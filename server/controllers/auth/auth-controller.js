@@ -175,4 +175,20 @@ const checkAuth = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, sendOTP, verifyOTP, loginUser: verifyOTP, logoutUser, updateProfile, authMiddleware, checkAuth };
+// ── Email + Password Login ────────────────────────────────
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email: email?.trim().toLowerCase() });
+    if (!user) return res.json({ success: false, message: "No account found with this email. Please register." });
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.json({ success: false, message: "Incorrect password. Please try again." });
+    const token = signToken(user);
+    res.cookie("token", token, cookieOptions).json({ success: true, message: "Logged in successfully!", user: userPayload(user) });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: "Login failed. Try again." });
+  }
+};
+
+module.exports = { registerUser, loginUser, sendOTP, verifyOTP, logoutUser, updateProfile, authMiddleware, checkAuth };
