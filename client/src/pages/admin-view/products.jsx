@@ -12,6 +12,7 @@ import {
   editProduct,
   fetchAllProducts,
 } from "@/store/admin/products-slice";
+import { updateSiteSettings, fetchSiteSettings } from "@/store/site-settings-slice";
 import { Plus, Search } from "lucide-react";
 import { getDiscountPercent } from "@/lib/product-offers";
 import { Fragment, useEffect, useMemo, useState } from "react";
@@ -48,10 +49,25 @@ function AdminProducts() {
   const [saving, setSaving] = useState(false);
 
   const { productList } = useSelector((state) => state.adminProducts);
+  const siteSettingsData = useSelector((s) => s.siteSettings?.data);
   const { productCategories, categoryOptionsMap } = useSiteSettings();
   const { brands } = useSiteSettings();
   const dispatch = useDispatch();
   const { toast } = useToast();
+
+  async function onAddCategory(newCat) {
+    const updated = [...(siteSettingsData?.productCategories || productCategories), newCat];
+    await dispatch(updateSiteSettings({ ...siteSettingsData, productCategories: updated }));
+    dispatch(fetchSiteSettings());
+    toast({ title: `Category "${newCat.label}" added ✅` });
+  }
+
+  async function onAddBrand(newBrand) {
+    const updated = [...(siteSettingsData?.brands || brands), newBrand];
+    await dispatch(updateSiteSettings({ ...siteSettingsData, brands: updated }));
+    dispatch(fetchSiteSettings());
+    toast({ title: `Brand "${newBrand.label}" added ✅` });
+  }
 
   function resetForm() {
     setFormData(initialFormData);
@@ -233,6 +249,8 @@ function AdminProducts() {
             brands={brands}
             isValid={isFormValid()}
             saving={saving}
+            onAddCategory={onAddCategory}
+            onAddBrand={onAddBrand}
           />
         </SheetContent>
       </Sheet>

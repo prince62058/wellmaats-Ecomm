@@ -11,6 +11,75 @@ import {
 } from "../ui/select";
 import ProductImageUpload from "./image-upload";
 import { getDiscountPercent, toDatetimeLocalValue } from "@/lib/product-offers";
+import { useState, useRef } from "react";
+import { Plus, Check, X } from "lucide-react";
+
+/* ── Inline "Add New" select ───────────────────────────────────── */
+function QuickAddSelect({ value, onValueChange, options, placeholder, onAddNew, addLabel }) {
+  const [adding, setAdding]   = useState(false);
+  const [newVal, setNewVal]   = useState("");
+  const inputRef              = useRef();
+
+  function startAdd(e) {
+    e.preventDefault();
+    setAdding(true);
+    setNewVal("");
+    setTimeout(() => inputRef.current?.focus(), 50);
+  }
+
+  function confirm(e) {
+    e?.preventDefault();
+    const trimmed = newVal.trim();
+    if (!trimmed) { setAdding(false); return; }
+    onAddNew(trimmed);
+    setAdding(false);
+    setNewVal("");
+  }
+
+  function cancel() { setAdding(false); setNewVal(""); }
+
+  return (
+    <div className="space-y-2">
+      {adding ? (
+        <div className="flex gap-2">
+          <Input
+            ref={inputRef}
+            value={newVal}
+            onChange={(e) => setNewVal(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); confirm(); } if (e.key === "Escape") cancel(); }}
+            placeholder={`Enter ${addLabel} name…`}
+            className="flex-1 h-9 rounded-xl border-forest/30 focus:border-forest"
+          />
+          <button type="button" onClick={confirm}
+            className="w-9 h-9 rounded-xl bg-forest text-white flex items-center justify-center hover:bg-forest/90 shrink-0">
+            <Check className="w-4 h-4" />
+          </button>
+          <button type="button" onClick={cancel}
+            className="w-9 h-9 rounded-xl border border-gray-200 text-gray-500 flex items-center justify-center hover:bg-gray-50 shrink-0">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      ) : (
+        <Select value={value} onValueChange={(v) => { if (v === "__add_new__") return; onValueChange(v); }}>
+          <SelectTrigger className="rounded-xl border-gray-200">
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((o) => (
+              <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>
+            ))}
+            <div className="border-t border-gray-100 mt-1 pt-1">
+              <button type="button" onClick={startAdd}
+                className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-forest font-semibold hover:bg-leaf/50 rounded-lg transition-colors">
+                <Plus className="w-4 h-4" /> Add New {addLabel}
+              </button>
+            </div>
+          </SelectContent>
+        </Select>
+      )}
+    </div>
+  );
+}
 
 function AdminProductForm({
   formData,
@@ -27,6 +96,8 @@ function AdminProductForm({
   brands,
   isValid,
   saving,
+  onAddCategory,
+  onAddBrand,
 }) {
   function setField(name, value) {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -95,25 +166,33 @@ function AdminProductForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Category *</Label>
-            <Select value={formData.category} onValueChange={(v) => setField("category", v)}>
-              <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
-              <SelectContent>
-                {productCategories.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <QuickAddSelect
+              value={formData.category}
+              onValueChange={(v) => setField("category", v)}
+              options={productCategories}
+              placeholder="Select category"
+              addLabel="Category"
+              onAddNew={(name) => {
+                const id = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                onAddCategory?.({ id, label: name });
+                setField("category", id);
+              }}
+            />
           </div>
           <div className="space-y-2">
             <Label>Brand *</Label>
-            <Select value={formData.brand} onValueChange={(v) => setField("brand", v)}>
-              <SelectTrigger><SelectValue placeholder="Select brand" /></SelectTrigger>
-              <SelectContent>
-                {brands.map((b) => (
-                  <SelectItem key={b.id} value={b.id}>{b.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <QuickAddSelect
+              value={formData.brand}
+              onValueChange={(v) => setField("brand", v)}
+              options={brands}
+              placeholder="Select brand"
+              addLabel="Brand"
+              onAddNew={(name) => {
+                const id = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                onAddBrand?.({ id, label: name });
+                setField("brand", id);
+              }}
+            />
           </div>
         </div>
         {formData.category && (
