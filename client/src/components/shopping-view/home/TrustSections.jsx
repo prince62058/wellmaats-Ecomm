@@ -20,7 +20,7 @@ export function WhyChooseUs() {
             Why Choose {brand.name}
           </h2>
         </ScrollReveal>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
           {whyChooseUs.map((item, i) => {
             const isImg = item.icon && (item.icon.startsWith("http") || item.icon.startsWith("/"));
             const Icon = iconMap[item.icon] || Leaf;
@@ -55,15 +55,15 @@ export function HealthBenefits() {
         <h2 className="font-display text-3xl md:text-4xl font-bold text-center text-forest mb-10">
           Health Benefits
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {healthBenefits.map((item, i) => (
             <div
               key={item.title}
-              className="p-5 rounded-2xl bg-gradient-to-br from-leaf to-white border border-forest/10 hover:border-forest/30 hover:shadow-md transition-all"
+              className="p-3 sm:p-5 rounded-2xl bg-gradient-to-br from-leaf to-white border border-forest/10 hover:border-forest/30 hover:shadow-md transition-all"
               style={{ animationDelay: `${i * 100}ms` }}
             >
-              <h3 className="font-semibold text-forest mb-1">{item.title}</h3>
-              <p className="text-sm text-muted-foreground">{item.desc}</p>
+              <h3 className="font-semibold text-forest mb-1 text-sm sm:text-base">{item.title}</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">{item.desc}</p>
             </div>
           ))}
         </div>

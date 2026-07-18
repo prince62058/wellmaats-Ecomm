@@ -21,7 +21,7 @@ function Brand({ brand, onClick }) {
         <img
           src={brand.logo}
           alt={brand.name}
-          className="h-12 w-auto max-w-[200px] object-contain object-left shrink-0 scale-125 origin-left"
+          className="h-11 w-auto max-w-full object-contain object-left shrink-0"
         />
       ) : (
         <>

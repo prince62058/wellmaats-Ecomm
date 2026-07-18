@@ -77,7 +77,7 @@ function OfferZone() {
               <SlidersHorizontal className="w-4 h-4 inline mr-1" />
               {deals.length} deals found
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
               {deals.map((product, i) => (
                 <ScrollReveal key={product._id} delay={i * 40}>
                   <ShoppingProductTile product={product} handleGetProductDetails={handleGetProductDetails} handleAddtoCart={handleAddtoCart} />

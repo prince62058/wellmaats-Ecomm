@@ -168,7 +168,7 @@ function ShoppingListing() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           <aside className="hidden lg:block w-72 shrink-0">
-            <div className="sticky top-20 lg:top-24">
+            <div className="sticky top-[calc(var(--header-h,120px)+12px)]">
               <ProductFilter filters={filters} handleFilter={handleFilter} />
             </div>
           </aside>

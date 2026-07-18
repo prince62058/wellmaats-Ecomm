@@ -31,8 +31,8 @@ function AnnouncementBar() {
   const msg = msgs[current];
 
   return (
-    <div className="relative bg-forest text-white text-center text-xs font-semibold py-2 px-10 sm:px-14 overflow-hidden select-none z-50">
-      <span className="animate-fade-in inline-block max-w-[calc(100%-3rem)] truncate px-1 align-middle">{msg.text}</span>
+    <div className="relative bg-forest text-white text-center text-xs font-semibold py-2 px-10 sm:px-14 overflow-hidden select-none">
+      <span className="animate-fade-in inline-block max-w-[calc(100%-3rem)] px-1 align-middle line-clamp-2 sm:truncate sm:line-clamp-none">{msg.text}</span>
       <button
         type="button"
         onClick={() => setDismissed(true)}

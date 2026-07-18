@@ -51,7 +51,7 @@ function AdminOrderDetailsView({ orderDetails, onUpdated }) {
   }
 
   return (
-    <DialogContent className="sm:max-w-[680px] max-h-[90vh] overflow-y-auto">
+    <DialogContent className="w-[calc(100%-1.5rem)] sm:max-w-[680px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
       <DialogHeader>
         <DialogTitle className="font-display text-forest flex items-center gap-2">
           <Package className="w-5 h-5" />

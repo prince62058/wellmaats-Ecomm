@@ -45,7 +45,7 @@ function CategoriesGrid() {
             Discover Ayurvedic drops tailored for every health need
           </p>
         </ScrollReveal>
-        <div className="grid grid-cols-1 min-[420px]:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
           {productCategories.map((cat, i) => {
             const Icon = categoryIcons[cat.id] || Shield;
             return (

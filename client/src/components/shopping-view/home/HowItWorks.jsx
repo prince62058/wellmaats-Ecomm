@@ -25,7 +25,7 @@ export default function HowItWorks() {
           </h2>
         </div>
 
-        <div className={`grid grid-cols-1 gap-6 max-w-5xl mx-auto ${
+        <div className={`grid grid-cols-1 gap-6 max-w-5xl mx-auto overflow-hidden ${
           howItWorks.length <= 2
             ? "md:grid-cols-2"
             : howItWorks.length === 3
@@ -35,7 +35,7 @@ export default function HowItWorks() {
           {howItWorks.map((step, i) => (
             <div key={i} className="relative flex flex-col items-center text-center group">
               {i < howItWorks.length - 1 && howItWorks.length <= 3 && (
-                <div className="hidden md:block absolute top-10 left-[60%] w-full h-px border-t-2 border-dashed border-forest/20 z-0" />
+                <div className="hidden md:block absolute top-10 left-[55%] w-[45%] h-px border-t-2 border-dashed border-forest/20 z-0" />
               )}
               <div className={`relative z-10 w-20 h-20 rounded-2xl bg-gradient-to-br ${STEP_COLORS[i % STEP_COLORS.length]} flex items-center justify-center shadow-xl mb-5 group-hover:scale-105 transition-transform duration-300 text-3xl`}>
                 {step.emoji || "🌿"}

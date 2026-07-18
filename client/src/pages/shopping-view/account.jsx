@@ -346,11 +346,11 @@ function ShoppingAccount() {
               { value: "referral",  label: "Refer & Earn", icon: <Gift className="w-4 h-4" /> },
             ].map((t) => (
               <TabsTrigger key={t.value} value={t.value}
-                className="flex items-center gap-2 text-sm rounded-xl shrink-0
+                className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm rounded-xl shrink-0
                   data-[state=active]:bg-forest data-[state=active]:text-white data-[state=active]:shadow-md
-                  px-3 sm:px-4 py-2.5 justify-center font-medium text-gray-500 hover:text-forest transition">
+                  px-2.5 sm:px-4 py-2.5 justify-center font-medium text-gray-500 hover:text-forest transition">
                 {t.icon}
-                <span className="hidden sm:inline">{t.label}</span>
+                <span className="max-[360px]:hidden">{t.label.split(" ")[0]}</span>
               </TabsTrigger>
             ))}
           </TabsList>

@@ -121,7 +121,7 @@ function AdminBlogs() {
             <SheetTitle>{editing ? "Edit Blog" : "Create New Blog"}</SheetTitle>
           </SheetHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Title *</Label>
                 <Input placeholder="Blog title..." value={form.title} onChange={(e) => set("title", e.target.value)} className="mt-1" />
@@ -131,7 +131,7 @@ function AdminBlogs() {
                 <Input placeholder="my-blog-slug" value={form.slug} onChange={(e) => set("slug", e.target.value)} className="mt-1" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Category</Label>
                 <Input placeholder="wellness" value={form.category} onChange={(e) => set("category", e.target.value)} className="mt-1" />
@@ -141,7 +141,7 @@ function AdminBlogs() {
                 <Input value={form.author} onChange={(e) => set("author", e.target.value)} className="mt-1" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Read Time (minutes)</Label>
                 <Input type="number" min={1} value={form.readTime} onChange={(e) => set("readTime", Number(e.target.value))} className="mt-1" />

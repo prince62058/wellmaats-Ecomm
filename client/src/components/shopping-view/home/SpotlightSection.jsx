@@ -79,7 +79,7 @@ function SpotlightSection({ products = [], handleGetProductDetails, handleAddtoC
 
         {/* Products grid */}
         {shown.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
             {shown.map((product, i) => (
               <ScrollReveal key={product._id} delay={i * 40}>
                 <ShoppingProductTile

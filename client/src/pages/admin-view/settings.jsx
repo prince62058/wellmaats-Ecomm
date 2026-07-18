@@ -466,7 +466,7 @@ function AdminSettings() {
                     </div>
 
                     {/* Text fields — labeled */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Badge Text</label>
                         <Input value={s.badge||""} placeholder="🏆 Best Seller" className="h-9 rounded-xl border-gray-200 text-sm"
@@ -488,7 +488,7 @@ function AdminSettings() {
                       <Input value={s.subtitle||""} placeholder="Short supporting line" className="h-9 rounded-xl border-gray-200 text-sm"
                         onChange={(e) => upd("subtitle", e.target.value)} />
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Button Link (URL)</label>
                         <Input value={s.link||""} placeholder="/shop/listing?category=..." className="h-9 rounded-xl border-gray-200 text-sm"
@@ -829,7 +829,7 @@ function AdminSettings() {
                   </div>
 
                   {/* Row 3: CTA Button + Link */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Button Text</label>
                       <Input value={b.cta || ""} onChange={(e) => setBannerField("cta", e.target.value)}

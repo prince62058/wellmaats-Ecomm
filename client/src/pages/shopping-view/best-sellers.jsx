@@ -47,9 +47,27 @@ function BestSellers() {
       </div>
 
       <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
-        {/* Sidebar */}
-        <div className="md:w-52 shrink-0">
-          <div className="sticky top-24 bg-white rounded-2xl border border-forest/10 p-4">
+        {/* Mobile category chips */}
+        <div className="md:hidden flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
+          {catTabs.map((cat) => (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => setActiveCategory(cat.id)}
+              className={`shrink-0 px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
+                activeCategory === cat.id
+                  ? "bg-forest text-white"
+                  : "bg-leaf text-forest border border-forest/15"
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Desktop sidebar */}
+        <div className="hidden md:block md:w-52 shrink-0">
+          <div className="sticky top-[calc(var(--header-h,120px)+12px)] bg-white rounded-2xl border border-forest/10 p-4">
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">Browse by Category</p>
             <div className="space-y-0.5">
               {catTabs.map((cat) => (
@@ -72,10 +90,10 @@ function BestSellers() {
         </div>
 
         {/* Products */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <p className="text-sm text-muted-foreground mb-4">{filtered.length} products found</p>
           {filtered.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
               {filtered.map((product, i) => (
                 <ScrollReveal key={product._id} delay={i * 40}>
                   <ShoppingProductTile product={product} handleGetProductDetails={handleGetProductDetails} handleAddtoCart={handleAddtoCart} />

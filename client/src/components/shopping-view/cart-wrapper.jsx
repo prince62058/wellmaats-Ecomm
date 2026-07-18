@@ -23,7 +23,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
   const itemCount = cartItems?.reduce((n, i) => n + i.quantity, 0) || 0;
 
   return (
-    <SheetContent className="sm:max-w-md flex flex-col p-0">
+    <SheetContent className="w-full sm:max-w-md flex flex-col p-0">
       <div className="bg-forest text-white px-6 py-5">
         <SheetHeader>
           <SheetTitle className="text-white font-display text-xl flex items-center gap-2">

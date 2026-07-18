@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Shield, Flame, Droplets, Wind, Heart, Brain, Bone,
   Sparkles, Activity, Stethoscope, Scale, Baby, Leaf,
@@ -38,24 +39,11 @@ function MegaMenu({ light, onNavigate }) {
   }
 
   const triggerClass = light
-    ? "text-sm font-medium text-white/90 hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
-    : "text-sm font-medium text-forest/80 hover:text-forest flex items-center gap-1 cursor-pointer transition-colors";
+    ? "group flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-sm font-semibold text-white ring-1 ring-white/25 hover:bg-white/25 transition-all"
+    : "group flex items-center gap-1.5 rounded-full bg-forest/10 px-3 py-1.5 text-sm font-semibold text-forest ring-1 ring-forest/15 hover:bg-forest hover:text-white transition-all";
 
-  return (
-    <div
-      className="relative"
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-    >
-      {/* Trigger */}
-      <button type="button" className={triggerClass}>
-        <Grid3X3 className="w-3.5 h-3.5 opacity-70" />
-        Shop By Category
-        <ChevronRight className={`w-3.5 h-3.5 opacity-60 transition-transform ${open ? "rotate-90" : ""}`} />
-      </button>
-
-      {/* Dropdown */}
-      {open && (
+  const panel = open
+    ? createPortal(
         <div
           className="fixed left-0 right-0 z-[999] shadow-2xl border-t border-forest/10"
           style={{ top: "var(--header-h, 104px)" }}
@@ -63,10 +51,9 @@ function MegaMenu({ light, onNavigate }) {
           onMouseLeave={handleLeave}
         >
           <div
-            className="flex bg-white max-h-[min(520px,calc(100dvh-var(--header-h,104px)))] overflow-hidden"
+            className="flex bg-white max-h-[min(420px,calc(100dvh-var(--header-h,104px)))] overflow-hidden"
             style={{ maxWidth: "100vw" }}
           >
-            {/* Left sidebar */}
             <div className="w-48 xl:w-56 shrink-0 bg-[#f6faf6] border-r border-forest/10 overflow-y-auto">
               {megaMenu.map((cat) => {
                 const Icon = ICON_MAP[cat.icon] || Leaf;
@@ -102,7 +89,6 @@ function MegaMenu({ light, onNavigate }) {
               </button>
             </div>
 
-            {/* Right panel */}
             {activeCategory && (
               <div className="flex-1 p-6 overflow-y-auto">
                 <div className="flex items-center gap-2 mb-5 pb-3 border-b border-forest/8">
@@ -146,8 +132,23 @@ function MegaMenu({ light, onNavigate }) {
               </div>
             )}
           </div>
-        </div>
-      )}
+        </div>,
+        document.body
+      )
+    : null;
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+    >
+      <button type="button" className={triggerClass}>
+        <Grid3X3 className="w-3.5 h-3.5 text-gold" />
+        Shop By Category
+        <ChevronRight className={`w-3.5 h-3.5 opacity-70 transition-transform ${open ? "rotate-90" : ""}`} />
+      </button>
+      {panel}
     </div>
   );
 }

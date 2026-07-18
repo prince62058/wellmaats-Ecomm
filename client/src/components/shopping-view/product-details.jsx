@@ -163,7 +163,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             )}
 
             <Tabs defaultValue="benefits" className="mt-8">
-              <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full">
+              <TabsList className="flex w-full overflow-x-auto scrollbar-hide gap-1 h-auto p-1">
                 <TabsTrigger value="benefits">Benefits</TabsTrigger>
                 <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
                 <TabsTrigger value="usage">How to Use</TabsTrigger>

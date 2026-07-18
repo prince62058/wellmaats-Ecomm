@@ -52,21 +52,21 @@ function PromoBannerSection({ bannerIndex }) {
           )}
 
           {/* Content */}
-          <div className="relative z-10 px-6 md:px-10 py-8 max-w-lg">
+          <div className="relative z-10 px-4 sm:px-6 md:px-10 py-6 sm:py-8 max-w-lg">
             {b.badge && (
               <span className="inline-block bg-gold text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">
                 {b.badge}
               </span>
             )}
-            <h3 className="font-display text-2xl md:text-4xl font-bold text-white leading-tight mb-2">
+            <h3 className="font-display text-xl sm:text-2xl md:text-4xl font-bold text-white leading-tight mb-2">
               {b.title}
             </h3>
             {b.subtitle && (
-              <p className="text-white/75 text-sm md:text-base mb-5">{b.subtitle}</p>
+              <p className="text-white/75 text-sm md:text-base mb-4 sm:mb-5 line-clamp-2 sm:line-clamp-none">{b.subtitle}</p>
             )}
             {b.link && (
               <Link to={b.link}>
-                <Button className="bg-gold hover:bg-gold/90 text-white rounded-full px-6 font-semibold shadow-lg">
+                <Button className="bg-gold hover:bg-gold/90 text-white rounded-full px-5 sm:px-6 font-semibold shadow-lg text-sm">
                   {b.cta || "Shop Now"} <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
@@ -93,14 +93,14 @@ function PromoBannerSection({ bannerIndex }) {
               <button
                 type="button"
                 onClick={() => setCurrent((c) => (c - 1 + banners.length) % banners.length)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white rounded-full p-1.5 transition"
+                className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white rounded-full p-1.5 transition"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 onClick={() => setCurrent((c) => (c + 1) % banners.length)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white rounded-full p-1.5 transition"
+                className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white rounded-full p-1.5 transition"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

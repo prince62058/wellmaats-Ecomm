@@ -157,12 +157,12 @@ function ShoppingCheckout() {
         <div className="flex flex-col-reverse lg:grid lg:grid-cols-5 gap-6 lg:gap-8 items-start">
           {/* Order summary — first on mobile */}
           <div className="lg:col-span-2 order-1 lg:order-2">
-            <div className="lg:sticky lg:top-24 bg-white rounded-2xl border border-forest/10 shadow-lg overflow-hidden">
-              <div className="bg-forest/5 px-6 py-4 border-b border-forest/10">
+            <div className="lg:sticky lg:top-[calc(var(--header-h,120px)+12px)] bg-white rounded-2xl border border-forest/10 shadow-lg overflow-hidden">
+              <div className="bg-forest/5 px-4 sm:px-6 py-4 border-b border-forest/10">
                 <h2 className="font-display text-xl font-bold text-forest">Order Summary</h2>
               </div>
 
-              <div className="px-6 py-4 space-y-4 max-h-[340px] overflow-y-auto">
+              <div className="px-4 sm:px-6 py-4 space-y-4 max-h-[340px] overflow-y-auto">
                 {items.map((item) => (
                   <div key={item.productId} className="pb-4 border-b border-forest/5 last:border-0 last:pb-0">
                     <UserCartItemsContent cartItem={item} />
@@ -170,7 +170,7 @@ function ShoppingCheckout() {
                 ))}
               </div>
 
-              <div className="px-6 py-4 bg-leaf/40 border-t border-forest/10 space-y-2 text-sm">
+              <div className="px-4 sm:px-6 py-4 bg-leaf/40 border-t border-forest/10 space-y-2 text-sm">
                 <div className="flex justify-between text-muted-foreground">
                   <span>Subtotal</span>
                   <span>₹{totalCartAmount}</span>

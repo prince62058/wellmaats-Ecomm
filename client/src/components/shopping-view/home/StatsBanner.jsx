@@ -8,7 +8,7 @@ function StatItem({ value, suffix, label, decimals = 0 }) {
 
   return (
     <div ref={ref} className="text-center">
-      <p className="font-display text-4xl md:text-5xl font-bold text-forest">
+      <p className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-forest">
         {decimals ? count.toFixed(decimals) : count}
         {suffix}
       </p>

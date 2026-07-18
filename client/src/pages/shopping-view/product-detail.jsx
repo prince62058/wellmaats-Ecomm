@@ -174,18 +174,18 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
         {/* ── Back button ── */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-forest mb-6 transition group"
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-forest mb-4 sm:mb-6 transition group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Back
         </button>
 
         {/* ══ Main Product Section ══ */}
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
+        <div className="grid lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-16">
 
           {/* LEFT — Image */}
           <div className="space-y-4">
@@ -210,15 +210,15 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Trust row */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {[
                 { icon: <Shield className="w-4 h-4" />, label: "100% Ayurvedic" },
                 { icon: <Truck className="w-4 h-4" />, label: "Express Delivery" },
                 { icon: <Package className="w-4 h-4" />, label: "Secure Packaging" },
               ].map((b) => (
-                <div key={b.label} className="flex flex-col items-center gap-1.5 bg-leaf/40 rounded-2xl py-3 px-2 text-center">
+                <div key={b.label} className="flex flex-col items-center gap-1 sm:gap-1.5 bg-leaf/40 rounded-xl sm:rounded-2xl py-2.5 sm:py-3 px-1 sm:px-2 text-center">
                   <span className="text-forest">{b.icon}</span>
-                  <span className="text-[11px] font-semibold text-forest">{b.label}</span>
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-forest leading-tight">{b.label}</span>
                 </div>
               ))}
             </div>
@@ -259,7 +259,7 @@ export default function ProductDetailPage() {
 
             {/* Price */}
             <div className="flex items-baseline gap-3 flex-wrap">
-              <span className="text-4xl font-bold text-forest">₹{price}</span>
+              <span className="text-3xl sm:text-4xl font-bold text-forest">₹{price}</span>
               {p.salePrice > 0 && (
                 <>
                   <span className="text-xl line-through text-muted-foreground">₹{p.price}</span>
@@ -408,13 +408,13 @@ export default function ProductDetailPage() {
             <TabsContent value="reviews">
               <div className="bg-leaf/20 rounded-3xl p-6 border border-forest/10 space-y-6">
                 {/* Rating summary */}
-                <div className="flex items-center gap-6 bg-white rounded-2xl p-5 shadow-sm border border-forest/5">
-                  <div className="text-center">
-                    <p className="text-5xl font-bold text-forest">{averageReview.toFixed(1)}</p>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-forest/5">
+                  <div className="text-center shrink-0">
+                    <p className="text-4xl sm:text-5xl font-bold text-forest">{averageReview.toFixed(1)}</p>
                     <StarRatingComponent rating={averageReview} />
                     <p className="text-xs text-muted-foreground mt-1">{reviews?.length || 0} reviews</p>
                   </div>
-                  <div className="flex-1 space-y-1.5">
+                  <div className="flex-1 space-y-1.5 min-w-0">
                     {[5,4,3,2,1].map((star) => {
                       const count = reviews?.filter((r) => Math.round(r.reviewValue) === star).length || 0;
                       const pct = reviews?.length ? Math.round((count / reviews.length) * 100) : 0;
@@ -488,7 +488,7 @@ export default function ProductDetailPage() {
                 View all <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {related.map((rel) => (
                 <ShoppingProductTile
                   key={rel._id}

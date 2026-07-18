@@ -31,10 +31,10 @@ export default function IngredientsStrip() {
           </p>
         </div>
 
-        {/* Herb cards */}
-        <div className="flex flex-wrap justify-center gap-5">
+        {/* Herb cards — scroll on mobile */}
+        <div className="flex gap-4 sm:gap-5 overflow-x-auto scrollbar-hide pb-2 sm:flex-wrap sm:justify-center sm:overflow-visible">
           {herbs.map((herb, i) => (
-            <div key={i} className="group flex flex-col items-center text-center gap-2 w-20 cursor-default">
+            <div key={i} className="group flex flex-col items-center text-center gap-2 w-20 shrink-0 cursor-default">
               <div
                 className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${EMOJI_BG[i % EMOJI_BG.length]} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 text-2xl`}
               >

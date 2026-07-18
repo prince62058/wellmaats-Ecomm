@@ -34,6 +34,50 @@ import HeaderSearch from "./header-search";
 import { useEffect, useRef, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 
+function navLinkAccent(href = "", label = "") {
+  const key = `${href} ${label}`.toLowerCase();
+  if (key.includes("best-seller") || key.includes("best seller")) {
+    return {
+      light: "text-amber-200 hover:text-amber-100 hover:bg-amber-400/20",
+      solid: "text-amber-700 hover:text-amber-800 hover:bg-amber-50",
+      chip: "bg-amber-100",
+    };
+  }
+  if (key.includes("offer")) {
+    return {
+      light: "text-orange-200 hover:text-orange-100 hover:bg-orange-400/20",
+      solid: "text-orange-600 hover:text-orange-700 hover:bg-orange-50",
+      chip: "bg-orange-100",
+    };
+  }
+  if (key.includes("blog")) {
+    return {
+      light: "text-emerald-200 hover:text-emerald-100 hover:bg-emerald-400/20",
+      solid: "text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50",
+      chip: "bg-emerald-100",
+    };
+  }
+  if (key.includes("track") || key.includes("account")) {
+    return {
+      light: "text-sky-200 hover:text-sky-100 hover:bg-sky-400/20",
+      solid: "text-sky-700 hover:text-sky-800 hover:bg-sky-50",
+      chip: "bg-sky-100",
+    };
+  }
+  if (key.includes("gift")) {
+    return {
+      light: "text-rose-200 hover:text-rose-100 hover:bg-rose-400/20",
+      solid: "text-rose-600 hover:text-rose-700 hover:bg-rose-50",
+      chip: "bg-rose-100",
+    };
+  }
+  return {
+    light: "text-white/90 hover:text-white hover:bg-white/15",
+    solid: "text-forest hover:text-forest hover:bg-leaf",
+    chip: "bg-leaf",
+  };
+}
+
 function MenuItems({ onNavigate, light, mobile = false }) {
   const navigate = useNavigate();
   const { productCategories } = useSiteSettings();
@@ -42,8 +86,8 @@ function MenuItems({ onNavigate, light, mobile = false }) {
   const linkClass = mobile
     ? "w-full text-left px-4 py-3.5 rounded-xl text-base font-medium text-forest hover:bg-leaf active:bg-leaf transition-colors"
     : light
-      ? "text-sm font-medium cursor-pointer text-white/90 hover:text-white transition-colors"
-      : "text-sm font-medium cursor-pointer text-forest/80 hover:text-forest transition-colors";
+      ? "text-sm font-semibold cursor-pointer text-white hover:text-gold transition-colors"
+      : "text-sm font-semibold cursor-pointer text-forest hover:text-forest/80 transition-colors";
 
   function goCategory(categoryId) {
     sessionStorage.setItem("filters", JSON.stringify({ category: [categoryId] }));
@@ -207,7 +251,7 @@ function HeaderRightContent({ light, openCartSheet, setOpenCartSheet }) {
       {/* Wishlist */}
       <Link
         to="/shop/wishlist"
-        className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors hidden sm:flex ${
+        className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors ${
           light ? "border-white/30 bg-white/10 text-white hover:bg-white/20" : "border-forest/15 text-forest hover:bg-leaf"
         }`}
       >
@@ -243,21 +287,23 @@ function HeaderRightContent({ light, openCartSheet, setOpenCartSheet }) {
         </DropdownMenu>
       ) : (
         /* ── Guest login / signup buttons ── */
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <Button
             onClick={openLoginModal}
             variant="outline"
             size="sm"
-            className={`rounded-full text-xs font-bold px-4 h-8 ${btnClass}`}
+            className={`rounded-full text-xs font-bold px-2.5 sm:px-4 h-8 ${btnClass}`}
           >
-            <LogIn className="w-3.5 h-3.5 mr-1.5" /> Login
+            <LogIn className="w-3.5 h-3.5 sm:mr-1.5" />
+            <span className="hidden sm:inline">Login</span>
           </Button>
           <Button
             onClick={() => navigate("/auth/register")}
             size="sm"
-            className="rounded-full text-xs font-bold px-4 h-8 bg-gold hover:bg-gold/90 text-white shadow-sm hidden sm:flex"
+            className="rounded-full text-xs font-bold px-3 sm:px-4 h-8 bg-gold hover:bg-gold/90 text-white shadow-sm"
           >
-            Sign Up
+            <span className="sm:hidden">Join</span>
+            <span className="hidden sm:inline">Sign Up</span>
           </Button>
         </div>
       )}
@@ -268,10 +314,13 @@ function HeaderRightContent({ light, openCartSheet, setOpenCartSheet }) {
 function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
+  const { headerNavLinks, megaMenu = [] } = useSiteSettings();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { openLoginModal } = useLoginModal();
+  const [categoryOpen, setCategoryOpen] = useState(false);
   const cartCount = cartItems?.items?.reduce((n, i) => n + (i.quantity || 0), 0) || 0;
+  const navLinks = headerNavLinks || [];
 
   function closeAnd(fn) {
     onOpenChange(false);
@@ -292,18 +341,93 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
             <img
               src={
                 brand.logo?.startsWith("/wellmaats-logo")
-                  ? "/wellmaats-logo.png?v=4"
-                  : brand.logo || "/wellmaats-logo.png?v=4"
+                  ? "/wellmaats-logo.png?v=6"
+                  : brand.logo || "/wellmaats-logo.png?v=6"
               }
               alt={brand.company || brand.name || "Wellmaats"}
-              className="h-14 w-auto max-w-[220px] object-contain object-left"
+              className="h-12 w-auto max-w-[220px] object-contain object-left"
             />
           </div>
           <HeaderSearch className="w-full" onResultClick={() => onOpenChange(false)} />
         </div>
 
-        <div className="flex-1 overflow-y-auto px-3 py-4">
-          <MenuItems mobile onNavigate={() => onOpenChange(false)} />
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+          {navLinks.length > 0 && (
+            <div>
+              <p className="px-4 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Explore
+              </p>
+              <div className="flex flex-col gap-1">
+                {navLinks.map((link) => {
+                  const accent = navLinkAccent(link.href, link.label);
+                  return (
+                    <button
+                      key={link.href}
+                      type="button"
+                      onClick={() => closeAnd(() => navigate(link.href))}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition-colors ${accent.solid}`}
+                    >
+                      <span className={`inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm ${accent.chip}`}>
+                        {link.icon}
+                      </span>
+                      {link.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {megaMenu.length > 0 && (
+            <div>
+              <p className="px-4 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Categories
+              </p>
+              <button
+                type="button"
+                onClick={() => setCategoryOpen((v) => !v)}
+                className="w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl text-base font-semibold text-forest bg-forest/5 hover:bg-leaf transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-forest/10 text-sm">▦</span>
+                  Shop By Category
+                </span>
+                <ChevronDown className={`w-4 h-4 text-forest/50 transition-transform ${categoryOpen ? "rotate-180" : ""}`} />
+              </button>
+              {categoryOpen && (
+                <div className="mt-1 ml-2 pl-2 border-l-2 border-forest/10 space-y-0.5 max-h-64 overflow-y-auto">
+                  {megaMenu.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() =>
+                        closeAnd(() => navigate(cat.href || `/shop/listing?category=${cat.id}`))
+                      }
+                      className="w-full text-left flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-forest/80 hover:bg-leaf hover:text-forest transition-colors"
+                    >
+                      <Leaf className="w-3.5 h-3.5 text-gold shrink-0" />
+                      {cat.label}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => closeAnd(() => navigate("/shop/listing"))}
+                    className="w-full text-left flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-semibold text-forest hover:bg-leaf transition-colors"
+                  >
+                    View all products
+                    <ArrowRight className="w-3.5 h-3.5 text-gold ml-auto" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div>
+            <p className="px-4 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Menu
+            </p>
+            <MenuItems mobile onNavigate={() => onOpenChange(false)} />
+          </div>
         </div>
 
         <div className="shrink-0 border-t border-forest/10 bg-leaf/50 px-3 py-4 space-y-1">
@@ -318,6 +442,10 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
                 {cartCount}
               </span>
             )}
+          </button>
+          <button type="button" className={actionClass} onClick={() => closeAnd(() => navigate("/shop/wishlist"))}>
+            <Heart className="w-5 h-5 text-forest shrink-0" />
+            Wishlist
           </button>
 
           {user ? (
@@ -402,25 +530,25 @@ function ShoppingHeader() {
   return (
     <header
       ref={headerRef}
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      className={`w-full transition-all duration-300 ${
         light
           ? "bg-gradient-to-b from-black/55 to-black/5 border-b border-white/10"
           : "bg-white/97 backdrop-blur-xl border-b border-forest/10 shadow-sm"
       }`}
     >
       {/* ── Row 1: Logo | Search | Cart+User ── */}
-      <div className="container mx-auto flex h-16 md:h-[4.75rem] items-center gap-2.5 md:gap-4 px-3 md:px-6">
+      <div className="container mx-auto flex h-14 sm:h-16 md:h-[4.75rem] items-center gap-2 md:gap-4 px-3 md:px-6">
         {/* Mobile hamburger left */}
         <Button
           variant="outline"
           size="icon"
           onClick={() => setMobileOpen(true)}
-          className={`lg:hidden rounded-full shrink-0 ${light ? "border-white/30 bg-white/10 text-white" : "border-forest/15"}`}
+          className={`lg:hidden rounded-full shrink-0 h-9 w-9 ${light ? "border-white/30 bg-white/10 text-white" : "border-forest/15"}`}
         >
           <Menu className="h-5 w-5" />
         </Button>
 
-        {/* Logo only — brand mark as provided */}
+        {/* Logo fills bar height; PNG is tightly cropped */}
         <Link
           to="/shop/home"
           className="flex items-center shrink-0"
@@ -430,23 +558,23 @@ function ShoppingHeader() {
             <img
               src={
                 brand.logo.startsWith("/wellmaats-logo")
-                  ? "/wellmaats-logo.png?v=4"
+                  ? "/wellmaats-logo.png?v=6"
                   : brand.logo
               }
               alt={brand.company || brand.name || "Wellmaats"}
-              className="h-16 sm:h-[4.5rem] md:h-20 w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[400px] object-contain object-left"
+              className="h-10 sm:h-14 md:h-16 w-auto max-w-[120px] sm:max-w-[220px] md:max-w-[340px] object-contain object-left"
             />
           ) : (
             <img
-              src="/wellmaats-logo.png?v=4"
+              src="/wellmaats-logo.png?v=6"
               alt="Wellmaats"
-              className="h-16 sm:h-[4.5rem] md:h-20 w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[400px] object-contain object-left"
+              className="h-10 sm:h-14 md:h-16 w-auto max-w-[120px] sm:max-w-[220px] md:max-w-[340px] object-contain object-left"
             />
           )}
         </Link>
 
-        {/* Search — center, prominent */}
-        <div className="flex-1 max-w-2xl mx-2 md:mx-4">
+        {/* Search — hide on very small screens (available in menu) */}
+        <div className="hidden min-[400px]:block flex-1 max-w-2xl mx-1 sm:mx-2 md:mx-4 min-w-0">
           <HeaderSearch className="w-full" variant={light ? "dark" : "light"} />
         </div>
 
@@ -460,28 +588,72 @@ function ShoppingHeader() {
         </div>
       </div>
 
-      {/* ── Row 2: Nav bar (desktop only) ── */}
-      <div className={`hidden lg:block border-t ${light ? "border-white/10" : "border-forest/8"}`}>
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="flex items-center gap-1 h-10 overflow-x-auto scrollbar-hide">
+      {/* ── Row 2: Nav — desktop full bar + mobile scroll chips ── */}
+      <div
+        className={`border-t ${
+          light
+            ? "border-white/10 bg-black/20 backdrop-blur-md"
+            : "border-forest/8 bg-leaf/70"
+        }`}
+      >
+        <div className="container mx-auto px-3 md:px-6">
+          {/* Mobile / tablet: horizontal chips */}
+          <div className="flex lg:hidden items-center gap-2 h-11 overflow-x-auto scrollbar-hide">
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              className={`shrink-0 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold whitespace-nowrap ${
+                light
+                  ? "bg-white/15 text-white ring-1 ring-white/25"
+                  : "bg-forest text-white"
+              }`}
+            >
+              ▦ Categories
+            </button>
+            {navLinks.map((link) => {
+              const accent = navLinkAccent(link.href, link.label);
+              return (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={`shrink-0 flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors ${
+                    light ? accent.light : accent.solid
+                  }`}
+                >
+                  <span className="text-[11px]">{link.icon}</span>
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Desktop */}
+          <div className="hidden lg:flex items-center gap-1.5 h-11 overflow-x-auto scrollbar-hide">
             <div className="shrink-0">
               <MegaMenu light={light} onNavigate={() => {}} />
             </div>
-            <div className={`w-px h-5 mx-2 shrink-0 ${light ? "bg-white/20" : "bg-forest/15"}`} />
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
-                  light
-                    ? "text-white/85 hover:text-white hover:bg-white/10"
-                    : "text-forest/75 hover:text-forest hover:bg-leaf"
-                }`}
-              >
-                <span className="text-xs">{link.icon}</span>
-                {link.label}
-              </Link>
-            ))}
+            <div className={`w-px h-5 mx-1.5 shrink-0 ${light ? "bg-white/25" : "bg-forest/15"}`} />
+            {navLinks.map((link) => {
+              const accent = navLinkAccent(link.href, link.label);
+              return (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${
+                    light ? accent.light : accent.solid
+                  }`}
+                >
+                  <span
+                    className={`inline-flex h-5 w-5 items-center justify-center rounded-md text-[11px] ${
+                      light ? "bg-white/15" : accent.chip
+                    }`}
+                  >
+                    {link.icon}
+                  </span>
+                  {link.label}
+                </Link>
+              );
+            })}
             <div className="flex-1 min-w-2" />
             <div className="hidden xl:flex shrink-0">
               <MenuItems light={light} />

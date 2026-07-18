@@ -49,7 +49,7 @@ function WishlistPage() {
 
       <div className="container mx-auto px-4 py-8">
         {wishlistProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
             {wishlistProducts.map((product, i) => (
               <ScrollReveal key={product._id} delay={i * 40}>
                 <ShoppingProductTile product={product} handleGetProductDetails={handleGetProductDetails} handleAddtoCart={handleAddtoCart} />
