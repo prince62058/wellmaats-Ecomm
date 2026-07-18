@@ -78,7 +78,7 @@ function HeroSection() {
   const headlineY = progress * -80;
 
   return (
-    <section ref={containerRef} className="relative h-[100vh] sm:h-[110vh] lg:h-[120vh] -mt-14 md:-mt-16">
+    <section ref={containerRef} className="relative h-screen -mt-14 md:-mt-16">
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#0a1f17]">
         <video
           ref={videoRef}
