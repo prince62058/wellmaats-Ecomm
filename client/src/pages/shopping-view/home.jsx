@@ -4,7 +4,7 @@ import { fetchAllFilteredProducts, fetchProductDetails } from "@/store/shop/prod
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
 
-import HeroSection from "@/components/shopping-view/home/HeroSection";
+import HeroCarousel from "@/components/shopping-view/home/HeroCarousel";
 import CategoriesGrid from "@/components/shopping-view/home/CategoriesGrid";
 import HowItWorks from "@/components/shopping-view/home/HowItWorks";
 import StatsBanner from "@/components/shopping-view/home/StatsBanner";
@@ -44,8 +44,8 @@ function ShoppingHome() {
 
   return (
     <div className="flex flex-col">
-      {/* 1. Hero */}
-      <HeroSection />
+      {/* 1. Hero Carousel */}
+      <HeroCarousel />
 
       {/* 2. Trust marquee */}
       <div className="relative bg-forest overflow-hidden py-3 border-y border-gold/30">

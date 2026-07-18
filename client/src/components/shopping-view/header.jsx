@@ -6,6 +6,7 @@ import {
   UserCog,
   ChevronDown,
   ArrowRight,
+  Heart,
 } from "lucide-react";
 import MegaMenu from "./mega-menu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -321,60 +322,97 @@ function ShoppingHeader() {
     setOpenCartSheet(true);
   }
 
+  const navLinks = [
+    { label: "Best Sellers", href: "/shop/best-sellers", icon: "🏆" },
+    { label: "Offer Zone", href: "/shop/offer-zone", icon: "🔥" },
+    { label: "Blogs", href: "/blogs", icon: "📖" },
+    { label: "Track Order", href: "/shop/account", icon: "🚚" },
+  ];
+
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         light
-          ? "border-b border-white/10 bg-gradient-to-b from-black/50 to-transparent"
-          : "border-b border-forest/10 bg-white/95 backdrop-blur-xl shadow-sm"
+          ? "bg-gradient-to-b from-black/55 to-black/5 border-b border-white/10"
+          : "bg-white/97 backdrop-blur-xl border-b border-forest/10 shadow-sm"
       }`}
     >
+      {/* ── Row 1: Logo | Search | Cart+User ── */}
       <div className="container mx-auto flex h-14 md:h-16 items-center gap-3 px-4 md:px-6">
-        <Link to="/shop/home" className="flex items-center gap-2.5 shrink-0">
-          <div className={`w-9 h-9 rounded-full flex items-center justify-center ${light ? "bg-white/15 backdrop-blur" : "bg-forest"}`}>
-            <Leaf className="h-5 w-5 text-white" />
+        {/* Mobile hamburger left */}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setMobileOpen(true)}
+          className={`lg:hidden rounded-full shrink-0 ${light ? "border-white/30 bg-white/10 text-white" : "border-forest/15"}`}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+
+        {/* Logo */}
+        <Link to="/shop/home" className="flex items-center gap-2 shrink-0">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${light ? "bg-white/20 backdrop-blur" : "bg-forest"}`}>
+            <Leaf className="h-4.5 w-4.5 text-white" />
           </div>
-          <div className="leading-tight min-w-0">
-            <span className={`font-display font-bold text-sm sm:text-base md:text-lg truncate block ${light ? "text-white" : "text-forest"}`}>
+          <div className="leading-tight hidden sm:block">
+            <span className={`font-display font-bold text-sm md:text-base block truncate ${light ? "text-white" : "text-forest"}`}>
               {brand.name}
             </span>
-            <span className={`block text-[9px] sm:text-[10px] -mt-0.5 truncate ${light ? "text-gold/90" : "text-gold"}`}>
+            <span className={`block text-[9px] -mt-0.5 ${light ? "text-gold/90" : "text-gold"}`}>
               {brand.tagline}
             </span>
           </div>
         </Link>
 
-        <div className="hidden md:flex flex-1 max-w-sm lg:max-w-md mx-auto">
+        {/* Search — center, prominent */}
+        <div className="flex-1 max-w-2xl mx-2 md:mx-4">
           <HeaderSearch className="w-full" variant={light ? "dark" : "light"} />
         </div>
 
-        <div className="hidden lg:flex items-center gap-6">
-          <MegaMenu light={light} onNavigate={() => {}} />
-          <MenuItems light={light} />
-        </div>
-
-        <div className="flex items-center gap-1.5 sm:gap-2 ml-auto shrink-0">
+        {/* Right: Cart + User */}
+        <div className="flex items-center gap-1.5 shrink-0">
           <HeaderRightContent
             light={light}
             openCartSheet={openCartSheet}
             setOpenCartSheet={setOpenCartSheet}
           />
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setMobileOpen(true)}
-            className={`lg:hidden rounded-full ${light ? "border-white/30 bg-white/10 text-white" : "border-forest/15"}`}
+          {/* Wishlist icon */}
+          <Link
+            to="/shop/wishlist"
+            className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors hidden sm:flex ${
+              light ? "border-white/30 bg-white/10 text-white hover:bg-white/20" : "border-forest/15 text-forest hover:bg-leaf"
+            }`}
           >
-            <Menu className="h-5 w-5" />
-          </Button>
+            <Heart className="w-4.5 h-4.5" />
+          </Link>
         </div>
       </div>
 
-      {!mobileOpen && (
-        <div className="md:hidden px-4 pb-3">
-          <HeaderSearch className="w-full" variant={light ? "dark" : "light"} />
+      {/* ── Row 2: Nav bar (desktop only) ── */}
+      <div className={`hidden lg:block border-t ${light ? "border-white/10" : "border-forest/8"}`}>
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center gap-1 h-10">
+            <MegaMenu light={light} onNavigate={() => {}} />
+            <div className={`w-px h-5 mx-2 ${light ? "bg-white/20" : "bg-forest/15"}`} />
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                  light
+                    ? "text-white/85 hover:text-white hover:bg-white/10"
+                    : "text-forest/75 hover:text-forest hover:bg-leaf"
+                }`}
+              >
+                <span className="text-xs">{link.icon}</span>
+                {link.label}
+              </Link>
+            ))}
+            <div className="flex-1" />
+            <MenuItems light={light} />
+          </div>
         </div>
-      )}
+      </div>
 
       <MobileNavSheet
         open={mobileOpen}

@@ -11,10 +11,12 @@ import shopSearchSlice from "./shop/search-slice";
 import shopReviewSlice from "./shop/review-slice";
 import commonFeatureSlice from "./common-slice";
 import siteSettingsReducer from "./site-settings-slice";
+import wishlistReducer from "./shop/wishlist-slice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    wishlist: wishlistReducer,
 
     adminProducts: adminProductsSlice,
     adminOrder: adminOrderSlice,

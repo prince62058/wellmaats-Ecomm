@@ -24,6 +24,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
 import ScrollToTop from "./components/common/scroll-to-top";
+import OfferZone from "./pages/shopping-view/offer-zone";
+import BestSellers from "./pages/shopping-view/best-sellers";
+import Blogs from "./pages/shopping-view/blogs";
+import BlogDetail from "./pages/shopping-view/blog-detail";
+import WishlistPage from "./pages/shopping-view/wishlist";
+import AdminBlogs from "./pages/admin-view/blogs";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -77,6 +83,7 @@ function App() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="features" element={<AdminFeatures />} />
           <Route path="settings" element={<AdminSettings />} />
+          <Route path="blogs" element={<AdminBlogs />} />
         </Route>
         <Route
           path="/shop"
@@ -92,7 +99,12 @@ function App() {
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="search" element={<SearchProducts />} />
+          <Route path="offer-zone" element={<OfferZone />} />
+          <Route path="best-sellers" element={<BestSellers />} />
+          <Route path="wishlist" element={<WishlistPage />} />
         </Route>
+        <Route path="/blogs" element={<Blogs />} />
+        <Route path="/blogs/:slug" element={<BlogDetail />} />
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
