@@ -8,6 +8,7 @@ import { Eye, ShoppingBag, Star, Heart, Zap } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleWishlistItem } from "@/store/shop/wishlist-slice";
 import { useNavigate } from "react-router-dom";
+import { useLoginModal } from "@/context/LoginModalContext";
 
 const FALLBACK_IMG = "/products/signature.jpg";
 
@@ -19,6 +20,7 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
   const { user } = useSelector((s) => s.auth);
   const wishlistProducts = useSelector((s) => s.wishlist?.products || []);
   const isWishlisted = wishlistProducts.includes(product?._id);
+  const { openLoginModal } = useLoginModal();
 
   useEffect(() => {
     setImgSrc(resolveProductImage(product?.image));
@@ -31,7 +33,7 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
 
   function handleWishlist(e) {
     e.stopPropagation();
-    if (!user?.id) { navigate("/auth/login"); return; }
+    if (!user?.id) { openLoginModal(); return; }
     dispatch(toggleWishlistItem({ userId: user.id, productId: product._id }));
   }
 

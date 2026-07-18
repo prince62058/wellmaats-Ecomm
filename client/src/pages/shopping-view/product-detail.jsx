@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import axiosInstance from "@/lib/axiosInstance";
+import { useLoginModal } from "@/context/LoginModalContext";
 
 const FALLBACK = "/products/signature.jpg";
 
@@ -35,6 +36,7 @@ export default function ProductDetailPage() {
   const { reviews } = useSelector((s) => s.shopReview);
   const wishlistProducts = useSelector((s) => s.wishlist?.products || []);
   const { categoryOptionsMap, productBadges } = useSiteSettings();
+  const { openLoginModal } = useLoginModal();
 
   // Local product state — avoids Redux productDetails being reset by modal
   const [product, setProduct] = useState(null);
@@ -94,7 +96,7 @@ export default function ProductDetailPage() {
     .slice(0, 4);
 
   function handleAddToCart(productId, totalStock, quantity = qty) {
-    if (!user?.id) { navigate("/auth/login"); return; }
+    if (!user?.id) { openLoginModal(); return; }
     const existing = (cartItems.items || []).find((i) => i.productId === productId);
     if (existing && existing.quantity + quantity > totalStock) {
       toast({ title: `Only ${totalStock} units available`, variant: "destructive" });
@@ -114,7 +116,7 @@ export default function ProductDetailPage() {
   }
 
   function handleWishlist() {
-    if (!user?.id) { navigate("/auth/login"); return; }
+    if (!user?.id) { openLoginModal(); return; }
     dispatch(toggleWishlistItem({ userId: user.id, productId: id }));
   }
 

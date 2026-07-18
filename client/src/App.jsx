@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import { LoginModalProvider } from "./context/LoginModalContext";
+import LoginModal from "./components/common/login-modal";
 import AuthLayout from "./components/auth/layout";
 import AuthLogin from "./pages/auth/login";
 import AuthRegister from "./pages/auth/register";
@@ -48,7 +50,9 @@ function App() {
   console.log(isLoading, user);
 
   return (
+    <LoginModalProvider>
     <div className="flex flex-col min-h-screen bg-white">
+      <LoginModal />
       <ScrollToTop />
       <Routes>
         <Route
@@ -111,6 +115,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
+    </LoginModalProvider>
   );
 }
 
