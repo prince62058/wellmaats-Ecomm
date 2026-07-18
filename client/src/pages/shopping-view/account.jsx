@@ -10,8 +10,9 @@ import axiosInstance from "@/lib/axiosInstance";
 import {
   User, Mail, Phone, Lock, Package, Heart, MapPin,
   Camera, Save, Calendar, ShieldCheck, ChevronRight,
-  Eye, EyeOff, CheckCircle2, Loader2, Edit3,
+  Eye, EyeOff, CheckCircle2, Loader2, Edit3, Gift, Wallet,
 } from "lucide-react";
+import ReferralPage from "./referral";
 import { Link } from "react-router-dom";
 
 /* ── Avatar color mapping ── */
@@ -239,6 +240,7 @@ function ShoppingAccount() {
   const { brand } = useSiteSettings();
   const { user } = useSelector((state) => state.auth);
   const { products: wishlistProducts } = useSelector((state) => state.wishlist || { products: [] });
+  const { info: referralInfo } = useSelector((state) => state.referral || {});
   const [tab, setTab] = useState("profile");
 
   const [bg, fg] = avatarColor(user?.userName);
@@ -312,11 +314,12 @@ function ShoppingAccount() {
           </div>
 
           {/* Stats strip */}
-          <div className="grid grid-cols-3 gap-3 mt-7">
+          <div className="grid grid-cols-4 gap-3 mt-7">
             {[
               { icon: <Package className="w-3.5 h-3.5" />, label: "Orders",    value: "—",  onClick: () => setTab("orders") },
               { icon: <Heart className="w-3.5 h-3.5" />,   label: "Wishlist",  value: wishlistProducts?.length ?? 0, onClick: () => setTab("wishlist") },
               { icon: <MapPin className="w-3.5 h-3.5" />,  label: "Addresses", value: "—",  onClick: () => setTab("addresses") },
+              { icon: <Wallet className="w-3.5 h-3.5" />,  label: "Wallet",    value: `₹${referralInfo?.walletBalance ?? 0}`, onClick: () => setTab("referral") },
             ].map((s) => (
               <button key={s.label} onClick={s.onClick}
                 className="bg-white/8 hover:bg-white/15 border border-white/10 rounded-2xl p-3 md:p-4 text-center transition group">
@@ -340,6 +343,7 @@ function ShoppingAccount() {
               { value: "orders",    label: "Orders",       icon: <Package className="w-4 h-4" /> },
               { value: "addresses", label: "Addresses",    icon: <MapPin className="w-4 h-4" /> },
               { value: "wishlist",  label: "Wishlist",     icon: <Heart className="w-4 h-4" /> },
+              { value: "referral",  label: "Refer & Earn", icon: <Gift className="w-4 h-4" /> },
             ].map((t) => (
               <TabsTrigger key={t.value} value={t.value}
                 className="flex items-center gap-2 text-sm rounded-xl
@@ -440,6 +444,10 @@ function ShoppingAccount() {
                 </div>
               )}
             </div>
+          </TabsContent>
+          {/* ── Referral tab ── */}
+          <TabsContent value="referral">
+            <ReferralPage />
           </TabsContent>
         </Tabs>
 

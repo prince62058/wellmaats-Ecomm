@@ -12,6 +12,7 @@ import shopReviewSlice from "./shop/review-slice";
 import commonFeatureSlice from "./common-slice";
 import siteSettingsReducer from "./site-settings-slice";
 import wishlistReducer from "./shop/wishlist-slice";
+import referralReducer from "./shop/referral-slice";
 
 const store = configureStore({
   reducer: {
@@ -30,6 +31,7 @@ const store = configureStore({
 
     commonFeature: commonFeatureSlice,
     siteSettings: siteSettingsReducer,
+    referral: referralReducer,
   },
 });
 

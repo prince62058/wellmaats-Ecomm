@@ -34,6 +34,8 @@ import BlogDetail from "./pages/shopping-view/blog-detail";
 import WishlistPage from "./pages/shopping-view/wishlist";
 import AdminBlogs from "./pages/admin-view/blogs";
 import ProductDetailPage from "./pages/shopping-view/product-detail";
+import ReferralPage from "./pages/shopping-view/referral";
+import RefLanding from "./pages/shopping-view/ref-landing";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -110,7 +112,9 @@ function App() {
           <Route path="best-sellers" element={<BestSellers />} />
           <Route path="wishlist" element={<WishlistPage />} />
           <Route path="product/:id" element={<ProductDetailPage />} />
+          <Route path="referral" element={<ReferralPage />} />
         </Route>
+        <Route path="/ref/:code" element={<RefLanding />} />
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/blogs/:slug" element={<BlogDetail />} />
         <Route path="/unauth-page" element={<UnauthPage />} />

@@ -34,7 +34,10 @@ function AuthRegister() {
       toast({ title: "Password must be at least 6 characters", variant: "destructive" }); return;
     }
     setLoading(true);
-    const result = await dispatch(registerUser(formData));
+    // Capture referral code from localStorage (set by /ref/:code landing page)
+    const pendingReferral = localStorage.getItem("pendingReferral") || "";
+    const result = await dispatch(registerUser({ ...formData, referralCode: pendingReferral }));
+    if (result?.payload?.success) localStorage.removeItem("pendingReferral");
     setLoading(false);
     if (result?.payload?.success) {
       toast({ title: "Account created! Welcome 🎉 Please login." });
