@@ -1,0 +1,14 @@
+{
+  "name": "wellmaats-ecomm",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Wellmaats / Mother Tatwa e-commerce (Express + React)",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "build": "npm install --prefix client && npm run build --prefix client && npm install --prefix server",
+    "start": "node server/server.js",
+    "seed": "node server/seed.js"
+  }
+}

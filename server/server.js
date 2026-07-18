@@ -1,4 +1,5 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
@@ -44,7 +45,9 @@ app.use(
         origin.includes("localtunnel.me") ||
         origin.includes("onrender.com") ||
         origin.includes("replit.dev") ||
-        origin.includes("replit.app")
+        origin.includes("replit.app") ||
+        origin.includes("wellmaats.in") ||
+        origin.includes("hostingersite.com")
       ) {
         callback(null, true);
       } else {
@@ -85,11 +88,14 @@ app.use("/api/common/feature", commonFeatureRouter);
 app.use("/api/common/site-settings", commonSiteSettingsRouter);
 app.use("/api/admin/site-settings", adminSiteSettingsRouter);
 
-// Serve React build
-const path = require("path");
-app.use(express.static(path.join(__dirname, "../client/dist")));
-app.get("*", (req, res) =>
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"))
-);
+// Serve React build (same origin as API on Hostinger)
+const clientDist = path.join(__dirname, "../client/dist");
+app.use(express.static(clientDist));
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
+  res.sendFile(path.join(clientDist, "index.html"), (err) => {
+    if (err) next(err);
+  });
+});
 
 app.listen(PORT, "0.0.0.0", () => console.log(`Server is now running on port ${PORT}`));
