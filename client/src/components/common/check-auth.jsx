@@ -8,17 +8,17 @@ function CheckAuth({ isAuthenticated, user, children }) {
   const location = useLocation();
   const path = location.pathname;
 
-  // Root → redirect appropriately
-  if (path === "/") {
-    if (!isAuthenticated) return <Navigate to="/shop/home" />;
-    if (user?.role === "admin") return <Navigate to="/admin/dashboard" />;
-    return <Navigate to="/shop/home" />;
-  }
-
   // Auth pages → redirect if already logged in
   if (isAuthenticated && (path.includes("/login") || path.includes("/register"))) {
-    if (user?.role === "admin") return <Navigate to="/admin/dashboard" />;
-    return <Navigate to="/shop/home" />;
+    if (user?.role === "admin") return <Navigate to="/admin/dashboard" replace />;
+    return <Navigate to="/shop/home" replace />;
+  }
+
+  // Root → redirect appropriately
+  if (path === "/") {
+    if (!isAuthenticated) return <Navigate to="/shop/home" replace />;
+    if (user?.role === "admin") return <Navigate to="/admin/dashboard" replace />;
+    return <Navigate to="/shop/home" replace />;
   }
 
   // Admin pages → must be logged in as admin
