@@ -293,7 +293,7 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
               <img
                 src={brand.logo}
                 alt={brand.name || "Wellmaats"}
-                className="h-12 w-auto max-w-[180px] object-contain object-left"
+                className="h-14 w-auto max-w-[220px] object-contain object-left"
               />
             ) : (
               <>
@@ -417,7 +417,7 @@ function ShoppingHeader() {
       }`}
     >
       {/* ── Row 1: Logo | Search | Cart+User ── */}
-      <div className="container mx-auto flex h-16 md:h-[4.5rem] items-center gap-3 px-4 md:px-6">
+      <div className="container mx-auto flex h-[4.5rem] md:h-20 items-center gap-3 md:gap-4 px-4 md:px-6">
         {/* Mobile hamburger left */}
         <Button
           variant="outline"
@@ -428,30 +428,36 @@ function ShoppingHeader() {
           <Menu className="h-5 w-5" />
         </Button>
 
-        {/* Logo */}
-        <Link to="/shop/home" className="flex items-center gap-2.5 shrink-0 min-w-0">
+        {/* Logo — large brand mark */}
+        <Link to="/shop/home" className="flex items-center shrink-0 min-w-0">
           {brand.logo ? (
-            <img
-              src={brand.logo}
-              alt={brand.name || "Wellmaats"}
-              className="h-11 sm:h-12 md:h-14 w-auto max-w-[150px] sm:max-w-[180px] md:max-w-[220px] object-contain object-left"
-            />
+            <span
+              className={`inline-flex items-center justify-center rounded-xl px-2 py-1 ${
+                light ? "bg-white shadow-md" : "bg-transparent"
+              }`}
+            >
+              <img
+                src={brand.logo}
+                alt={brand.name || "Wellmaats"}
+                className="h-14 sm:h-16 md:h-[4.25rem] w-auto max-w-[200px] sm:max-w-[280px] md:max-w-[340px] object-contain object-left"
+              />
+            </span>
           ) : (
-            <>
-              <div className={`w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center shrink-0 ${light ? "bg-white/20 backdrop-blur" : "bg-forest"}`}>
-                <Leaf className="h-5 w-5 text-white" />
+            <span className="flex items-center gap-2.5 min-w-0">
+              <div className={`w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center shrink-0 ${light ? "bg-white/20 backdrop-blur" : "bg-forest"}`}>
+                <Leaf className="h-5 w-5 md:h-6 md:w-6 text-white" />
               </div>
               <div className="leading-tight hidden sm:block min-w-0">
-                <span className={`font-display font-bold text-base md:text-lg block truncate ${light ? "text-white" : "text-forest"}`}>
+                <span className={`font-display font-bold text-lg md:text-xl block truncate ${light ? "text-white" : "text-forest"}`}>
                   {brand.company || brand.name}
                 </span>
                 {brand.tagline && (
-                  <span className={`block text-[10px] md:text-xs -mt-0.5 truncate ${light ? "text-gold/90" : "text-gold"}`}>
+                  <span className={`block text-xs truncate ${light ? "text-gold/90" : "text-gold"}`}>
                     {brand.tagline}
                   </span>
                 )}
               </div>
-            </>
+            </span>
           )}
         </Link>
 
