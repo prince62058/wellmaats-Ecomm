@@ -7,7 +7,9 @@ import {
   ChevronDown,
   ArrowRight,
   Heart,
+  LogIn,
 } from "lucide-react";
+import { useLoginModal } from "@/context/LoginModalContext";
 import MegaMenu from "./mega-menu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent } from "../ui/sheet";
@@ -177,6 +179,8 @@ function HeaderRightContent({ light, openCartSheet, setOpenCartSheet }) {
 
   const cartCount = cartItems?.items?.length || 0;
 
+  const { openLoginModal } = useLoginModal();
+
   return (
     <div className="flex items-center gap-2">
       <Sheet open={openCartSheet} onOpenChange={setOpenCartSheet}>
@@ -198,26 +202,49 @@ function HeaderRightContent({ light, openCartSheet, setOpenCartSheet }) {
           cartItems={cartItems?.items?.length > 0 ? cartItems.items : []}
         />
       </Sheet>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Avatar className={`cursor-pointer ring-2 ${light ? "ring-white/30" : "ring-forest/10"}`}>
-            {user?.avatar && <AvatarImage src={user.avatar} alt={user.userName} className="object-cover" />}
-            <AvatarFallback className="bg-forest text-white font-bold text-sm">
-              {user?.userName?.[0]?.toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side="right" className="w-52">
-          <DropdownMenuLabel className="text-sm">{user?.userName}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate("/shop/account")}>
-            <UserCog className="mr-2 h-4 w-4" /> Account
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => dispatch(logoutUser())}>
-            <LogOut className="mr-2 h-4 w-4" /> Logout
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+
+      {user ? (
+        /* ── Logged-in avatar dropdown ── */
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className={`cursor-pointer ring-2 ${light ? "ring-white/30" : "ring-forest/10"}`}>
+              {user?.avatar && <AvatarImage src={user.avatar} alt={user.userName} className="object-cover" />}
+              <AvatarFallback className="bg-forest text-white font-bold text-sm">
+                {user?.userName?.[0]?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" className="w-52">
+            <DropdownMenuLabel className="text-sm">{user?.userName}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate("/shop/account")}>
+              <UserCog className="mr-2 h-4 w-4" /> Account
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => dispatch(logoutUser())}>
+              <LogOut className="mr-2 h-4 w-4" /> Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        /* ── Guest login / signup buttons ── */
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={openLoginModal}
+            variant="outline"
+            size="sm"
+            className={`rounded-full text-xs font-bold px-4 h-8 ${btnClass}`}
+          >
+            <LogIn className="w-3.5 h-3.5 mr-1.5" /> Login
+          </Button>
+          <Button
+            onClick={() => navigate("/auth/register")}
+            size="sm"
+            className="rounded-full text-xs font-bold px-4 h-8 bg-gold hover:bg-gold/90 text-white shadow-sm hidden sm:flex"
+          >
+            Sign Up
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
