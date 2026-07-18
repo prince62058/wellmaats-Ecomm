@@ -35,6 +35,61 @@ function Field({ label, children }) {
   );
 }
 
+// ── Small icon/image uploader (used in Mega Menu, Why Choose Us) ──
+function IconUpload({ value, iconOptions, onChange }) {
+  const [uploading, setUploading] = useState(false);
+  const ref = useRef();
+  const isImg = value && (value.startsWith("http") || value.startsWith("/"));
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("my_file", file);
+      const res = await axiosInstance.post("/api/admin/products/upload-image", fd);
+      if (res.data?.result?.url) onChange(res.data.result.url);
+    } catch { alert("Upload failed. Try again."); }
+    setUploading(false);
+    e.target.value = "";
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Icon</label>
+      <div className="flex items-center gap-2">
+        {/* Preview */}
+        <div className="w-9 h-9 rounded-xl bg-leaf border border-forest/15 flex items-center justify-center shrink-0 overflow-hidden">
+          {isImg
+            ? <img src={value} alt="" className="w-full h-full object-contain p-1" />
+            : (() => { const I = ICON_MAP[value] || Leaf; return <I className="w-4 h-4 text-forest" />; })()}
+        </div>
+        {/* Dropdown for built-in icons */}
+        <select value={isImg ? "__custom__" : (value || "Leaf")}
+          onChange={(e) => { if (e.target.value !== "__custom__") onChange(e.target.value); }}
+          className="flex-1 h-9 rounded-xl border border-gray-200 bg-white text-xs px-2 focus:outline-none focus:ring-2 focus:ring-forest/20">
+          {(iconOptions || ICON_OPTIONS).map((n) => <option key={n} value={n}>{n}</option>)}
+          {isImg && <option value="__custom__">📎 Custom (uploaded)</option>}
+        </select>
+        {/* Upload button */}
+        <input ref={ref} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+        <button type="button" onClick={() => ref.current?.click()} disabled={uploading}
+          className="h-9 px-3 rounded-xl border border-forest/20 bg-leaf text-forest text-xs font-semibold hover:bg-forest hover:text-white transition-colors flex items-center gap-1.5 shrink-0 disabled:opacity-50">
+          {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+          {uploading ? "" : "Upload"}
+        </button>
+        {isImg && (
+          <button type="button" onClick={() => onChange("Leaf")}
+            className="h-9 w-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center shrink-0">
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Logo uploader ─────────────────────────────────────────────
 function LogoUpload({ value, onChange }) {
   const [uploading, setUploading] = useState(false);
@@ -866,12 +921,11 @@ function AdminSettings() {
                         <Input value={cat.label} placeholder="Liver Care" className="h-8 rounded-lg border-gray-200 text-xs"
                           onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],label:e.target.value}; return {...p,megaMenu:m}; })} />
                       </div>
-                      <div className="space-y-0.5">
-                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Icon</label>
-                        <select value={cat.icon || "Leaf"} className="w-full h-8 rounded-lg border border-gray-200 bg-white text-xs px-2 focus:outline-none"
-                          onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],icon:e.target.value}; return {...p,megaMenu:m}; })}>
-                          {ICON_OPTIONS.map((n) => <option key={n} value={n}>{n}</option>)}
-                        </select>
+                      <div className="space-y-0.5 col-span-2 sm:col-span-1">
+                        <IconUpload
+                          value={cat.icon || "Leaf"}
+                          onChange={(v) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],icon:v}; return {...p,megaMenu:m}; })}
+                        />
                       </div>
                       <div className="space-y-0.5">
                         <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Main Link</label>
@@ -1028,18 +1082,12 @@ function AdminSettings() {
                         <IconComp className="w-5 h-5 text-forest" />
                       </div>
                       <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        {/* Icon selector */}
+                        {/* Icon selector + upload */}
                         <div className="space-y-1">
-                          <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Icon</label>
-                          <select
+                          <IconUpload
                             value={item.icon || "Leaf"}
-                            onChange={(e) => updateList("whyChooseUs", i, "icon", e.target.value)}
-                            className="w-full h-9 rounded-xl border border-gray-200 bg-white text-sm px-3 focus:outline-none focus:ring-2 focus:ring-forest/20"
-                          >
-                            {ICON_OPTIONS.map((name) => (
-                              <option key={name} value={name}>{name}</option>
-                            ))}
-                          </select>
+                            onChange={(v) => updateList("whyChooseUs", i, "icon", v)}
+                          />
                         </div>
                         {/* Title */}
                         <div className="space-y-1">

@@ -22,13 +22,16 @@ export function WhyChooseUs() {
         </ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {whyChooseUs.map((item, i) => {
+            const isImg = item.icon && (item.icon.startsWith("http") || item.icon.startsWith("/"));
             const Icon = iconMap[item.icon] || Leaf;
             return (
               <ScrollReveal key={item.title} delay={i * 70}>
                 <Card className="glass border-0 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center h-full">
                   <CardContent className="p-6">
                     <div className="w-12 h-12 mx-auto rounded-full bg-forest/10 flex items-center justify-center mb-4">
-                      <Icon className="w-6 h-6 text-forest" />
+                      {isImg
+                        ? <img src={item.icon} alt={item.title} className="w-6 h-6 object-contain" />
+                        : <Icon className="w-6 h-6 text-forest" />}
                     </div>
                     <h3 className="font-semibold text-forest mb-1">{item.title}</h3>
                     <p className="text-xs text-muted-foreground">{item.desc}</p>

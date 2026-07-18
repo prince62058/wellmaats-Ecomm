@@ -67,6 +67,7 @@ function MegaMenu({ light, onNavigate }) {
             <div className="w-56 shrink-0 bg-[#f6faf6] border-r border-forest/10 overflow-y-auto">
               {megaMenu.map((cat) => {
                 const Icon = ICON_MAP[cat.icon] || Leaf;
+                const isImg = cat.icon && (cat.icon.startsWith("http") || cat.icon.startsWith("/"));
                 const isActive = cat.id === activeId;
                 return (
                   <button
@@ -80,7 +81,9 @@ function MegaMenu({ light, onNavigate }) {
                     onMouseEnter={() => setActiveId(cat.id)}
                     onClick={() => go(cat.href || `/shop/listing?category=${cat.id}`)}
                   >
-                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-forest" : "text-forest/50"}`} />
+                    {isImg
+                      ? <img src={cat.icon} alt="" className={`w-4 h-4 shrink-0 object-contain ${isActive ? "opacity-100" : "opacity-60"}`} />
+                      : <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-forest" : "text-forest/50"}`} />}
                     <span className="truncate">{cat.label}</span>
                     <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-40 shrink-0" />
                   </button>
@@ -101,6 +104,8 @@ function MegaMenu({ light, onNavigate }) {
               <div className="flex-1 p-6 overflow-y-auto">
                 <div className="flex items-center gap-2 mb-5 pb-3 border-b border-forest/8">
                   {(() => {
+                    const isImg = activeCategory.icon && (activeCategory.icon.startsWith("http") || activeCategory.icon.startsWith("/"));
+                    if (isImg) return <img src={activeCategory.icon} alt="" className="w-5 h-5 object-contain" />;
                     const Icon = ICON_MAP[activeCategory.icon] || Leaf;
                     return <Icon className="w-5 h-5 text-forest" />;
                   })()}
