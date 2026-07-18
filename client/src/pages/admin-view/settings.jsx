@@ -9,7 +9,19 @@ import {
   resetSiteSettings,
   updateSiteSettings,
 } from "@/store/site-settings-slice";
-import { Plus, Trash2, Upload, Loader2, Film, Image } from "lucide-react";
+import {
+  Plus, Trash2, Upload, Loader2, Film, Image,
+  Leaf, ShieldCheck, FlaskConical, Ban, Heart, Flag,
+  Truck, Star, Clock, Zap, Award, CheckCircle,
+  ChevronDown, ChevronRight, GripVertical,
+} from "lucide-react";
+
+/* Map of icon name → component for Why Choose Us preview */
+const ICON_MAP = {
+  Leaf, ShieldCheck, FlaskConical, Ban, Heart, Flag,
+  Truck, Star, Clock, Zap, Award, CheckCircle,
+};
+const ICON_OPTIONS = Object.keys(ICON_MAP);
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "@/lib/axiosInstance";
@@ -675,78 +687,131 @@ function AdminSettings() {
           )}
         </TabsContent>
 
-        <TabsContent value="megamenu" className="space-y-4 mt-6">
-          <div className="flex items-center justify-between mb-2">
+        <TabsContent value="megamenu" className="space-y-5 mt-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-forest">Mega Menu Categories</h3>
-              <p className="text-xs text-muted-foreground">Each category shows on hover with column-based subcategories.</p>
+              <h3 className="font-bold text-forest text-base">Mega Menu Categories</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Each category shows in the navigation dropdown with grouped sub-links.</p>
             </div>
-            <Button size="sm" variant="outline" onClick={() =>
+            <Button size="sm" className="bg-forest hover:bg-forest/90 gap-1.5 rounded-xl" onClick={() =>
               setForm((prev) => ({
                 ...prev,
                 megaMenu: [...(prev.megaMenu || []), {
-                  id: "", label: "", icon: "Leaf", href: "",
+                  id: "", label: "New Category", icon: "Leaf", href: "",
                   columns: [{ heading: "Products", items: [{ name: "", href: "" }] }],
                 }],
               }))
             }>
-              <Plus className="w-4 h-4 mr-1" /> Add Category
+              <Plus className="w-4 h-4" /> Add Category
             </Button>
           </div>
-          {(form.megaMenu || []).map((cat, ci) => (
-            <div key={ci} className="border rounded-xl p-4 space-y-3 bg-gray-50">
-              <div className="flex gap-2 flex-wrap">
-                <Input className="w-36" placeholder="ID (e.g. liver-care)" value={cat.id}
-                  onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],id:e.target.value}; return {...p,megaMenu:m}; })} />
-                <Input className="flex-1 min-w-32" placeholder="Label" value={cat.label}
-                  onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],label:e.target.value}; return {...p,megaMenu:m}; })} />
-                <Input className="w-28" placeholder="Icon name" value={cat.icon||""}
-                  onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],icon:e.target.value}; return {...p,megaMenu:m}; })} />
-                <Input className="flex-1 min-w-40" placeholder="Link href" value={cat.href||""}
-                  onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],href:e.target.value}; return {...p,megaMenu:m}; })} />
-                <Button size="icon" variant="ghost" onClick={() =>
-                  setForm((p) => ({ ...p, megaMenu: p.megaMenu.filter((_,i)=>i!==ci) }))
-                }><Trash2 className="w-4 h-4 text-red-500" /></Button>
-              </div>
-              {/* Columns */}
-              <div className="space-y-2 pl-3 border-l-2 border-forest/15">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Columns</p>
-                  <Button size="sm" variant="ghost" onClick={() =>
-                    setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],columns:[...(m[ci].columns||[]),{heading:"",items:[{name:"",href:""}]}]}; return {...p,megaMenu:m}; })
-                  }><Plus className="w-3 h-3 mr-1" />Add Column</Button>
-                </div>
-                {(cat.columns||[]).map((col, coli) => (
-                  <div key={coli} className="border rounded-lg p-3 bg-white space-y-2">
-                    <div className="flex gap-2">
-                      <Input className="flex-1" placeholder="Column heading" value={col.heading}
-                        onChange={(e) => setForm((p) => {
-                          const m=JSON.parse(JSON.stringify(p.megaMenu));
-                          m[ci].columns[coli].heading=e.target.value; return {...p,megaMenu:m};
-                        })} />
-                      <Button size="icon" variant="ghost" onClick={() =>
-                        setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns.splice(coli,1); return {...p,megaMenu:m}; })
-                      }><Trash2 className="w-3 h-3 text-red-400" /></Button>
-                    </div>
-                    {(col.items||[]).map((item, ii) => (
-                      <div key={ii} className="flex gap-2 pl-2">
-                        <Input className="flex-1" placeholder="Name" value={item.name}
-                          onChange={(e) => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items[ii].name=e.target.value; return {...p,megaMenu:m}; })} />
-                        <Input className="flex-1" placeholder="/shop/listing?category=..." value={item.href}
-                          onChange={(e) => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items[ii].href=e.target.value; return {...p,megaMenu:m}; })} />
-                        <Button size="icon" variant="ghost" onClick={() =>
-                          setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items.splice(ii,1); return {...p,megaMenu:m}; })
-                        }><Trash2 className="w-3 h-3 text-red-300" /></Button>
-                      </div>
-                    ))}
-                    <Button size="sm" variant="ghost" className="text-xs" onClick={() =>
-                      setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items.push({name:"",href:""}); return {...p,megaMenu:m}; })
-                    }><Plus className="w-3 h-3 mr-1" />Add Item</Button>
-                  </div>
-                ))}
-              </div>
+
+          {!(form.megaMenu || []).length && (
+            <div className="border-2 border-dashed border-gray-200 rounded-2xl py-10 text-center text-muted-foreground text-sm">
+              No mega menu categories yet
             </div>
-          ))}
+          )}
+
+          <div className="space-y-4">
+            {(form.megaMenu || []).map((cat, ci) => {
+              const CatIcon = ICON_MAP[cat.icon] || Leaf;
+              return (
+                <div key={ci} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  {/* ── Category Header ── */}
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 border-b border-gray-100">
+                    <div className="w-9 h-9 rounded-xl bg-forest/10 flex items-center justify-center shrink-0">
+                      <CatIcon className="w-4.5 h-4.5 text-forest" />
+                    </div>
+                    <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="space-y-0.5">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">ID / Slug</label>
+                        <Input value={cat.id} placeholder="e.g. liver-care" className="h-8 rounded-lg border-gray-200 text-xs"
+                          onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],id:e.target.value}; return {...p,megaMenu:m}; })} />
+                      </div>
+                      <div className="space-y-0.5">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Display Label</label>
+                        <Input value={cat.label} placeholder="Liver Care" className="h-8 rounded-lg border-gray-200 text-xs"
+                          onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],label:e.target.value}; return {...p,megaMenu:m}; })} />
+                      </div>
+                      <div className="space-y-0.5">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Icon</label>
+                        <select value={cat.icon || "Leaf"} className="w-full h-8 rounded-lg border border-gray-200 bg-white text-xs px-2 focus:outline-none"
+                          onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],icon:e.target.value}; return {...p,megaMenu:m}; })}>
+                          {ICON_OPTIONS.map((n) => <option key={n} value={n}>{n}</option>)}
+                        </select>
+                      </div>
+                      <div className="space-y-0.5">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Main Link</label>
+                        <Input value={cat.href || ""} placeholder="/shop/listing?category=..." className="h-8 rounded-lg border-gray-200 text-xs"
+                          onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],href:e.target.value}; return {...p,megaMenu:m}; })} />
+                      </div>
+                    </div>
+                    <button type="button"
+                      onClick={() => setForm((p) => ({ ...p, megaMenu: p.megaMenu.filter((_,i) => i !== ci) }))}
+                      className="w-8 h-8 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors shrink-0">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* ── Columns ── */}
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-xs font-bold text-forest uppercase tracking-wide">Dropdown Columns</p>
+                      <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1 transition-colors"
+                        onClick={() => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns=[...(m[ci].columns||[]),{heading:"",items:[{name:"",href:""}]}]; return {...p,megaMenu:m}; })}>
+                        <Plus className="w-3.5 h-3.5" /> Add Column
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {(cat.columns || []).map((col, coli) => (
+                        <div key={coli} className="rounded-xl border border-gray-100 bg-gray-50 p-3 space-y-2">
+                          {/* Column heading */}
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 space-y-0.5">
+                              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Column Heading</label>
+                              <Input value={col.heading} placeholder="e.g. Products"
+                                className="h-8 rounded-lg border-gray-200 text-xs bg-white"
+                                onChange={(e) => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].heading=e.target.value; return {...p,megaMenu:m}; })} />
+                            </div>
+                            <button type="button"
+                              onClick={() => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns.splice(coli,1); return {...p,megaMenu:m}; })}
+                              className="w-7 h-7 rounded-lg border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center mt-4 shrink-0">
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+
+                          {/* Items */}
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Links</label>
+                            {(col.items || []).map((item, ii) => (
+                              <div key={ii} className="flex gap-1.5 items-center">
+                                <Input value={item.name} placeholder="Link name"
+                                  className="flex-1 h-7 rounded-lg border-gray-200 text-xs bg-white"
+                                  onChange={(e) => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items[ii].name=e.target.value; return {...p,megaMenu:m}; })} />
+                                <Input value={item.href} placeholder="/shop/..."
+                                  className="flex-1 h-7 rounded-lg border-gray-200 text-xs bg-white"
+                                  onChange={(e) => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items[ii].href=e.target.value; return {...p,megaMenu:m}; })} />
+                                <button type="button"
+                                  onClick={() => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items.splice(ii,1); return {...p,megaMenu:m}; })}
+                                  className="w-6 h-7 rounded flex items-center justify-center text-red-300 hover:text-red-500 shrink-0">
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                            <button type="button" className="text-[11px] font-semibold text-forest hover:text-forest/70 flex items-center gap-1 mt-1 transition-colors"
+                              onClick={() => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items.push({name:"",href:""}); return {...p,megaMenu:m}; })}>
+                              <Plus className="w-3 h-3" /> Add Link
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </TabsContent>
 
         <TabsContent value="homepage" className="space-y-8 mt-6">
@@ -809,20 +874,69 @@ function AdminSettings() {
           </section>
 
           <section>
-            <div className="flex items-center justify-between mb-3">
-              <Label>Why Choose Us</Label>
-              <Button size="sm" variant="outline" onClick={() => addListItem("whyChooseUs", { icon: "Leaf", title: "", desc: "" })}>
-                <Plus className="w-4 h-4 mr-1" /> Add
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="font-bold text-forest text-sm">Why Choose Us</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Trust badges shown on the home page</p>
+              </div>
+              <Button size="sm" className="bg-forest hover:bg-forest/90 gap-1.5 rounded-xl"
+                onClick={() => addListItem("whyChooseUs", { icon: "Leaf", title: "", desc: "" })}>
+                <Plus className="w-4 h-4" /> Add Point
               </Button>
             </div>
-            {(form.whyChooseUs || []).map((item, i) => (
-              <div key={i} className="border rounded-lg p-4 mb-3 grid gap-2 md:grid-cols-3">
-                <Input placeholder="Icon (Leaf, Truck...)" value={item.icon} onChange={(e) => updateList("whyChooseUs", i, "icon", e.target.value)} />
-                <Input placeholder="Title" value={item.title} onChange={(e) => updateList("whyChooseUs", i, "title", e.target.value)} />
-                <Input placeholder="Description" value={item.desc} onChange={(e) => updateList("whyChooseUs", i, "desc", e.target.value)} />
-                <Button size="sm" variant="ghost" onClick={() => removeListItem("whyChooseUs", i)}><Trash2 className="w-4 h-4" /></Button>
-              </div>
-            ))}
+            <div className="space-y-3">
+              {(form.whyChooseUs || []).map((item, i) => {
+                const IconComp = ICON_MAP[item.icon] || Leaf;
+                return (
+                  <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                    <div className="flex items-start gap-4">
+                      {/* Icon preview */}
+                      <div className="w-11 h-11 rounded-xl bg-leaf flex items-center justify-center shrink-0 border border-forest/10">
+                        <IconComp className="w-5 h-5 text-forest" />
+                      </div>
+                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {/* Icon selector */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Icon</label>
+                          <select
+                            value={item.icon || "Leaf"}
+                            onChange={(e) => updateList("whyChooseUs", i, "icon", e.target.value)}
+                            className="w-full h-9 rounded-xl border border-gray-200 bg-white text-sm px-3 focus:outline-none focus:ring-2 focus:ring-forest/20"
+                          >
+                            {ICON_OPTIONS.map((name) => (
+                              <option key={name} value={name}>{name}</option>
+                            ))}
+                          </select>
+                        </div>
+                        {/* Title */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Title *</label>
+                          <Input value={item.title} placeholder="e.g. 100% Ayurvedic"
+                            onChange={(e) => updateList("whyChooseUs", i, "title", e.target.value)}
+                            className="h-9 rounded-xl border-gray-200 text-sm" />
+                        </div>
+                        {/* Description */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Description</label>
+                          <Input value={item.desc} placeholder="Short supporting text"
+                            onChange={(e) => updateList("whyChooseUs", i, "desc", e.target.value)}
+                            className="h-9 rounded-xl border-gray-200 text-sm" />
+                        </div>
+                      </div>
+                      <button type="button" onClick={() => removeListItem("whyChooseUs", i)}
+                        className="w-8 h-8 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors shrink-0 mt-5">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              {!(form.whyChooseUs || []).length && (
+                <div className="border-2 border-dashed border-gray-200 rounded-2xl py-8 text-center text-muted-foreground text-sm">
+                  No trust points yet — click "Add Point" to add one
+                </div>
+              )}
+            </div>
           </section>
 
           <section>
