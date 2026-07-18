@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 
 const initialState = {
   isLoading: false,
@@ -12,7 +12,7 @@ export const createNewOrder = createAsyncThunk(
   "/order/createNewOrder",
   async (orderData) => {
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/shop/order/create`,
+      `/api/shop/order/create`,
       orderData
     );
 
@@ -24,7 +24,7 @@ export const capturePayment = createAsyncThunk(
   "/order/capturePayment",
   async ({ razorpayOrderId, razorpayPaymentId, razorpaySignature, orderId }) => {
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/shop/order/capture`,
+      `/api/shop/order/capture`,
       {
         razorpayOrderId,
         razorpayPaymentId,
@@ -41,7 +41,7 @@ export const getAllOrdersByUserId = createAsyncThunk(
   "/order/getAllOrdersByUserId",
   async (userId) => {
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/shop/order/list/${userId}`
+      `/api/shop/order/list/${userId}`
     );
 
     return response.data;
@@ -52,7 +52,7 @@ export const getOrderDetails = createAsyncThunk(
   "/order/getOrderDetails",
   async (id) => {
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/shop/order/details/${id}`
+      `/api/shop/order/details/${id}`
     );
 
     return response.data;

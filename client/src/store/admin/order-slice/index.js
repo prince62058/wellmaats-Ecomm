@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 
 const initialState = {
   orderList: [],
@@ -10,7 +10,7 @@ export const getAllOrdersForAdmin = createAsyncThunk(
   "/order/getAllOrdersForAdmin",
   async () => {
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/admin/orders/get`,
+      `/api/admin/orders/get`,
       { withCredentials: true }
     );
 
@@ -22,7 +22,7 @@ export const getOrderDetailsForAdmin = createAsyncThunk(
   "/order/getOrderDetailsForAdmin",
   async (id) => {
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/admin/orders/details/${id}`,
+      `/api/admin/orders/details/${id}`,
       { withCredentials: true }
     );
 
@@ -34,7 +34,7 @@ export const updateOrderStatus = createAsyncThunk(
   "/order/updateOrderStatus",
   async ({ id, orderStatus }) => {
     const response = await axios.put(
-      `${import.meta.env.VITE_API_URL}/api/admin/orders/update/${id}`,
+      `/api/admin/orders/update/${id}`,
       {
         orderStatus,
       },

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -10,7 +10,7 @@ export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async ({ userId, productId, quantity }) => {
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/shop/cart/add`,
+      `/api/shop/cart/add`,
       {
         userId,
         productId,
@@ -26,7 +26,7 @@ export const fetchCartItems = createAsyncThunk(
   "cart/fetchCartItems",
   async (userId) => {
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/shop/cart/get/${userId}`
+      `/api/shop/cart/get/${userId}`
     );
 
     return response.data;
@@ -37,7 +37,7 @@ export const deleteCartItem = createAsyncThunk(
   "cart/deleteCartItem",
   async ({ userId, productId }) => {
     const response = await axios.delete(
-      `${import.meta.env.VITE_API_URL}/api/shop/cart/${userId}/${productId}`
+      `/api/shop/cart/${userId}/${productId}`
     );
 
     return response.data;
@@ -48,7 +48,7 @@ export const updateCartQuantity = createAsyncThunk(
   "cart/updateCartQuantity",
   async ({ userId, productId, quantity }) => {
     const response = await axios.put(
-      `${import.meta.env.VITE_API_URL}/api/shop/cart/update-cart`,
+      `/api/shop/cart/update-cart`,
       {
         userId,
         productId,

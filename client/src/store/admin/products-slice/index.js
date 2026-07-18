@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 
 const initialState = {
   isLoading: false,
@@ -10,13 +10,12 @@ export const addNewProduct = createAsyncThunk(
   "/products/addnewproduct",
   async (formData) => {
     const result = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/admin/products/add`,
+      `/api/admin/products/add`,
       formData,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
       }
     );
 
@@ -28,7 +27,7 @@ export const fetchAllProducts = createAsyncThunk(
   "/products/fetchAllProducts",
   async () => {
     const result = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/admin/products/get`,
+      `/api/admin/products/get`,
       { withCredentials: true }
     );
 
@@ -40,13 +39,12 @@ export const editProduct = createAsyncThunk(
   "/products/editProduct",
   async ({ id, formData }) => {
     const result = await axios.put(
-      `${import.meta.env.VITE_API_URL}/api/admin/products/edit/${id}`,
+      `/api/admin/products/edit/${id}`,
       formData,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
       }
     );
 
@@ -58,7 +56,7 @@ export const deleteProduct = createAsyncThunk(
   "/products/deleteProduct",
   async (id) => {
     const result = await axios.delete(
-      `${import.meta.env.VITE_API_URL}/api/admin/products/delete/${id}`,
+      `/api/admin/products/delete/${id}`,
       { withCredentials: true }
     );
 

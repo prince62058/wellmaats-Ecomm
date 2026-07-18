@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 
 const initialState = {
   isLoading: false,
@@ -10,7 +10,7 @@ export const fetchSiteSettings = createAsyncThunk(
   "/siteSettings/fetch",
   async () => {
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/common/site-settings/get`
+      `/api/common/site-settings/get`
     );
     return response.data;
   }
@@ -20,7 +20,7 @@ export const updateSiteSettings = createAsyncThunk(
   "/siteSettings/update",
   async (payload) => {
     const response = await axios.put(
-      `${import.meta.env.VITE_API_URL}/api/admin/site-settings/update`,
+      `/api/admin/site-settings/update`,
       payload,
       { withCredentials: true }
     );
@@ -32,7 +32,7 @@ export const resetSiteSettings = createAsyncThunk(
   "/siteSettings/reset",
   async () => {
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/admin/site-settings/reset`,
+      `/api/admin/site-settings/reset`,
       {},
       { withCredentials: true }
     );
