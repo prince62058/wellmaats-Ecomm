@@ -5,7 +5,7 @@ module.exports = {
     name: "Mother Tatwa",
     tagline: "Nature Cures Life",
     category: "Ayurvedic Wellness & Herbal Drops",
-    logo: "",
+    logo: "/wellmaats-logo.png",
   },
   contact: {
     phone: "+91 98765 43210",

@@ -442,7 +442,7 @@ function ShoppingHeader() {
             <img
               src={brand.logo}
               alt={brand.name || "Wellmaats"}
-              className="h-12 sm:h-14 md:h-16 w-auto max-w-[200px] sm:max-w-[260px] md:max-w-[300px] object-contain object-left"
+              className="h-14 sm:h-16 md:h-[4.5rem] w-auto max-w-[220px] sm:max-w-[300px] md:max-w-[360px] object-contain object-left drop-shadow-sm"
             />
           ) : (
             <span className="flex items-center gap-2">
