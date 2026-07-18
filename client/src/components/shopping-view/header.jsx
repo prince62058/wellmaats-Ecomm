@@ -289,27 +289,15 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
       >
         <div className="shrink-0 px-5 pt-12 pb-4 border-b border-forest/10 bg-white">
           <div className="flex items-center gap-2.5 mb-4 pr-8">
-            {brand.logo ? (
-              <img
-                src={brand.logo}
-                alt={brand.name || "Wellmaats"}
-                className="h-12 w-auto max-w-[200px] object-contain object-left"
-              />
-            ) : (
-              <>
-                <div className="w-10 h-10 rounded-full bg-forest flex items-center justify-center shrink-0">
-                  <Leaf className="h-5 w-5 text-white" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-display font-bold text-forest truncate text-base">
-                    {brand.company || brand.name || "Wellmaats"}
-                  </p>
-                  <p className="text-[10px] text-gold truncate font-semibold">
-                    {brand.tagline || "Nature Cures Life"}
-                  </p>
-                </div>
-              </>
-            )}
+            <img
+              src={
+                brand.logo?.startsWith("/wellmaats-logo")
+                  ? "/wellmaats-logo.png?v=4"
+                  : brand.logo || "/wellmaats-logo.png?v=4"
+              }
+              alt={brand.company || brand.name || "Wellmaats"}
+              className="h-14 w-auto max-w-[220px] object-contain object-left"
+            />
           </div>
           <HeaderSearch className="w-full" onResultClick={() => onOpenChange(false)} />
         </div>
@@ -432,27 +420,28 @@ function ShoppingHeader() {
           <Menu className="h-5 w-5" />
         </Button>
 
-        {/* Logo only */}
+        {/* Logo only — brand mark as provided */}
         <Link
           to="/shop/home"
           className="flex items-center shrink-0"
-          aria-label={brand.name || "Wellmaats"}
+          aria-label={brand.company || brand.name || "Wellmaats"}
         >
           {brand.logo ? (
             <img
-              src={brand.logo}
-              alt={brand.name || "Wellmaats"}
-              className="h-14 sm:h-16 md:h-[4.5rem] w-auto max-w-[220px] sm:max-w-[300px] md:max-w-[360px] object-contain object-left drop-shadow-sm"
+              src={
+                brand.logo.startsWith("/wellmaats-logo")
+                  ? "/wellmaats-logo.png?v=4"
+                  : brand.logo
+              }
+              alt={brand.company || brand.name || "Wellmaats"}
+              className="h-16 sm:h-[4.5rem] md:h-20 w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[400px] object-contain object-left"
             />
           ) : (
-            <span className="flex items-center gap-2">
-              <span className={`w-11 h-11 rounded-full flex items-center justify-center ${light ? "bg-white/20" : "bg-forest"}`}>
-                <Leaf className="h-5 w-5 text-white" />
-              </span>
-              <span className={`font-display font-bold text-lg ${light ? "text-white" : "text-forest"}`}>
-                {brand.company || brand.name || "Wellmaats"}
-              </span>
-            </span>
+            <img
+              src="/wellmaats-logo.png?v=4"
+              alt="Wellmaats"
+              className="h-16 sm:h-[4.5rem] md:h-20 w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[400px] object-contain object-left"
+            />
           )}
         </Link>
 
