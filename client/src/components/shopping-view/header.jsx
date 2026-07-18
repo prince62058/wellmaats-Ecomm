@@ -169,6 +169,7 @@ function HeaderRightContent({ light, openCartSheet, setOpenCartSheet }) {
   const { cartItems } = useSelector((state) => state.shopCart);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { openLoginModal } = useLoginModal();
 
   useEffect(() => {
     if (user?.id) dispatch(fetchCartItems(user.id));
@@ -179,8 +180,6 @@ function HeaderRightContent({ light, openCartSheet, setOpenCartSheet }) {
     : "border-forest/15 text-forest hover:bg-leaf";
 
   const cartCount = cartItems?.items?.length || 0;
-
-  const { openLoginModal } = useLoginModal();
 
   return (
     <div className="flex items-center gap-2">
@@ -203,6 +202,16 @@ function HeaderRightContent({ light, openCartSheet, setOpenCartSheet }) {
           cartItems={cartItems?.items?.length > 0 ? cartItems.items : []}
         />
       </Sheet>
+
+      {/* Wishlist */}
+      <Link
+        to="/shop/wishlist"
+        className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors hidden sm:flex ${
+          light ? "border-white/30 bg-white/10 text-white hover:bg-white/20" : "border-forest/15 text-forest hover:bg-leaf"
+        }`}
+      >
+        <Heart className="w-4 h-4" />
+      </Link>
 
       {user ? (
         /* ── Logged-in avatar dropdown ── */
@@ -401,22 +410,13 @@ function ShoppingHeader() {
           <HeaderSearch className="w-full" variant={light ? "dark" : "light"} />
         </div>
 
-        {/* Right: Cart + User */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        {/* Right: Cart + Wishlist + User */}
+        <div className="flex items-center shrink-0">
           <HeaderRightContent
             light={light}
             openCartSheet={openCartSheet}
             setOpenCartSheet={setOpenCartSheet}
           />
-          {/* Wishlist icon */}
-          <Link
-            to="/shop/wishlist"
-            className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors hidden sm:flex ${
-              light ? "border-white/30 bg-white/10 text-white hover:bg-white/20" : "border-forest/15 text-forest hover:bg-leaf"
-            }`}
-          >
-            <Heart className="w-4.5 h-4.5" />
-          </Link>
         </div>
       </div>
 
