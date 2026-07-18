@@ -293,7 +293,7 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
               <img
                 src={brand.logo}
                 alt={brand.name || "Wellmaats"}
-                className="h-14 w-auto max-w-[220px] object-contain object-left"
+                className="h-12 w-auto max-w-[200px] object-contain object-left scale-125 origin-left"
               />
             ) : (
               <>
@@ -417,7 +417,7 @@ function ShoppingHeader() {
       }`}
     >
       {/* ── Row 1: Logo | Search | Cart+User ── */}
-      <div className="container mx-auto flex h-[4.5rem] md:h-20 items-center gap-3 md:gap-4 px-4 md:px-6">
+      <div className="container mx-auto flex h-16 md:h-[4.75rem] items-center gap-2.5 md:gap-4 px-3 md:px-6">
         {/* Mobile hamburger left */}
         <Button
           variant="outline"
@@ -428,20 +428,18 @@ function ShoppingHeader() {
           <Menu className="h-5 w-5" />
         </Button>
 
-        {/* Logo — large brand mark */}
-        <Link to="/shop/home" className="flex items-center shrink-0 min-w-0">
+        {/* Logo — fills header; scales past image padding */}
+        <Link
+          to="/shop/home"
+          className="flex items-center shrink-0 h-12 md:h-14 overflow-hidden"
+          aria-label={brand.name || "Wellmaats"}
+        >
           {brand.logo ? (
-            <span
-              className={`inline-flex items-center justify-center rounded-xl px-2 py-1 ${
-                light ? "bg-white shadow-md" : "bg-transparent"
-              }`}
-            >
-              <img
-                src={brand.logo}
-                alt={brand.name || "Wellmaats"}
-                className="h-14 sm:h-16 md:h-[4.25rem] w-auto max-w-[200px] sm:max-w-[280px] md:max-w-[340px] object-contain object-left"
-              />
-            </span>
+            <img
+              src={brand.logo}
+              alt={brand.name || "Wellmaats"}
+              className="h-16 sm:h-[4.5rem] md:h-20 w-auto max-w-[min(55vw,280px)] md:max-w-[360px] object-contain object-left -my-2 scale-[1.35] sm:scale-150 origin-left"
+            />
           ) : (
             <span className="flex items-center gap-2.5 min-w-0">
               <div className={`w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center shrink-0 ${light ? "bg-white/20 backdrop-blur" : "bg-forest"}`}>
