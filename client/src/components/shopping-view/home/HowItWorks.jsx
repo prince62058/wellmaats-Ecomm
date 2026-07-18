@@ -1,7 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { ShoppingBag, Truck, Leaf } from "lucide-react";
+import { ShoppingBag, Truck, Leaf, Sparkles, Heart, Zap, Shield, Moon, Flower2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+
+const HERBS = [
+  { icon: Leaf,     name: "Ashwagandha",  benefit: "Stress & Anxiety",  color: "from-emerald-600 to-green-800" },
+  { icon: Sparkles, name: "Shatavari",    benefit: "Women's Wellness",  color: "from-pink-500 to-rose-700" },
+  { icon: Heart,    name: "Arjuna",       benefit: "Heart Health",       color: "from-red-500 to-rose-800" },
+  { icon: Zap,      name: "Shilajit",     benefit: "Energy & Stamina",  color: "from-amber-500 to-yellow-700" },
+  { icon: Shield,   name: "Neem",         benefit: "Immunity Boost",    color: "from-lime-600 to-green-700" },
+  { icon: Moon,     name: "Brahmi",       benefit: "Mind & Memory",     color: "from-violet-600 to-purple-800" },
+  { icon: Flower2,  name: "Tulsi",        benefit: "Respiratory Care",  color: "from-teal-500 to-cyan-700" },
+  { icon: Sparkles, name: "Kutki",        benefit: "Liver Detox",       color: "from-orange-500 to-amber-700" },
+];
 
 const STEPS = [
   {
@@ -61,7 +72,7 @@ function HowItWorks() {
   const ActiveIcon = STEPS[activeStep].icon;
 
   return (
-    <section ref={containerRef} className="relative h-[260vh] bg-gradient-to-b from-white to-leaf">
+    <section ref={containerRef} className="relative h-[280vh] bg-gradient-to-b from-white to-leaf">
       <div className="sticky top-0 h-screen flex items-center overflow-hidden">
         <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div>
@@ -129,6 +140,45 @@ function HowItWorks() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Key Ingredients strip — visible as scroll reaches bottom ── */}
+      <div className="absolute bottom-0 left-0 right-0 py-16 px-4">
+        <div className="container mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-gold text-xs font-bold uppercase tracking-[0.35em] mb-2">Nature's Pharmacy</p>
+            <h3 className="font-display text-2xl md:text-3xl font-bold text-forest">
+              35+ Potent Ayurvedic Herbs
+            </h3>
+            <p className="text-sm text-forest/60 mt-2 max-w-md mx-auto">
+              Every drop of Mother Tatwa is crafted from time-tested Ayurvedic herbs, scientifically validated for modern wellness.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3">
+            {HERBS.map((herb) => {
+              const Icon = herb.icon;
+              return (
+                <div key={herb.name}
+                  className="group flex flex-col items-center text-center gap-2 cursor-default">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${herb.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className="w-6 h-6 text-white" />
+                  </div>
+                  <p className="text-xs font-bold text-forest leading-tight">{herb.name}</p>
+                  <p className="text-[10px] text-forest/55 leading-tight">{herb.benefit}</p>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center justify-center gap-8 mt-12 flex-wrap">
+            {["🌿 100% Natural", "🔬 Lab Tested", "✅ GMP Certified", "🚫 No Side Effects", "🇮🇳 Made in India"].map((tag) => (
+              <span key={tag} className="text-xs font-semibold text-forest/70 bg-white/70 backdrop-blur-sm border border-forest/15 px-4 py-1.5 rounded-full">
+                {tag}
+              </span>
+            ))}
           </div>
         </div>
       </div>
