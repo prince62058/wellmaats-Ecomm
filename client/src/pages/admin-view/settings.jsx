@@ -348,9 +348,9 @@ function AdminSettings() {
                     <Trash2 className="w-4 h-4 text-red-400" />
                   </Button>
                 </div>
-                <Input placeholder="Emoji (🌿)" value={h.emoji || ""} onChange={(e) => updateListItem("herbs", i, "emoji", e.target.value)} className="text-center text-lg" />
-                <Input placeholder="Herb name (e.g. Ashwagandha)" value={h.name || ""} onChange={(e) => updateListItem("herbs", i, "name", e.target.value)} />
-                <Input placeholder="Benefit (e.g. Stress & Anxiety)" value={h.benefit || ""} onChange={(e) => updateListItem("herbs", i, "benefit", e.target.value)} />
+                <Input placeholder="Emoji (🌿)" value={h.emoji || ""} onChange={(e) => updateList("herbs", i, "emoji", e.target.value)} className="text-center text-lg" />
+                <Input placeholder="Herb name (e.g. Ashwagandha)" value={h.name || ""} onChange={(e) => updateList("herbs", i, "name", e.target.value)} />
+                <Input placeholder="Benefit (e.g. Stress & Anxiety)" value={h.benefit || ""} onChange={(e) => updateList("herbs", i, "benefit", e.target.value)} />
               </div>
             ))}
           </div>
@@ -575,6 +575,30 @@ function AdminSettings() {
         </TabsContent>
 
         <TabsContent value="homepage" className="space-y-8 mt-6">
+          {/* How it Works */}
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <Label>🪜 How it Works Steps</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">Steps shown in the "How it Works" section on home page.</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => addListItem("howItWorks", { emoji: "✨", tag: `Step 0${(form.howItWorks||[]).length+1}`, title: "", desc: "" })}>
+                <Plus className="w-4 h-4 mr-1" /> Add Step
+              </Button>
+            </div>
+            {(form.howItWorks || []).map((step, i) => (
+              <div key={i} className="border rounded-lg p-4 mb-3 space-y-2 bg-gray-50">
+                <div className="flex items-center gap-2">
+                  <Input className="w-20 text-center text-xl" placeholder="Emoji" value={step.emoji||""} onChange={(e) => updateList("howItWorks", i, "emoji", e.target.value)} />
+                  <Input className="w-28" placeholder="Tag (Step 01)" value={step.tag||""} onChange={(e) => updateList("howItWorks", i, "tag", e.target.value)} />
+                  <Input className="flex-1" placeholder="Title" value={step.title||""} onChange={(e) => updateList("howItWorks", i, "title", e.target.value)} />
+                  <Button size="icon" variant="ghost" onClick={() => removeListItem("howItWorks", i)}><Trash2 className="w-4 h-4 text-red-400" /></Button>
+                </div>
+                <Input placeholder="Description" value={step.desc||""} onChange={(e) => updateList("howItWorks", i, "desc", e.target.value)} />
+              </div>
+            ))}
+          </section>
+
           <section>
             <div className="flex items-center justify-between mb-3">
               <Label>FAQ</Label>

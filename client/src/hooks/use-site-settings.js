@@ -103,6 +103,11 @@ export function useSiteSettings() {
       { label: "Express Delivery", icon: "Truck" },
       { label: "COD Available",    icon: "Shield" },
     ],
+    howItWorks: data?.howItWorks?.length ? data.howItWorks : [
+      { emoji: "🌿", tag: "Step 01", title: "Browse & Choose",    desc: "Explore 12+ Ayurvedic drops by wellness need — immunity, gut, stress & more." },
+      { emoji: "🛒", tag: "Step 02", title: "Add to Cart",        desc: "Pick your drops, secure checkout with Razorpay — UPI, cards & wallets." },
+      { emoji: "🚚", tag: "Step 03", title: "Wellness Delivered", desc: "Pan-India express delivery. Start your daily Ayurvedic routine at home." },
+    ],
     herbs: data?.herbs?.length ? data.herbs : [
       { emoji: "🌿", name: "Ashwagandha",  benefit: "Stress & Anxiety"    },
       { emoji: "🌸", name: "Shatavari",    benefit: "Women's Wellness"    },

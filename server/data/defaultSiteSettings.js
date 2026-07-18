@@ -338,6 +338,11 @@ module.exports = {
     { label: "Express Delivery", icon: "Truck" },
     { label: "COD Available", icon: "Shield" },
   ],
+  howItWorks: [
+    { emoji: "🌿", tag: "Step 01", title: "Browse & Choose", desc: "Explore 12+ Ayurvedic drops by wellness need — immunity, gut, stress & more." },
+    { emoji: "🛒", tag: "Step 02", title: "Add to Cart",     desc: "Pick your drops, secure checkout with Razorpay — UPI, cards & wallets." },
+    { emoji: "🚚", tag: "Step 03", title: "Wellness Delivered", desc: "Pan-India express delivery. Start your daily Ayurvedic routine at home." },
+  ],
   whyChooseUs: [
     { icon: "Leaf", title: "100% Ayurvedic", desc: "Pure herbal formulations rooted in ancient wisdom" },
     { icon: "ShieldCheck", title: "GMP Certified", desc: "Manufactured in certified facilities" },
