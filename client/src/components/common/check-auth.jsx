@@ -34,10 +34,7 @@ function CheckAuth({ isAuthenticated, user, children }) {
     return <Navigate to="/auth/login" />;
   }
 
-  // Admin visiting shop — send to admin dashboard
-  if (isAuthenticated && user?.role === "admin" && path.includes("/shop")) {
-    return <Navigate to="/admin/dashboard" />;
-  }
+  // Admins can visit shop pages to preview the store
 
   return <>{children}</>;
 }
