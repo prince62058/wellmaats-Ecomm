@@ -15,7 +15,8 @@ import { addReview, getReviews } from "@/store/shop/review-slice";
 import { useSiteSettings, resolveProductImage } from "@/hooks/use-site-settings";
 import { getDiscountPercent, isFlashSaleActive, getTimeLeft } from "@/lib/product-offers";
 import ProductOfferBadges from "./product-offer-badges";
-import { BadgeCheck, Truck, Shield } from "lucide-react";
+import { BadgeCheck, Truck, Shield, ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const badgeIcons = { Truck, Shield };
 
@@ -102,9 +103,18 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             />
           </div>
           <div className="p-4 sm:p-8">
-            <p className="text-gold text-sm font-medium uppercase tracking-wide">
-              {categoryOptionsMap[productDetails?.category]}
-            </p>
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-gold text-sm font-medium uppercase tracking-wide">
+                {categoryOptionsMap[productDetails?.category]}
+              </p>
+              <Link
+                to={`/shop/product/${productDetails?._id}`}
+                onClick={handleDialogClose}
+                className="flex items-center gap-1 text-xs font-semibold text-forest border border-forest/20 hover:bg-forest hover:text-white px-3 py-1.5 rounded-full transition-all shrink-0"
+              >
+                Full Page <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-forest mt-1">
               {productDetails?.title}
             </h1>
