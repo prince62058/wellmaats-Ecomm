@@ -28,7 +28,7 @@ function buildProductQuery(filterParams = {}, sortParams = "price-lowtohigh") {
 export const fetchAllFilteredProducts = createAsyncThunk(
   "/products/fetchAllProducts",
   async ({ filterParams, sortParams }) => {
-    const result = await axios.get(
+    const result = await axiosInstance.get(
       `/api/shop/products/get?${buildProductQuery(filterParams, sortParams)}`
     );
     return result?.data;
@@ -38,7 +38,7 @@ export const fetchAllFilteredProducts = createAsyncThunk(
 export const fetchProductDetails = createAsyncThunk(
   "/products/fetchProductDetails",
   async (id) => {
-    const result = await axios.get(
+    const result = await axiosInstance.get(
       `/api/shop/products/get/${id}`
     );
 

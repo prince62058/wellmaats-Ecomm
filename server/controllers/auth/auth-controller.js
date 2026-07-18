@@ -2,11 +2,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
 
-const isProd = process.env.NODE_ENV === "production";
+// SameSite=None + Secure required so the cookie works inside Replit's
+// cross-site iframe preview (top-level: replit.com, iframe: replit.dev).
 const cookieOptions = {
   httpOnly: true,
-  secure: isProd,
-  sameSite: isProd ? "none" : "lax",
+  secure: true,
+  sameSite: "none",
 };
 
 //register

@@ -11,7 +11,7 @@ const initialState = {
 export const createNewOrder = createAsyncThunk(
   "/order/createNewOrder",
   async (orderData) => {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `/api/shop/order/create`,
       orderData
     );
@@ -23,7 +23,7 @@ export const createNewOrder = createAsyncThunk(
 export const capturePayment = createAsyncThunk(
   "/order/capturePayment",
   async ({ razorpayOrderId, razorpayPaymentId, razorpaySignature, orderId }) => {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `/api/shop/order/capture`,
       {
         razorpayOrderId,
@@ -40,7 +40,7 @@ export const capturePayment = createAsyncThunk(
 export const getAllOrdersByUserId = createAsyncThunk(
   "/order/getAllOrdersByUserId",
   async (userId) => {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       `/api/shop/order/list/${userId}`
     );
 
@@ -51,7 +51,7 @@ export const getAllOrdersByUserId = createAsyncThunk(
 export const getOrderDetails = createAsyncThunk(
   "/order/getOrderDetails",
   async (id) => {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       `/api/shop/order/details/${id}`
     );
 

@@ -9,7 +9,7 @@ const initialState = {
 export const fetchSiteSettings = createAsyncThunk(
   "/siteSettings/fetch",
   async () => {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       `/api/common/site-settings/get`
     );
     return response.data;
@@ -19,7 +19,7 @@ export const fetchSiteSettings = createAsyncThunk(
 export const updateSiteSettings = createAsyncThunk(
   "/siteSettings/update",
   async (payload) => {
-    const response = await axios.put(
+    const response = await axiosInstance.put(
       `/api/admin/site-settings/update`,
       payload,
       { withCredentials: true }
@@ -31,7 +31,7 @@ export const updateSiteSettings = createAsyncThunk(
 export const resetSiteSettings = createAsyncThunk(
   "/siteSettings/reset",
   async () => {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `/api/admin/site-settings/reset`,
       {},
       { withCredentials: true }

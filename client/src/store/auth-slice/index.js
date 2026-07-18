@@ -11,7 +11,7 @@ export const registerUser = createAsyncThunk(
   "/auth/register",
 
   async (formData) => {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `/api/auth/register`,
       formData,
       {
@@ -26,7 +26,7 @@ export const loginUser = createAsyncThunk(
   "/auth/login",
 
   async (formData) => {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `/api/auth/login`,
       formData,
       {
@@ -41,7 +41,7 @@ export const logoutUser = createAsyncThunk(
   "/auth/logout",
 
   async () => {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `/api/auth/logout`,
       {},
       {
@@ -56,7 +56,7 @@ export const checkAuth = createAsyncThunk(
   "/auth/checkauth",
 
   async () => {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       `/api/auth/check-auth`,
       {
         headers: {

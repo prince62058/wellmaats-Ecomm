@@ -9,7 +9,7 @@ const initialState = {
 export const getAllOrdersForAdmin = createAsyncThunk(
   "/order/getAllOrdersForAdmin",
   async () => {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       `/api/admin/orders/get`,
       { withCredentials: true }
     );
@@ -21,7 +21,7 @@ export const getAllOrdersForAdmin = createAsyncThunk(
 export const getOrderDetailsForAdmin = createAsyncThunk(
   "/order/getOrderDetailsForAdmin",
   async (id) => {
-    const response = await axios.get(
+    const response = await axiosInstance.get(
       `/api/admin/orders/details/${id}`,
       { withCredentials: true }
     );
@@ -33,7 +33,7 @@ export const getOrderDetailsForAdmin = createAsyncThunk(
 export const updateOrderStatus = createAsyncThunk(
   "/order/updateOrderStatus",
   async ({ id, orderStatus }) => {
-    const response = await axios.put(
+    const response = await axiosInstance.put(
       `/api/admin/orders/update/${id}`,
       {
         orderStatus,
