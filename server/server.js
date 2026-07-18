@@ -38,7 +38,9 @@ app.use(
         origin.includes("127.0.0.1") ||
         origin.includes("loca.lt") ||
         origin.includes("localtunnel.me") ||
-        origin.includes("onrender.com")
+        origin.includes("onrender.com") ||
+        origin.includes("replit.dev") ||
+        origin.includes("replit.app")
       ) {
         callback(null, true);
       } else {
