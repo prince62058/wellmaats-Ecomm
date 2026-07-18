@@ -289,13 +289,23 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
       >
         <div className="shrink-0 px-5 pt-12 pb-4 border-b border-forest/10 bg-white">
           <div className="flex items-center gap-2.5 mb-4 pr-8">
-            <div className="w-9 h-9 rounded-full bg-forest flex items-center justify-center shrink-0">
-              <Leaf className="h-5 w-5 text-white" />
-            </div>
-            <div className="min-w-0">
-              <p className="font-display font-bold text-forest truncate">{brand.name}</p>
-              <p className="text-[10px] text-gold truncate">{brand.tagline}</p>
-            </div>
+            {brand.logo ? (
+              <img
+                src={brand.logo}
+                alt={brand.name || "Wellmaats"}
+                className="h-12 w-auto max-w-[180px] object-contain object-left"
+              />
+            ) : (
+              <>
+                <div className="w-10 h-10 rounded-full bg-forest flex items-center justify-center shrink-0">
+                  <Leaf className="h-5 w-5 text-white" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-display font-bold text-forest truncate">{brand.name}</p>
+                  <p className="text-[10px] text-gold truncate">{brand.tagline}</p>
+                </div>
+              </>
+            )}
           </div>
           <HeaderSearch className="w-full" onResultClick={() => onOpenChange(false)} />
         </div>
@@ -407,7 +417,7 @@ function ShoppingHeader() {
       }`}
     >
       {/* ── Row 1: Logo | Search | Cart+User ── */}
-      <div className="container mx-auto flex h-14 md:h-16 items-center gap-3 px-4 md:px-6">
+      <div className="container mx-auto flex h-16 md:h-[4.5rem] items-center gap-3 px-4 md:px-6">
         {/* Mobile hamburger left */}
         <Button
           variant="outline"
@@ -419,22 +429,30 @@ function ShoppingHeader() {
         </Button>
 
         {/* Logo */}
-        <Link to="/shop/home" className="flex items-center gap-2 shrink-0">
+        <Link to="/shop/home" className="flex items-center gap-2.5 shrink-0 min-w-0">
           {brand.logo ? (
-            <img src={brand.logo} alt={brand.name} className="h-9 w-auto max-w-[120px] object-contain" />
+            <img
+              src={brand.logo}
+              alt={brand.name || "Wellmaats"}
+              className="h-11 sm:h-12 md:h-14 w-auto max-w-[150px] sm:max-w-[180px] md:max-w-[220px] object-contain object-left"
+            />
           ) : (
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${light ? "bg-white/20 backdrop-blur" : "bg-forest"}`}>
-              <Leaf className="h-4.5 w-4.5 text-white" />
-            </div>
+            <>
+              <div className={`w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center shrink-0 ${light ? "bg-white/20 backdrop-blur" : "bg-forest"}`}>
+                <Leaf className="h-5 w-5 text-white" />
+              </div>
+              <div className="leading-tight hidden sm:block min-w-0">
+                <span className={`font-display font-bold text-base md:text-lg block truncate ${light ? "text-white" : "text-forest"}`}>
+                  {brand.company || brand.name}
+                </span>
+                {brand.tagline && (
+                  <span className={`block text-[10px] md:text-xs -mt-0.5 truncate ${light ? "text-gold/90" : "text-gold"}`}>
+                    {brand.tagline}
+                  </span>
+                )}
+              </div>
+            </>
           )}
-          <div className="leading-tight hidden sm:block">
-            <span className={`font-display font-bold text-sm md:text-base block truncate ${light ? "text-white" : "text-forest"}`}>
-              {brand.company || brand.name}
-            </span>
-            <span className={`block text-[9px] -mt-0.5 ${light ? "text-gold/90" : "text-gold"}`}>
-              {brand.tagline}
-            </span>
-          </div>
         </Link>
 
         {/* Search — center, prominent */}
