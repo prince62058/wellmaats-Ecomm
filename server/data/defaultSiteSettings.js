@@ -5,6 +5,7 @@ module.exports = {
     name: "Mother Tatwa",
     tagline: "Nature Cures Life",
     category: "Ayurvedic Wellness & Herbal Drops",
+    logo: "",
   },
   contact: {
     phone: "+91 98765 43210",

@@ -23,6 +23,49 @@ function Field({ label, children }) {
   );
 }
 
+// ── Logo uploader ─────────────────────────────────────────────
+function LogoUpload({ value, onChange }) {
+  const [uploading, setUploading] = useState(false);
+  const ref = useRef();
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("my_file", file);
+      const res = await axiosInstance.post("/api/admin/products/upload-image", fd);
+      if (res.data?.result?.url) onChange(res.data.result.url);
+    } catch { alert("Upload failed. Try again."); }
+    setUploading(false);
+    e.target.value = "";
+  }
+
+  return (
+    <div className="flex items-center gap-4">
+      {/* Preview */}
+      <div className="w-16 h-16 rounded-xl border border-forest/15 bg-leaf/30 flex items-center justify-center overflow-hidden shrink-0">
+        {value
+          ? <img src={value} alt="Logo" className="w-full h-full object-contain p-1" />
+          : <span className="text-2xl">🌿</span>}
+      </div>
+      <div className="flex flex-col gap-2">
+        <input ref={ref} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+        <Button type="button" size="sm" variant="outline" disabled={uploading}
+          onClick={() => ref.current?.click()}>
+          {uploading ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Uploading…</> : <><Upload className="w-3.5 h-3.5 mr-1.5" />Upload Logo</>}
+        </Button>
+        {value && (
+          <Button type="button" size="sm" variant="ghost" className="text-red-500 text-xs"
+            onClick={() => onChange("")}>Remove</Button>
+        )}
+        <p className="text-xs text-muted-foreground">PNG or SVG recommended · transparent bg</p>
+      </div>
+    </div>
+  );
+}
+
 // ── Slide media uploader (image or video) ─────────────────
 function SlideMediaUpload({ label, icon: Icon, accept, field, slideIdx, value, onChange }) {
   const [uploading, setUploading] = useState(false);
@@ -362,6 +405,13 @@ function AdminSettings() {
         </TabsContent>
 
         <TabsContent value="brand" className="space-y-4 mt-6 max-w-2xl">
+          {/* Logo upload */}
+          <Field label="Brand Logo">
+            <LogoUpload
+              value={form.brand?.logo || ""}
+              onChange={(url) => update("brand.logo", url)}
+            />
+          </Field>
           <Field label="Company Name">
             <Input value={form.brand?.company || ""} onChange={(e) => update("brand.company", e.target.value)} />
           </Field>
