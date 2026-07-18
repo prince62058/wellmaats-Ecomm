@@ -76,4 +76,11 @@ app.use("/api/common/feature", commonFeatureRouter);
 app.use("/api/common/site-settings", commonSiteSettingsRouter);
 app.use("/api/admin/site-settings", adminSiteSettingsRouter);
 
+// Serve React build
+const path = require("path");
+app.use(express.static(path.join(__dirname, "../client/dist")));
+app.get("*", (req, res) =>
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"))
+);
+
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
