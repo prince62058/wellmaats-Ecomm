@@ -47,6 +47,36 @@ function ShoppingHome() {
   return (
     <div className="flex flex-col">
       <HeroSection />
+
+      {/* Trust marquee strip */}
+      <div className="relative bg-forest overflow-hidden py-3 border-y border-gold/30">
+        <div className="flex animate-marquee whitespace-nowrap gap-0">
+          {[
+            "🌿 100% Ayurvedic",
+            "🧪 Lab Tested",
+            "✅ GMP Certified",
+            "🇮🇳 Made in India",
+            "🚚 Pan-India Delivery",
+            "💊 35+ Herbs Extract",
+            "⭐ 4.8 Customer Rating",
+            "🔒 Secure Payments",
+            "🌿 100% Ayurvedic",
+            "🧪 Lab Tested",
+            "✅ GMP Certified",
+            "🇮🇳 Made in India",
+            "🚚 Pan-India Delivery",
+            "💊 35+ Herbs Extract",
+            "⭐ 4.8 Customer Rating",
+            "🔒 Secure Payments",
+          ].map((item, i) => (
+            <span key={i} className="inline-flex items-center gap-2 text-white/90 text-xs font-semibold tracking-widest uppercase mx-8">
+              {item}
+              <span className="text-gold mx-2">◆</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
       <CategoriesGrid />
       <HowItWorks />
       <StatsBanner />
