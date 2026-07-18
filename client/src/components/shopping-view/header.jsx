@@ -401,7 +401,7 @@ function ShoppingHeader() {
           )}
           <div className="leading-tight hidden sm:block">
             <span className={`font-display font-bold text-sm md:text-base block truncate ${light ? "text-white" : "text-forest"}`}>
-              {brand.name}
+              {brand.company || brand.name}
             </span>
             <span className={`block text-[9px] -mt-0.5 ${light ? "text-gold/90" : "text-gold"}`}>
               {brand.tagline}
