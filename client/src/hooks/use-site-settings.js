@@ -36,6 +36,8 @@ export function useSiteSettings() {
     isLoading,
     settings: data,
     megaMenu: data?.megaMenu || [],
+    quickFilters: data?.quickFilters || [],
+    promoBanners: data?.promoBanners || [],
     brand: data?.brand || BRAND,
     contact: data?.contact || BRAND.contact,
     social: data?.social || [],

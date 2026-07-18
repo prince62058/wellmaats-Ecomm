@@ -122,6 +122,7 @@ function AdminSettings() {
           <TabsTrigger value="brand">Brand</TabsTrigger>
           <TabsTrigger value="contact">Contact</TabsTrigger>
           <TabsTrigger value="categories">Categories</TabsTrigger>
+          <TabsTrigger value="promobanners">Promo Banners</TabsTrigger>
           <TabsTrigger value="megamenu">Mega Menu</TabsTrigger>
           <TabsTrigger value="homepage">Homepage</TabsTrigger>
           <TabsTrigger value="footer">Footer</TabsTrigger>
@@ -174,7 +175,26 @@ function AdminSettings() {
           </div>
         </TabsContent>
 
+        {/* ── Quick Filters + Categories + Brands ── */}
         <TabsContent value="categories" className="space-y-6 mt-6">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <Label>Quick Filter Tabs</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">Shown as filter tabs in "Today's Wellness Deals" section on home page.</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => addListItem("quickFilters", { label: "", category: "" })}>
+                <Plus className="w-4 h-4 mr-1" /> Add Filter
+              </Button>
+            </div>
+            {(form.quickFilters || []).map((f, i) => (
+              <div key={i} className="flex gap-2 mb-2">
+                <Input placeholder="Label (e.g. Immunity)" value={f.label} onChange={(e) => updateList("quickFilters", i, "label", e.target.value)} />
+                <Input placeholder="category id (e.g. immunity-drops)" value={f.category} onChange={(e) => updateList("quickFilters", i, "category", e.target.value)} />
+                <Button size="icon" variant="ghost" onClick={() => removeListItem("quickFilters", i)}><Trash2 className="w-4 h-4" /></Button>
+              </div>
+            ))}
+          </div>
           <div>
             <div className="flex items-center justify-between mb-3">
               <Label>Product Categories</Label>
@@ -205,6 +225,46 @@ function AdminSettings() {
               </div>
             ))}
           </div>
+        </TabsContent>
+
+        {/* ── Promo Banners ── */}
+        <TabsContent value="promobanners" className="space-y-4 mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h3 className="font-semibold text-forest">Promotional Banners</h3>
+              <p className="text-xs text-muted-foreground">Full-width banners shown between sections on home page. First 3 are shown.</p>
+            </div>
+            <Button size="sm" variant="outline" onClick={() =>
+              setForm((prev) => ({
+                ...prev,
+                promoBanners: [...(prev.promoBanners || []), {
+                  badge: "", title: "", subtitle: "", cta: "Shop Now",
+                  link: "/shop/listing", bgGradient: "linear-gradient(135deg, #1a3a2a, #40916c)",
+                  productImage: "",
+                }],
+              }))
+            }>
+              <Plus className="w-4 h-4 mr-1" /> Add Banner
+            </Button>
+          </div>
+          {(form.promoBanners || []).map((b, bi) => (
+            <div key={bi} className="border rounded-xl p-4 space-y-2 bg-gray-50">
+              <div className="flex gap-2 flex-wrap">
+                <Input className="w-32" placeholder="Badge text" value={b.badge||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],badge:e.target.value}; return {...p,promoBanners:arr}; })} />
+                <Input className="flex-1 min-w-40" placeholder="Title" value={b.title||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],title:e.target.value}; return {...p,promoBanners:arr}; })} />
+                <Button size="icon" variant="ghost" onClick={() => setForm((p) => ({ ...p, promoBanners: p.promoBanners.filter((_,i)=>i!==bi) }))}><Trash2 className="w-4 h-4 text-red-500" /></Button>
+              </div>
+              <Input placeholder="Subtitle" value={b.subtitle||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],subtitle:e.target.value}; return {...p,promoBanners:arr}; })} />
+              <div className="flex gap-2 flex-wrap">
+                <Input className="w-28" placeholder="CTA text" value={b.cta||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],cta:e.target.value}; return {...p,promoBanners:arr}; })} />
+                <Input className="flex-1" placeholder="/shop/listing?category=..." value={b.link||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],link:e.target.value}; return {...p,promoBanners:arr}; })} />
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <Input className="flex-1 min-w-48" placeholder="CSS gradient (e.g. linear-gradient(...))" value={b.bgGradient||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],bgGradient:e.target.value}; return {...p,promoBanners:arr}; })} />
+                <Input className="flex-1" placeholder="Product image path (e.g. /products/immunity.jpg)" value={b.productImage||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],productImage:e.target.value}; return {...p,promoBanners:arr}; })} />
+              </div>
+            </div>
+          ))}
         </TabsContent>
 
         <TabsContent value="megamenu" className="space-y-4 mt-6">
