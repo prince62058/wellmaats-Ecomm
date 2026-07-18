@@ -9,6 +9,7 @@ import {
   Heart,
   LogIn,
   UserPlus,
+  LayoutDashboard,
 } from "lucide-react";
 import { useLoginModal } from "@/context/LoginModalContext";
 import MegaMenu from "./mega-menu";
@@ -227,6 +228,11 @@ function HeaderRightContent({ light, openCartSheet, setOpenCartSheet }) {
           <DropdownMenuContent side="right" className="w-52">
             <DropdownMenuLabel className="text-sm">{user?.userName}</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            {user?.role === "admin" && (
+              <DropdownMenuItem onClick={() => navigate("/admin/dashboard")}>
+                <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Panel
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={() => navigate("/shop/account")}>
               <UserCog className="mr-2 h-4 w-4" /> Account
             </DropdownMenuItem>

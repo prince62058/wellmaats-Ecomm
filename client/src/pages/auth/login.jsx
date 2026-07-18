@@ -106,8 +106,11 @@ export default function AuthLogin() {
     setLoading(true);
     const result = await dispatch(verifyOTPLogin({ identifier: identifier.trim(), otp: c }));
     setLoading(false);
-    if (result?.payload?.success) toast({ title: "Welcome! Logged in 🎉" });
-    else { toast({ title: result?.payload?.message || "Incorrect OTP", variant: "destructive" }); setOtp(""); }
+    if (result?.payload?.success) {
+      toast({ title: "Welcome! Logged in 🎉" });
+      const role = result.payload.user?.role;
+      navigate(role === "admin" ? "/admin/dashboard" : "/shop/home");
+    } else { toast({ title: result?.payload?.message || "Incorrect OTP", variant: "destructive" }); setOtp(""); }
   }
 
   /* ── Email: password login ── */
@@ -117,8 +120,11 @@ export default function AuthLogin() {
     setLoading(true);
     const result = await dispatch(loginUser({ email: identifier.trim(), password }));
     setLoading(false);
-    if (result?.payload?.success) toast({ title: "Welcome back! 🎉" });
-    else {
+    if (result?.payload?.success) {
+      toast({ title: "Welcome back! 🎉" });
+      const role = result.payload.user?.role;
+      navigate(role === "admin" ? "/admin/dashboard" : "/shop/home");
+    } else {
       const msg = result?.payload?.message || "Login failed";
       if (msg.toLowerCase().includes("no account")) setNotFound(true);
       else toast({ title: msg, variant: "destructive" });
