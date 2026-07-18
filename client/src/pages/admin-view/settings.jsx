@@ -388,7 +388,7 @@ function AdminSettings() {
                 <p className="text-xs text-muted-foreground italic py-2">No nav links — add one above</p>
               )}
               {(form.headerNavLinks || []).map((link, i) => (
-                <div key={i} className="grid grid-cols-[40px_1fr_2fr_36px] gap-2 items-end">
+                <div key={i} className="grid grid-cols-1 sm:grid-cols-[40px_1fr_2fr_36px] gap-2 items-end">
                   <div className="space-y-0.5">
                     <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Icon</label>
                     <Input value={link.icon||""} placeholder="🔥" className="h-9 rounded-xl border-gray-200 text-center text-base"
@@ -626,14 +626,14 @@ function AdminSettings() {
               {!(form.quickFilters||[]).length && <p className="text-xs text-muted-foreground italic py-1">No filters yet</p>}
               {/* Column headers */}
               {(form.quickFilters||[]).length > 0 && (
-                <div className="grid grid-cols-[1fr_1fr_36px] gap-2 mb-1">
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_36px] gap-2 mb-1">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Tab Label</span>
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Category ID / Slug</span>
                   <span />
                 </div>
               )}
               {(form.quickFilters || []).map((f, i) => (
-                <div key={i} className="grid grid-cols-[1fr_1fr_36px] gap-2 items-center">
+                <div key={i} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_36px] gap-2 items-center">
                   <Input value={f.label} placeholder="e.g. Immunity" className="h-9 rounded-xl border-gray-200 text-sm"
                     onChange={(e) => updateList("quickFilters", i, "label", e.target.value)} />
                   <Input value={f.category} placeholder="e.g. immunity-drops" className="h-9 rounded-xl border-gray-200 text-sm font-mono text-xs"
@@ -662,14 +662,14 @@ function AdminSettings() {
             <div className="p-5 space-y-2">
               {!(form.productCategories||[]).length && <p className="text-xs text-muted-foreground italic py-1">No categories yet</p>}
               {(form.productCategories||[]).length > 0 && (
-                <div className="grid grid-cols-[1fr_1fr_36px] gap-2 mb-1">
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_36px] gap-2 mb-1">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">ID / Slug (used internally)</span>
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Display Label</span>
                   <span />
                 </div>
               )}
               {(form.productCategories || []).map((cat, i) => (
-                <div key={i} className="grid grid-cols-[1fr_1fr_36px] gap-2 items-center">
+                <div key={i} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_36px] gap-2 items-center">
                   <Input value={cat.id} placeholder="e.g. liver-care" className="h-9 rounded-xl border-gray-200 text-sm font-mono text-xs"
                     onChange={(e) => updateList("productCategories", i, "id", e.target.value)} />
                   <Input value={cat.label} placeholder="e.g. Liver Care" className="h-9 rounded-xl border-gray-200 text-sm"
@@ -698,14 +698,14 @@ function AdminSettings() {
             <div className="p-5 space-y-2">
               {!(form.brands||[]).length && <p className="text-xs text-muted-foreground italic py-1">No brands yet</p>}
               {(form.brands||[]).length > 0 && (
-                <div className="grid grid-cols-[1fr_1fr_36px] gap-2 mb-1">
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_36px] gap-2 mb-1">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">ID / Slug</span>
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Display Name</span>
                   <span />
                 </div>
               )}
               {(form.brands || []).map((b, i) => (
-                <div key={i} className="grid grid-cols-[1fr_1fr_36px] gap-2 items-center">
+                <div key={i} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_36px] gap-2 items-center">
                   <Input value={b.id} placeholder="e.g. mother-tatwa" className="h-9 rounded-xl border-gray-200 text-sm font-mono text-xs"
                     onChange={(e) => updateList("brands", i, "id", e.target.value)} />
                   <Input value={b.label} placeholder="e.g. Mother Tatwa" className="h-9 rounded-xl border-gray-200 text-sm"

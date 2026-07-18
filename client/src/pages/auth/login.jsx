@@ -37,14 +37,14 @@ function OtpInput({ value, onChange, onComplete }) {
     e.preventDefault();
   }
   return (
-    <div className="flex gap-2 justify-center" onPaste={handlePaste}>
+    <div className="flex gap-1.5 sm:gap-2 justify-center w-full max-w-[22rem] mx-auto" onPaste={handlePaste}>
       {[0,1,2,3,4,5].map((i) => (
         <input key={i} ref={(el) => (refs.current[i] = el)}
           type="text" inputMode="numeric" maxLength={1}
           value={digits[i]?.trim() || ""}
           onChange={(e) => handleInput(i, e)}
           onKeyDown={(e) => handleKey(i, e)}
-          className={`w-11 h-14 text-center text-xl font-bold rounded-xl border-2 transition focus:outline-none focus:border-forest focus:ring-2 focus:ring-forest/20
+          className={`w-9 h-11 sm:w-11 sm:h-14 flex-1 max-w-11 text-center text-lg sm:text-xl font-bold rounded-xl border-2 transition focus:outline-none focus:border-forest focus:ring-2 focus:ring-forest/20
             ${digits[i]?.trim() ? "border-forest bg-leaf/30 text-forest" : "border-gray-200 bg-white"}`}
         />
       ))}

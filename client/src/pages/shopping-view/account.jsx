@@ -314,7 +314,7 @@ function ShoppingAccount() {
           </div>
 
           {/* Stats strip */}
-          <div className="grid grid-cols-4 gap-3 mt-7">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-7">
             {[
               { icon: <Package className="w-3.5 h-3.5" />, label: "Orders",    value: "—",  onClick: () => setTab("orders") },
               { icon: <Heart className="w-3.5 h-3.5" />,   label: "Wishlist",  value: wishlistProducts?.length ?? 0, onClick: () => setTab("wishlist") },
@@ -323,7 +323,7 @@ function ShoppingAccount() {
             ].map((s) => (
               <button key={s.label} onClick={s.onClick}
                 className="bg-white/8 hover:bg-white/15 border border-white/10 rounded-2xl p-3 md:p-4 text-center transition group">
-                <div className="text-2xl font-bold">{s.value}</div>
+                <div className="text-lg sm:text-2xl font-bold">{s.value}</div>
                 <div className="text-xs text-white/65 mt-0.5 flex items-center justify-center gap-1 group-hover:text-white/90 transition">
                   {s.icon} {s.label}
                 </div>
@@ -337,7 +337,7 @@ function ShoppingAccount() {
       <div className="container mx-auto px-4 py-6 md:py-8">
         <Tabs value={tab} onValueChange={setTab}>
           {/* Tab bar */}
-          <TabsList className="flex h-auto bg-white border border-forest/10 shadow-sm rounded-2xl p-1.5 gap-1 mb-7 flex-wrap md:flex-nowrap">
+          <TabsList className="flex h-auto bg-white border border-forest/10 shadow-sm rounded-2xl p-1.5 gap-1 mb-7 overflow-x-auto scrollbar-hide flex-nowrap">
             {[
               { value: "profile",   label: "My Profile",  icon: <User className="w-4 h-4" /> },
               { value: "orders",    label: "Orders",       icon: <Package className="w-4 h-4" /> },
@@ -346,10 +346,11 @@ function ShoppingAccount() {
               { value: "referral",  label: "Refer & Earn", icon: <Gift className="w-4 h-4" /> },
             ].map((t) => (
               <TabsTrigger key={t.value} value={t.value}
-                className="flex items-center gap-2 text-sm rounded-xl
+                className="flex items-center gap-2 text-sm rounded-xl shrink-0
                   data-[state=active]:bg-forest data-[state=active]:text-white data-[state=active]:shadow-md
-                  px-4 py-2.5 flex-1 justify-center font-medium text-gray-500 hover:text-forest transition">
-                {t.icon} {t.label}
+                  px-3 sm:px-4 py-2.5 justify-center font-medium text-gray-500 hover:text-forest transition">
+                {t.icon}
+                <span className="hidden sm:inline">{t.label}</span>
               </TabsTrigger>
             ))}
           </TabsList>

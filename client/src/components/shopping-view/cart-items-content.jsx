@@ -72,11 +72,11 @@ function UserCartItemsContent({ cartItem }) {
   }
 
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-start sm:items-center gap-3 sm:space-x-4">
       <img
         src={cartItem?.image}
         alt={cartItem?.title}
-        className="w-16 h-16 rounded-xl object-cover border border-forest/10"
+        className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover border border-forest/10 shrink-0"
       />
       <div className="flex-1 min-w-0">
         <h3 className="font-semibold text-forest text-sm truncate">{cartItem?.title}</h3>

@@ -58,13 +58,16 @@ function MegaMenu({ light, onNavigate }) {
       {open && (
         <div
           className="fixed left-0 right-0 z-[999] shadow-2xl border-t border-forest/10"
-          style={{ top: "calc(var(--header-h, 64px))" }}
+          style={{ top: "var(--header-h, 104px)" }}
           onMouseEnter={handleEnter}
           onMouseLeave={handleLeave}
         >
-          <div className="flex bg-white max-h-[520px]" style={{ maxWidth: "100vw" }}>
+          <div
+            className="flex bg-white max-h-[min(520px,calc(100dvh-var(--header-h,104px)))] overflow-hidden"
+            style={{ maxWidth: "100vw" }}
+          >
             {/* Left sidebar */}
-            <div className="w-56 shrink-0 bg-[#f6faf6] border-r border-forest/10 overflow-y-auto">
+            <div className="w-48 xl:w-56 shrink-0 bg-[#f6faf6] border-r border-forest/10 overflow-y-auto">
               {megaMenu.map((cat) => {
                 const Icon = ICON_MAP[cat.icon] || Leaf;
                 const isImg = cat.icon && (cat.icon.startsWith("http") || cat.icon.startsWith("/"));

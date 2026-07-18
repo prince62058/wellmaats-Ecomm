@@ -31,8 +31,8 @@ function AnnouncementBar() {
   const msg = msgs[current];
 
   return (
-    <div className="relative bg-forest text-white text-center text-xs font-semibold py-2 px-10 overflow-hidden select-none z-50">
-      <span className="animate-fade-in">{msg.text}</span>
+    <div className="relative bg-forest text-white text-center text-xs font-semibold py-2 px-10 sm:px-14 overflow-hidden select-none z-50">
+      <span className="animate-fade-in inline-block max-w-[calc(100%-3rem)] truncate px-1 align-middle">{msg.text}</span>
       <button
         type="button"
         onClick={() => setDismissed(true)}
@@ -43,7 +43,7 @@ function AnnouncementBar() {
       </button>
       {/* Progress dots */}
       {msgs.length > 1 && (
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 flex gap-1">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 hidden sm:flex gap-1">
           {msgs.map((_, i) => (
             <button
               key={i}

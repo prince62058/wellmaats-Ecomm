@@ -118,7 +118,7 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
         </CardContent>
       </div>
 
-      <CardFooter className="p-3 pt-2 mt-auto flex gap-1.5">
+      <CardFooter className="p-3 pt-2 mt-auto flex flex-col min-[380px]:flex-row gap-1.5">
         {product?.totalStock === 0 ? (
           <Button disabled className="w-full rounded-full opacity-50 h-9 text-xs">
             Out of Stock
@@ -128,16 +128,16 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
             <Button
               onClick={() => handleAddtoCart(product?._id, product?.totalStock)}
               variant="outline"
-              className="flex-1 rounded-full h-9 border-forest text-forest hover:bg-leaf font-semibold text-xs"
+              className="w-full min-[380px]:flex-1 rounded-full h-9 border-forest text-forest hover:bg-leaf font-semibold text-xs"
             >
-              <ShoppingBag className="w-3.5 h-3.5 mr-1" />
+              <ShoppingBag className="w-3.5 h-3.5 mr-1 shrink-0" />
               Add to Cart
             </Button>
             <Button
               onClick={handleBuyNow}
-              className="flex-1 rounded-full h-9 bg-gold hover:bg-gold/90 text-white font-semibold text-xs shadow-sm"
+              className="w-full min-[380px]:flex-1 rounded-full h-9 bg-gold hover:bg-gold/90 text-white font-semibold text-xs shadow-sm"
             >
-              <Zap className="w-3.5 h-3.5 mr-1" />
+              <Zap className="w-3.5 h-3.5 mr-1 shrink-0" />
               Buy Now
             </Button>
           </>

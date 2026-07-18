@@ -10,7 +10,7 @@ export function Testimonials() {
         <h2 className="font-display text-3xl md:text-4xl font-bold text-center text-forest mb-10">
           Customer Reviews
         </h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {testimonials.map((t) => (
             <Card key={t.name} className="glass border-0">
               <CardContent className="p-6">

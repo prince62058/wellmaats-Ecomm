@@ -81,8 +81,8 @@ export default function HeroCarousel() {
 
   return (
     <div
-      className="relative w-full overflow-hidden select-none"
-      style={{ minHeight: 340, height: "min(75vh, 620px)" }}
+      className="relative w-full overflow-hidden select-none min-h-[280px] sm:min-h-[340px]"
+      style={{ height: "min(70vh, 620px)" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -181,10 +181,10 @@ export default function HeroCarousel() {
 
       {/* ── Arrows ── */}
       {slides.length > 1 && <>
-        <button onClick={() => go(-1)} className="absolute left-3 top-1/2 -translate-y-1/2 z-30 bg-black/25 hover:bg-black/55 text-white rounded-full p-2.5 backdrop-blur-sm transition">
+        <button onClick={() => go(-1)} className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 z-30 bg-black/25 hover:bg-black/55 text-white rounded-full p-2.5 backdrop-blur-sm transition">
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <button onClick={() => go(1)} className="absolute right-3 top-1/2 -translate-y-1/2 z-30 bg-black/25 hover:bg-black/55 text-white rounded-full p-2.5 backdrop-blur-sm transition">
+        <button onClick={() => go(1)} className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 z-30 bg-black/25 hover:bg-black/55 text-white rounded-full p-2.5 backdrop-blur-sm transition">
           <ChevronRight className="w-5 h-5" />
         </button>
       </>}
@@ -198,7 +198,7 @@ export default function HeroCarousel() {
       </div>
 
       {/* slide counter */}
-      <div className="absolute bottom-5 right-5 z-30 text-white/40 text-xs font-mono">
+      <div className="absolute bottom-5 right-5 z-30 text-white/40 text-xs font-mono hidden sm:block">
         {String(cur + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
       </div>
     </div>

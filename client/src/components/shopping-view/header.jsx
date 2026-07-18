@@ -30,7 +30,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
 import HeaderSearch from "./header-search";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 
 function MenuItems({ onNavigate, light, mobile = false }) {
@@ -348,6 +348,7 @@ function ShoppingHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const headerRef = useRef(null);
   const location = useLocation();
   const { brand, headerNavLinks } = useSiteSettings();
   const isHome = location.pathname === "/shop/home";
@@ -364,6 +365,26 @@ function ShoppingHeader() {
     setScrolled(window.scrollY > 48);
   }, [location.pathname]);
 
+  // Keep mega-menu aligned under the real sticky header (incl. announcement offset)
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const sync = () => {
+      const bottom = Math.round(el.getBoundingClientRect().bottom);
+      document.documentElement.style.setProperty("--header-h", `${bottom}px`);
+    };
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    window.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("scroll", sync);
+      window.removeEventListener("resize", sync);
+    };
+  }, [scrolled, light, location.pathname]);
+
   function handleOpenCartFromMenu() {
     setOpenCartSheet(true);
   }
@@ -372,6 +393,7 @@ function ShoppingHeader() {
 
   return (
     <header
+      ref={headerRef}
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         light
           ? "bg-gradient-to-b from-black/55 to-black/5 border-b border-white/10"
@@ -427,14 +449,16 @@ function ShoppingHeader() {
       {/* ── Row 2: Nav bar (desktop only) ── */}
       <div className={`hidden lg:block border-t ${light ? "border-white/10" : "border-forest/8"}`}>
         <div className="container mx-auto px-4 md:px-6">
-          <div className="flex items-center gap-1 h-10">
-            <MegaMenu light={light} onNavigate={() => {}} />
-            <div className={`w-px h-5 mx-2 ${light ? "bg-white/20" : "bg-forest/15"}`} />
+          <div className="flex items-center gap-1 h-10 overflow-x-auto scrollbar-hide">
+            <div className="shrink-0">
+              <MegaMenu light={light} onNavigate={() => {}} />
+            </div>
+            <div className={`w-px h-5 mx-2 shrink-0 ${light ? "bg-white/20" : "bg-forest/15"}`} />
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
                   light
                     ? "text-white/85 hover:text-white hover:bg-white/10"
                     : "text-forest/75 hover:text-forest hover:bg-leaf"
@@ -444,8 +468,10 @@ function ShoppingHeader() {
                 {link.label}
               </Link>
             ))}
-            <div className="flex-1" />
-            <MenuItems light={light} />
+            <div className="flex-1 min-w-2" />
+            <div className="hidden xl:flex shrink-0">
+              <MenuItems light={light} />
+            </div>
           </div>
         </div>
       </div>

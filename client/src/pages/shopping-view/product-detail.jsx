@@ -245,13 +245,15 @@ export default function ProductDetailPage() {
             </h1>
 
             {/* Rating */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <StarRatingComponent rating={averageReview} />
-              <span className="text-sm font-semibold text-forest">{averageReview.toFixed(1)}</span>
-              <span className="text-sm text-muted-foreground">({reviews?.length || 0} reviews)</span>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
+                <StarRatingComponent rating={averageReview} />
+                <span className="text-sm font-semibold text-forest">{averageReview.toFixed(1)}</span>
+                <span className="text-sm text-muted-foreground">({reviews?.length || 0} reviews)</span>
+              </div>
               {p.totalStock > 0
-                ? <span className="ml-auto text-xs bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-1 rounded-full border border-emerald-200">✓ In Stock ({p.totalStock} left)</span>
-                : <span className="ml-auto text-xs bg-red-50 text-red-600 font-semibold px-2.5 py-1 rounded-full border border-red-200">Out of Stock</span>
+                ? <span className="self-start text-xs bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-1 rounded-full border border-emerald-200">✓ In Stock ({p.totalStock} left)</span>
+                : <span className="self-start text-xs bg-red-50 text-red-600 font-semibold px-2.5 py-1 rounded-full border border-red-200">Out of Stock</span>
               }
             </div>
 
@@ -306,20 +308,20 @@ export default function ProductDetailPage() {
                     >+</button>
                   </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     onClick={() => handleAddToCart(p._id, p.totalStock, qty)}
                     variant="outline"
-                    className="flex-1 h-13 rounded-2xl border-2 border-forest text-forest hover:bg-leaf font-bold text-sm py-4"
+                    className="w-full sm:flex-1 h-12 sm:h-13 rounded-2xl border-2 border-forest text-forest hover:bg-leaf font-bold text-sm py-4"
                   >
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    Add to Cart — ₹{price * qty}
+                    <ShoppingBag className="w-4 h-4 mr-2 shrink-0" />
+                    <span className="truncate">Add to Cart — ₹{price * qty}</span>
                   </Button>
                   <Button
                     onClick={handleBuyNow}
-                    className="flex-1 h-13 rounded-2xl bg-forest hover:bg-forest/90 font-bold text-sm py-4 shadow-lg"
+                    className="w-full sm:flex-1 h-12 sm:h-13 rounded-2xl bg-forest hover:bg-forest/90 font-bold text-sm py-4 shadow-lg"
                   >
-                    <Zap className="w-4 h-4 mr-2" />
+                    <Zap className="w-4 h-4 mr-2 shrink-0" />
                     Buy Now
                   </Button>
                 </div>
@@ -344,7 +346,7 @@ export default function ProductDetailPage() {
         {/* ══ Tabs: Benefits, Ingredients, How to Use, Reviews ══ */}
         <div className="mt-12">
           <Tabs defaultValue="benefits">
-            <TabsList className="flex flex-wrap h-auto gap-1 bg-leaf/40 p-1 rounded-2xl mb-6">
+            <TabsList className="flex flex-nowrap h-auto gap-1 bg-leaf/40 p-1 rounded-2xl mb-6 overflow-x-auto scrollbar-hide">
               {[
                 { value: "benefits", label: "Benefits" },
                 { value: "ingredients", label: "Ingredients" },
@@ -352,7 +354,7 @@ export default function ProductDetailPage() {
                 { value: "reviews", label: `Reviews (${reviews?.length || 0})` },
               ].map((t) => (
                 <TabsTrigger key={t.value} value={t.value}
-                  className="flex-1 min-w-[100px] rounded-xl text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-sm">
+                  className="shrink-0 rounded-xl text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-sm px-4">
                   {t.label}
                 </TabsTrigger>
               ))}

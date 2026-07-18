@@ -19,11 +19,11 @@ export function FAQSection() {
           {faq.map((item, i) => (
             <div key={i} className="border border-forest/10 rounded-xl overflow-hidden">
               <button
-                className="w-full flex items-center justify-between p-5 text-left font-semibold text-forest hover:bg-leaf transition-colors"
+                className="w-full flex items-center justify-between gap-3 p-5 text-left font-semibold text-forest hover:bg-leaf transition-colors"
                 onClick={() => setOpen(open === i ? -1 : i)}
               >
-                {item.q}
-                <ChevronDown className={`w-5 h-5 transition-transform ${open === i ? "rotate-180" : ""}`} />
+                <span className="flex-1 min-w-0 pr-1">{item.q}</span>
+                <ChevronDown className={`w-5 h-5 shrink-0 transition-transform ${open === i ? "rotate-180" : ""}`} />
               </button>
               {open === i && (
                 <div className="px-5 pb-5 text-muted-foreground text-sm">{item.a}</div>

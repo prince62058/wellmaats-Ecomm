@@ -48,7 +48,7 @@ function App() {
     dispatch(fetchSiteSettings());
   }, [dispatch]);
 
-  if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
+  if (isLoading) return <Skeleton className="w-full max-w-md h-40 mx-auto mt-24 rounded-2xl" />;
 
   console.log(isLoading, user);
 

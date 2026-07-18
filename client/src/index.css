@@ -78,6 +78,13 @@
   .btn-gold {
     @apply bg-[#C8A54A] hover:bg-[#B8943F] text-white font-semibold shadow-md hover:shadow-lg transition-all;
   }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 html {
