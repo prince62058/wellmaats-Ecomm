@@ -511,43 +511,168 @@ function AdminSettings() {
         </TabsContent>
 
         {/* ── Promo Banners ── */}
-        <TabsContent value="promobanners" className="space-y-4 mt-6">
-          <div className="flex items-center justify-between mb-2">
+        <TabsContent value="promobanners" className="space-y-5 mt-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-forest">Promotional Banners</h3>
-              <p className="text-xs text-muted-foreground">Full-width banners shown between sections on home page. First 3 are shown.</p>
+              <h3 className="font-bold text-forest text-base">Promotional Banners</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Full-width banners shown on the home page. First 3 are displayed.
+              </p>
             </div>
-            <Button size="sm" variant="outline" onClick={() =>
+            <Button size="sm" className="bg-forest hover:bg-forest/90 gap-1.5 rounded-xl" onClick={() =>
               setForm((prev) => ({
                 ...prev,
                 promoBanners: [...(prev.promoBanners || []), {
-                  badge: "", title: "", subtitle: "", cta: "Shop Now",
-                  link: "/shop/listing", bgGradient: "linear-gradient(135deg, #1a3a2a, #40916c)",
-                  productImage: "",
+                  badge: "New", title: "Banner Title", subtitle: "Add a short description here",
+                  cta: "Shop Now", link: "/shop/listing",
+                  bgGradient: "linear-gradient(135deg, #1a3a2a 0%, #40916c 100%)",
+                  productImage: "/products/signature.jpg",
                 }],
               }))
             }>
-              <Plus className="w-4 h-4 mr-1" /> Add Banner
+              <Plus className="w-4 h-4" /> Add Banner
             </Button>
           </div>
-          {(form.promoBanners || []).map((b, bi) => (
-            <div key={bi} className="border rounded-xl p-4 space-y-2 bg-gray-50">
-              <div className="flex gap-2 flex-wrap">
-                <Input className="w-32" placeholder="Badge text" value={b.badge||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],badge:e.target.value}; return {...p,promoBanners:arr}; })} />
-                <Input className="flex-1 min-w-40" placeholder="Title" value={b.title||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],title:e.target.value}; return {...p,promoBanners:arr}; })} />
-                <Button size="icon" variant="ghost" onClick={() => setForm((p) => ({ ...p, promoBanners: p.promoBanners.filter((_,i)=>i!==bi) }))}><Trash2 className="w-4 h-4 text-red-500" /></Button>
-              </div>
-              <Input placeholder="Subtitle" value={b.subtitle||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],subtitle:e.target.value}; return {...p,promoBanners:arr}; })} />
-              <div className="flex gap-2 flex-wrap">
-                <Input className="w-28" placeholder="CTA text" value={b.cta||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],cta:e.target.value}; return {...p,promoBanners:arr}; })} />
-                <Input className="flex-1" placeholder="/shop/listing?category=..." value={b.link||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],link:e.target.value}; return {...p,promoBanners:arr}; })} />
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                <Input className="flex-1 min-w-48" placeholder="CSS gradient (e.g. linear-gradient(...))" value={b.bgGradient||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],bgGradient:e.target.value}; return {...p,promoBanners:arr}; })} />
-                <Input className="flex-1" placeholder="Product image path (e.g. /products/immunity.jpg)" value={b.productImage||""} onChange={(e) => setForm((p) => { const arr=[...p.promoBanners]; arr[bi]={...arr[bi],productImage:e.target.value}; return {...p,promoBanners:arr}; })} />
-              </div>
+
+          {(form.promoBanners || []).length === 0 && (
+            <div className="border-2 border-dashed border-forest/20 rounded-2xl py-12 text-center text-muted-foreground">
+              <p className="text-sm font-medium">No banners yet</p>
+              <p className="text-xs mt-1">Click "Add Banner" to create your first promo banner</p>
             </div>
-          ))}
+          )}
+
+          {(form.promoBanners || []).map((b, bi) => {
+            function setBannerField(field, val) {
+              setForm((p) => {
+                const arr = [...(p.promoBanners || [])];
+                arr[bi] = { ...arr[bi], [field]: val };
+                return { ...p, promoBanners: arr };
+              });
+            }
+
+            // Extract colors from gradient for pickers
+            const colorMatch = (b.bgGradient || "").match(/#[0-9a-fA-F]{6}/g) || [];
+            const col1 = colorMatch[0] || "#1a3a2a";
+            const col2 = colorMatch[1] || "#40916c";
+
+            function applyColors(c1, c2) {
+              setBannerField("bgGradient", `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`);
+            }
+
+            return (
+              <div key={bi} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                {/* ── Live mini preview ── */}
+                <div
+                  className="relative h-24 flex items-center px-6 gap-4 overflow-hidden"
+                  style={{ background: b.bgGradient || "linear-gradient(135deg,#1a3a2a,#40916c)" }}
+                >
+                  <div className="flex-1 min-w-0">
+                    {b.badge && (
+                      <span className="inline-block bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full mb-1">
+                        {b.badge}
+                      </span>
+                    )}
+                    <p className="text-white font-bold text-sm leading-tight truncate">{b.title || "Banner Title"}</p>
+                    <p className="text-white/70 text-[11px] truncate mt-0.5">{b.subtitle || "Subtitle…"}</p>
+                    {b.cta && (
+                      <span className="mt-2 inline-block bg-white text-[10px] font-bold px-3 py-1 rounded-full text-forest">
+                        {b.cta}
+                      </span>
+                    )}
+                  </div>
+                  {b.productImage && (
+                    <img src={b.productImage} alt="" className="h-20 w-20 object-contain drop-shadow-lg shrink-0" />
+                  )}
+                  {/* Banner # badge */}
+                  <div className="absolute top-2 right-2 bg-black/30 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    Banner {bi + 1}
+                  </div>
+                </div>
+
+                {/* ── Fields ── */}
+                <div className="p-5 space-y-4">
+                  {/* Row 1: Badge + Title + Delete */}
+                  <div className="flex gap-3 items-start">
+                    <div className="space-y-1 w-28 shrink-0">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Badge Label</label>
+                      <Input value={b.badge || ""} onChange={(e) => setBannerField("badge", e.target.value)}
+                        placeholder="e.g. New Launch" className="rounded-xl border-gray-200 h-9 text-sm" />
+                    </div>
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Banner Title *</label>
+                      <Input value={b.title || ""} onChange={(e) => setBannerField("title", e.target.value)}
+                        placeholder="e.g. Women's Wellness Range" className="rounded-xl border-gray-200 h-9 text-sm" />
+                    </div>
+                    <button type="button" onClick={() => setForm((p) => ({ ...p, promoBanners: p.promoBanners.filter((_,i) => i !== bi) }))}
+                      className="mt-5 w-9 h-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Row 2: Subtitle */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Subtitle / Description</label>
+                    <Input value={b.subtitle || ""} onChange={(e) => setBannerField("subtitle", e.target.value)}
+                      placeholder="e.g. Crafted with Shatavari & Ashwagandha for hormonal balance"
+                      className="rounded-xl border-gray-200 h-9 text-sm" />
+                  </div>
+
+                  {/* Row 3: CTA Button + Link */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Button Text</label>
+                      <Input value={b.cta || ""} onChange={(e) => setBannerField("cta", e.target.value)}
+                        placeholder="Shop Now" className="rounded-xl border-gray-200 h-9 text-sm" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Button Link (URL)</label>
+                      <Input value={b.link || ""} onChange={(e) => setBannerField("link", e.target.value)}
+                        placeholder="/shop/listing?category=..." className="rounded-xl border-gray-200 h-9 text-sm" />
+                    </div>
+                  </div>
+
+                  {/* Row 4: Colors + Image */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Color pickers */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Background Colors</label>
+                      <div className="flex items-center gap-2 p-2.5 border border-gray-200 rounded-xl bg-gray-50">
+                        <div className="flex items-center gap-1.5">
+                          <label className="text-[11px] text-muted-foreground font-medium">From</label>
+                          <input type="color" value={col1}
+                            onChange={(e) => applyColors(e.target.value, col2)}
+                            className="w-8 h-8 rounded-lg border border-gray-200 cursor-pointer p-0.5 bg-white" />
+                        </div>
+                        <div className="flex-1 h-5 rounded-lg" style={{ background: b.bgGradient }} />
+                        <div className="flex items-center gap-1.5">
+                          <label className="text-[11px] text-muted-foreground font-medium">To</label>
+                          <input type="color" value={col2}
+                            onChange={(e) => applyColors(col1, e.target.value)}
+                            className="w-8 h-8 rounded-lg border border-gray-200 cursor-pointer p-0.5 bg-white" />
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">Pick start & end colors — gradient auto-updates</p>
+                    </div>
+
+                    {/* Product Image */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Product Image Path</label>
+                      <Input value={b.productImage || ""} onChange={(e) => setBannerField("productImage", e.target.value)}
+                        placeholder="/products/immunity.jpg" className="rounded-xl border-gray-200 h-9 text-sm" />
+                      <p className="text-[10px] text-muted-foreground">Local path or full URL. Shows on right side of banner.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {(form.promoBanners || []).length > 0 && (
+            <p className="text-xs text-muted-foreground text-center">
+              💡 Only the first 3 banners are shown on the homepage. Click "Save All Changes" to apply.
+            </p>
+          )}
         </TabsContent>
 
         <TabsContent value="megamenu" className="space-y-4 mt-6">
