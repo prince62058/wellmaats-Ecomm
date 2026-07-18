@@ -21,6 +21,209 @@ module.exports = {
     { platform: "Linkedin", url: "https://linkedin.com" },
     { platform: "WhatsApp", url: "https://wa.me/919876543210" },
   ],
+  megaMenu: [
+    {
+      id: "immunity-drops", label: "Immunity & Wellness", icon: "Shield",
+      href: "/shop/listing?category=immunity-drops",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Immunity Booster Drops", href: "/shop/listing?category=immunity-drops" },
+          { name: "Multi-Herb Complex", href: "/shop/listing?category=immunity-drops" },
+          { name: "Tulsi Drops", href: "/shop/listing?category=immunity-drops" },
+        ]},
+        { heading: "Shop By Concern", items: [
+          { name: "Cold & Flu", href: "/shop/listing?category=immunity-drops" },
+          { name: "Seasonal Immunity", href: "/shop/listing?category=immunity-drops" },
+          { name: "Daily Wellness", href: "/shop/listing?category=immunity-drops" },
+        ]},
+        { heading: "For Whom", items: [
+          { name: "Adults", href: "/shop/listing?category=immunity-drops" },
+          { name: "Elderly", href: "/shop/listing?category=immunity-drops" },
+          { name: "Working Professionals", href: "/shop/listing?category=immunity-drops" },
+        ]},
+      ],
+    },
+    {
+      id: "digestive-care", label: "Digestive Health", icon: "Flame",
+      href: "/shop/listing?category=digestive-care",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Gut Health Drops", href: "/shop/listing?category=digestive-care" },
+          { name: "Digestive Enzyme Drops", href: "/shop/listing?category=digestive-care" },
+          { name: "Triphala Drops", href: "/shop/listing?category=digestive-care" },
+        ]},
+        { heading: "Concerns", items: [
+          { name: "Acidity & Gas", href: "/shop/listing?category=digestive-care" },
+          { name: "Constipation", href: "/shop/listing?category=digestive-care" },
+          { name: "Bloating", href: "/shop/listing?category=digestive-care" },
+          { name: "IBS Support", href: "/shop/listing?category=digestive-care" },
+        ]},
+      ],
+    },
+    {
+      id: "liver-care", label: "Liver & Detox", icon: "Droplets",
+      href: "/shop/listing?category=liver-care",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Liver Detox Drops", href: "/shop/listing?category=liver-care" },
+          { name: "Kutki Drops", href: "/shop/listing?category=liver-care" },
+          { name: "Detox Complex", href: "/shop/listing?category=liver-care" },
+        ]},
+        { heading: "Concerns", items: [
+          { name: "Fatty Liver", href: "/shop/listing?category=liver-care" },
+          { name: "Detoxification", href: "/shop/listing?category=liver-care" },
+          { name: "Jaundice Recovery", href: "/shop/listing?category=liver-care" },
+        ]},
+      ],
+    },
+    {
+      id: "lung-care", label: "Respiratory Care", icon: "Wind",
+      href: "/shop/listing?category=lung-care",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Lung Care Drops", href: "/shop/listing?category=lung-care" },
+          { name: "Vasaka Drops", href: "/shop/listing?category=lung-care" },
+          { name: "Breath Easy Complex", href: "/shop/listing?category=lung-care" },
+        ]},
+        { heading: "Concerns", items: [
+          { name: "Asthma Support", href: "/shop/listing?category=lung-care" },
+          { name: "Cough & Cold", href: "/shop/listing?category=lung-care" },
+          { name: "Pollution Defense", href: "/shop/listing?category=lung-care" },
+        ]},
+      ],
+    },
+    {
+      id: "heart-wellness", label: "Heart Health", icon: "Heart",
+      href: "/shop/listing?category=heart-wellness",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Heart Care Drops", href: "/shop/listing?category=heart-wellness" },
+          { name: "Arjuna Drops", href: "/shop/listing?category=heart-wellness" },
+          { name: "Cardio Support", href: "/shop/listing?category=heart-wellness" },
+        ]},
+        { heading: "Concerns", items: [
+          { name: "Blood Pressure", href: "/shop/listing?category=heart-wellness" },
+          { name: "Cholesterol", href: "/shop/listing?category=heart-wellness" },
+          { name: "Heart Strength", href: "/shop/listing?category=heart-wellness" },
+        ]},
+      ],
+    },
+    {
+      id: "stress-relief", label: "Stress & Sleep", icon: "Brain",
+      href: "/shop/listing?category=stress-relief",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Stress Relief Drops", href: "/shop/listing?category=stress-relief" },
+          { name: "Ashwagandha Drops", href: "/shop/listing?category=stress-relief" },
+          { name: "Sleep Well Drops", href: "/shop/listing?category=stress-relief" },
+        ]},
+        { heading: "Concerns", items: [
+          { name: "Anxiety", href: "/shop/listing?category=stress-relief" },
+          { name: "Insomnia", href: "/shop/listing?category=stress-relief" },
+          { name: "Mental Fatigue", href: "/shop/listing?category=stress-relief" },
+          { name: "Mood Balance", href: "/shop/listing?category=stress-relief" },
+        ]},
+      ],
+    },
+    {
+      id: "joint-pain-relief", label: "Joint & Bone Care", icon: "Bone",
+      href: "/shop/listing?category=joint-pain-relief",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Joint Relief Drops", href: "/shop/listing?category=joint-pain-relief" },
+          { name: "Shallaki Drops", href: "/shop/listing?category=joint-pain-relief" },
+          { name: "Bone Strength Complex", href: "/shop/listing?category=joint-pain-relief" },
+        ]},
+        { heading: "Concerns", items: [
+          { name: "Arthritis", href: "/shop/listing?category=joint-pain-relief" },
+          { name: "Knee Pain", href: "/shop/listing?category=joint-pain-relief" },
+          { name: "Inflammation", href: "/shop/listing?category=joint-pain-relief" },
+        ]},
+      ],
+    },
+    {
+      id: "womens-wellness", label: "Women's Wellness", icon: "Sparkles",
+      href: "/shop/listing?category=womens-wellness",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Women's Care Drops", href: "/shop/listing?category=womens-wellness" },
+          { name: "Shatavari Drops", href: "/shop/listing?category=womens-wellness" },
+          { name: "Hormonal Balance", href: "/shop/listing?category=womens-wellness" },
+        ]},
+        { heading: "Concerns", items: [
+          { name: "PCOS Support", href: "/shop/listing?category=womens-wellness" },
+          { name: "Menstrual Health", href: "/shop/listing?category=womens-wellness" },
+          { name: "Fertility Support", href: "/shop/listing?category=womens-wellness" },
+          { name: "Menopause", href: "/shop/listing?category=womens-wellness" },
+        ]},
+      ],
+    },
+    {
+      id: "mens-wellness", label: "Men's Wellness", icon: "Activity",
+      href: "/shop/listing?category=mens-wellness",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Men's Vitality Drops", href: "/shop/listing?category=mens-wellness" },
+          { name: "Shilajit Drops", href: "/shop/listing?category=mens-wellness" },
+          { name: "Stamina Booster", href: "/shop/listing?category=mens-wellness" },
+        ]},
+        { heading: "Concerns", items: [
+          { name: "Energy & Stamina", href: "/shop/listing?category=mens-wellness" },
+          { name: "Testosterone Support", href: "/shop/listing?category=mens-wellness" },
+          { name: "Performance", href: "/shop/listing?category=mens-wellness" },
+        ]},
+      ],
+    },
+    {
+      id: "diabetes-support", label: "Diabetes Support", icon: "Stethoscope",
+      href: "/shop/listing?category=diabetes-support",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Diabetes Support Drops", href: "/shop/listing?category=diabetes-support" },
+          { name: "Karela Drops", href: "/shop/listing?category=diabetes-support" },
+          { name: "Blood Sugar Balance", href: "/shop/listing?category=diabetes-support" },
+        ]},
+        { heading: "Concerns", items: [
+          { name: "Blood Sugar", href: "/shop/listing?category=diabetes-support" },
+          { name: "Insulin Sensitivity", href: "/shop/listing?category=diabetes-support" },
+          { name: "Weight with Diabetes", href: "/shop/listing?category=diabetes-support" },
+        ]},
+      ],
+    },
+    {
+      id: "skin-hair-care", label: "Skin & Hair Care", icon: "Sparkles",
+      href: "/shop/listing?category=skin-hair-care",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Hair Growth Drops", href: "/shop/listing?category=skin-hair-care" },
+          { name: "Skin Glow Drops", href: "/shop/listing?category=skin-hair-care" },
+          { name: "Bhringraj Drops", href: "/shop/listing?category=skin-hair-care" },
+        ]},
+        { heading: "Concerns", items: [
+          { name: "Hair Fall", href: "/shop/listing?category=skin-hair-care" },
+          { name: "Dandruff", href: "/shop/listing?category=skin-hair-care" },
+          { name: "Acne & Skin", href: "/shop/listing?category=skin-hair-care" },
+          { name: "Anti-Aging", href: "/shop/listing?category=skin-hair-care" },
+        ]},
+      ],
+    },
+    {
+      id: "kids-wellness", label: "Kids Wellness", icon: "Baby",
+      href: "/shop/listing?category=kids-wellness",
+      columns: [
+        { heading: "Products", items: [
+          { name: "Kids Wellness Drops", href: "/shop/listing?category=kids-wellness" },
+          { name: "Kids Immunity Drops", href: "/shop/listing?category=kids-wellness" },
+          { name: "Growth Support", href: "/shop/listing?category=kids-wellness" },
+        ]},
+        { heading: "Age Groups", items: [
+          { name: "2–5 Years", href: "/shop/listing?category=kids-wellness" },
+          { name: "6–12 Years", href: "/shop/listing?category=kids-wellness" },
+          { name: "Teens", href: "/shop/listing?category=kids-wellness" },
+        ]},
+      ],
+    },
+  ],
   productCategories: [
     { id: "immunity-drops", label: "Immunity Drops" },
     { id: "digestive-care", label: "Digestive Care" },

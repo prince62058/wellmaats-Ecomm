@@ -19,6 +19,7 @@ const SiteSettingsSchema = new mongoose.Schema(
     },
     social: [{ platform: String, url: String }],
     productCategories: [{ id: String, label: String }],
+    megaMenu: mongoose.Schema.Types.Mixed,
     brands: [{ id: String, label: String }],
     footerLinks: mongoose.Schema.Types.Mixed,
     trustBadges: [String],

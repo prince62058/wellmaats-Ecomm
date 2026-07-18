@@ -122,6 +122,7 @@ function AdminSettings() {
           <TabsTrigger value="brand">Brand</TabsTrigger>
           <TabsTrigger value="contact">Contact</TabsTrigger>
           <TabsTrigger value="categories">Categories</TabsTrigger>
+          <TabsTrigger value="megamenu">Mega Menu</TabsTrigger>
           <TabsTrigger value="homepage">Homepage</TabsTrigger>
           <TabsTrigger value="footer">Footer</TabsTrigger>
         </TabsList>
@@ -204,6 +205,80 @@ function AdminSettings() {
               </div>
             ))}
           </div>
+        </TabsContent>
+
+        <TabsContent value="megamenu" className="space-y-4 mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h3 className="font-semibold text-forest">Mega Menu Categories</h3>
+              <p className="text-xs text-muted-foreground">Each category shows on hover with column-based subcategories.</p>
+            </div>
+            <Button size="sm" variant="outline" onClick={() =>
+              setForm((prev) => ({
+                ...prev,
+                megaMenu: [...(prev.megaMenu || []), {
+                  id: "", label: "", icon: "Leaf", href: "",
+                  columns: [{ heading: "Products", items: [{ name: "", href: "" }] }],
+                }],
+              }))
+            }>
+              <Plus className="w-4 h-4 mr-1" /> Add Category
+            </Button>
+          </div>
+          {(form.megaMenu || []).map((cat, ci) => (
+            <div key={ci} className="border rounded-xl p-4 space-y-3 bg-gray-50">
+              <div className="flex gap-2 flex-wrap">
+                <Input className="w-36" placeholder="ID (e.g. liver-care)" value={cat.id}
+                  onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],id:e.target.value}; return {...p,megaMenu:m}; })} />
+                <Input className="flex-1 min-w-32" placeholder="Label" value={cat.label}
+                  onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],label:e.target.value}; return {...p,megaMenu:m}; })} />
+                <Input className="w-28" placeholder="Icon name" value={cat.icon||""}
+                  onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],icon:e.target.value}; return {...p,megaMenu:m}; })} />
+                <Input className="flex-1 min-w-40" placeholder="Link href" value={cat.href||""}
+                  onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],href:e.target.value}; return {...p,megaMenu:m}; })} />
+                <Button size="icon" variant="ghost" onClick={() =>
+                  setForm((p) => ({ ...p, megaMenu: p.megaMenu.filter((_,i)=>i!==ci) }))
+                }><Trash2 className="w-4 h-4 text-red-500" /></Button>
+              </div>
+              {/* Columns */}
+              <div className="space-y-2 pl-3 border-l-2 border-forest/15">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Columns</p>
+                  <Button size="sm" variant="ghost" onClick={() =>
+                    setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],columns:[...(m[ci].columns||[]),{heading:"",items:[{name:"",href:""}]}]}; return {...p,megaMenu:m}; })
+                  }><Plus className="w-3 h-3 mr-1" />Add Column</Button>
+                </div>
+                {(cat.columns||[]).map((col, coli) => (
+                  <div key={coli} className="border rounded-lg p-3 bg-white space-y-2">
+                    <div className="flex gap-2">
+                      <Input className="flex-1" placeholder="Column heading" value={col.heading}
+                        onChange={(e) => setForm((p) => {
+                          const m=JSON.parse(JSON.stringify(p.megaMenu));
+                          m[ci].columns[coli].heading=e.target.value; return {...p,megaMenu:m};
+                        })} />
+                      <Button size="icon" variant="ghost" onClick={() =>
+                        setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns.splice(coli,1); return {...p,megaMenu:m}; })
+                      }><Trash2 className="w-3 h-3 text-red-400" /></Button>
+                    </div>
+                    {(col.items||[]).map((item, ii) => (
+                      <div key={ii} className="flex gap-2 pl-2">
+                        <Input className="flex-1" placeholder="Name" value={item.name}
+                          onChange={(e) => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items[ii].name=e.target.value; return {...p,megaMenu:m}; })} />
+                        <Input className="flex-1" placeholder="/shop/listing?category=..." value={item.href}
+                          onChange={(e) => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items[ii].href=e.target.value; return {...p,megaMenu:m}; })} />
+                        <Button size="icon" variant="ghost" onClick={() =>
+                          setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items.splice(ii,1); return {...p,megaMenu:m}; })
+                        }><Trash2 className="w-3 h-3 text-red-300" /></Button>
+                      </div>
+                    ))}
+                    <Button size="sm" variant="ghost" className="text-xs" onClick={() =>
+                      setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items.push({name:"",href:""}); return {...p,megaMenu:m}; })
+                    }><Plus className="w-3 h-3 mr-1" />Add Item</Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </TabsContent>
 
         <TabsContent value="homepage" className="space-y-8 mt-6">

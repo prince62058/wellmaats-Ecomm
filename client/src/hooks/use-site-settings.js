@@ -35,6 +35,7 @@ export function useSiteSettings() {
   return {
     isLoading,
     settings: data,
+    megaMenu: data?.megaMenu || [],
     brand: data?.brand || BRAND,
     contact: data?.contact || BRAND.contact,
     social: data?.social || [],

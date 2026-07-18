@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
+import MegaMenu from "./mega-menu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent } from "../ui/sheet";
 import { Button } from "../ui/button";
@@ -348,6 +349,7 @@ function ShoppingHeader() {
         </div>
 
         <div className="hidden lg:flex items-center gap-6">
+          <MegaMenu light={light} onNavigate={() => {}} />
           <MenuItems light={light} />
         </div>
 

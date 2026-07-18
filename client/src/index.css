@@ -6,6 +6,7 @@
 
 @layer base {
   :root {
+    --header-h: 56px;
     --background: 120 100% 98%;
     --foreground: 158 55% 12%;
     --card: 0 0% 100%;
