@@ -242,145 +242,217 @@ function AdminSettings() {
         </TabsList>
 
         {/* ══ HEADER TAB ══ */}
-        <TabsContent value="header" className="space-y-6 mt-6">
+        <TabsContent value="header" className="space-y-5 mt-6">
+
           {/* Announcement Bar */}
-          <div className="border rounded-xl p-5 space-y-4 bg-gray-50">
-            <div className="flex items-center justify-between">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-amber-50 border-b border-amber-100">
               <div>
-                <h3 className="font-semibold text-forest">📢 Announcement Bar</h3>
-                <p className="text-xs text-muted-foreground">Top banner — shows cycling messages to all visitors.</p>
+                <h3 className="font-bold text-forest text-sm">📢 Announcement Bar</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Top banner that cycles messages for all visitors.</p>
               </div>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox"
-                  checked={form.announcementBar?.enabled !== false}
-                  onChange={(e) => setForm((p) => ({ ...p, announcementBar: { ...(p.announcementBar||{}), enabled: e.target.checked } }))}
-                  className="w-4 h-4 accent-forest"
-                />
-                <span className="text-sm font-medium">Enabled</span>
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <div className={`w-10 h-5 rounded-full transition-colors relative ${form.announcementBar?.enabled !== false ? "bg-forest" : "bg-gray-200"}`}
+                  onClick={() => setForm((p) => ({ ...p, announcementBar: { ...(p.announcementBar||{}), enabled: !(p.announcementBar?.enabled !== false) } }))}>
+                  <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${form.announcementBar?.enabled !== false ? "left-5" : "left-0.5"}`} />
+                </div>
+                <span className="text-xs font-semibold">{form.announcementBar?.enabled !== false ? "Enabled" : "Disabled"}</span>
               </label>
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <Label className="text-xs uppercase tracking-wider text-muted-foreground">Messages</Label>
-                <Button size="sm" variant="outline" onClick={() =>
-                  setForm((p) => ({ ...p, announcementBar: { ...(p.announcementBar||{}), messages: [...(p.announcementBar?.messages||[]), ""] } }))
-                }><Plus className="w-3 h-3 mr-1" />Add</Button>
+            <div className="p-5 space-y-2">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Messages (cycling)</p>
+                <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1"
+                  onClick={() => setForm((p) => ({ ...p, announcementBar: { ...(p.announcementBar||{}), messages: [...(p.announcementBar?.messages||[]), ""] } }))}>
+                  <Plus className="w-3.5 h-3.5" /> Add Message
+                </button>
               </div>
+              {(form.announcementBar?.messages || []).length === 0 && (
+                <p className="text-xs text-muted-foreground italic py-2">No messages yet — add one above</p>
+              )}
               {(form.announcementBar?.messages || []).map((msg, i) => (
-                <div key={i} className="flex gap-2 mb-2">
-                  <Input placeholder="🚚 Free Shipping above ₹499" value={msg}
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-5 shrink-0 font-bold">{i+1}.</span>
+                  <Input value={msg} placeholder="🚚 Free Shipping above ₹499 | 🌿 100% Ayurvedic"
+                    className="flex-1 h-9 rounded-xl border-gray-200 text-sm"
                     onChange={(e) => setForm((p) => { const m=[...(p.announcementBar?.messages||[])]; m[i]=e.target.value; return {...p, announcementBar:{...(p.announcementBar||{}), messages:m}}; })} />
-                  <Button size="icon" variant="ghost" onClick={() =>
-                    setForm((p) => { const m=(p.announcementBar?.messages||[]).filter((_,j)=>j!==i); return {...p, announcementBar:{...(p.announcementBar||{}), messages:m}}; })
-                  }><Trash2 className="w-4 h-4 text-red-400" /></Button>
+                  <button type="button" onClick={() => setForm((p) => { const m=(p.announcementBar?.messages||[]).filter((_,j)=>j!==i); return {...p, announcementBar:{...(p.announcementBar||{}), messages:m}}; })}
+                    className="w-8 h-8 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center shrink-0">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Marquee Trust Strip */}
-          <div className="border rounded-xl p-5 space-y-3 bg-gray-50">
-            <div className="flex items-center justify-between">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-[#1a4731]/5 border-b border-[#1a4731]/10">
               <div>
-                <h3 className="font-semibold text-forest">📌 Marquee Trust Strip</h3>
-                <p className="text-xs text-muted-foreground">Dark-green scrolling band below the hero (e.g. "🌿 100% Ayurvedic").</p>
+                <h3 className="font-bold text-forest text-sm">📌 Marquee Trust Strip</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Dark-green scrolling band below the hero — short trust phrases.</p>
               </div>
-              <Button size="sm" variant="outline" onClick={() =>
-                setForm((p) => ({ ...p, marqueeMessages: [...(p.marqueeMessages||[]), ""] }))
-              }><Plus className="w-3 h-3 mr-1" />Add</Button>
+              <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1"
+                onClick={() => setForm((p) => ({ ...p, marqueeMessages: [...(p.marqueeMessages||[]), ""] }))}>
+                <Plus className="w-3.5 h-3.5" /> Add Item
+              </button>
             </div>
-            {(form.marqueeMessages || []).map((msg, i) => (
-              <div key={i} className="flex gap-2">
-                <Input placeholder="🌿 100% Ayurvedic" value={msg}
-                  onChange={(e) => setForm((p) => { const m=[...(p.marqueeMessages||[])]; m[i]=e.target.value; return {...p, marqueeMessages:m}; })} />
-                <Button size="icon" variant="ghost" onClick={() =>
-                  setForm((p) => ({ ...p, marqueeMessages: (p.marqueeMessages||[]).filter((_,j)=>j!==i) }))
-                }><Trash2 className="w-4 h-4 text-red-400" /></Button>
-              </div>
-            ))}
+            <div className="p-5 space-y-2">
+              {(form.marqueeMessages || []).length === 0 && (
+                <p className="text-xs text-muted-foreground italic py-2">No items yet — add one above</p>
+              )}
+              {(form.marqueeMessages || []).map((msg, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-5 shrink-0 font-bold">{i+1}.</span>
+                  <Input value={msg} placeholder="🌿 100% Ayurvedic"
+                    className="flex-1 h-9 rounded-xl border-gray-200 text-sm"
+                    onChange={(e) => setForm((p) => { const m=[...(p.marqueeMessages||[])]; m[i]=e.target.value; return {...p, marqueeMessages:m}; })} />
+                  <button type="button" onClick={() => setForm((p) => ({ ...p, marqueeMessages: (p.marqueeMessages||[]).filter((_,j)=>j!==i) }))}
+                    className="w-8 h-8 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center shrink-0">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Header Nav Links */}
-          <div className="border rounded-xl p-5 space-y-3 bg-gray-50">
-            <div className="flex items-center justify-between">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-blue-50 border-b border-blue-100">
               <div>
-                <h3 className="font-semibold text-forest">🔗 Header Nav Links</h3>
-                <p className="text-xs text-muted-foreground">Links shown in the 2nd nav row on desktop (Best Sellers, Offer Zone, Blogs…).</p>
+                <h3 className="font-bold text-forest text-sm">🔗 Header Nav Links</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Quick links shown in the top nav bar (Best Sellers, Offer Zone…).</p>
               </div>
-              <Button size="sm" variant="outline" onClick={() =>
-                setForm((p) => ({ ...p, headerNavLinks: [...(p.headerNavLinks||[]), { label:"", href:"", icon:"" }] }))
-              }><Plus className="w-3 h-3 mr-1" />Add Link</Button>
+              <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1"
+                onClick={() => setForm((p) => ({ ...p, headerNavLinks: [...(p.headerNavLinks||[]), { label:"", href:"", icon:"" }] }))}>
+                <Plus className="w-3.5 h-3.5" /> Add Link
+              </button>
             </div>
-            {(form.headerNavLinks || []).map((link, i) => (
-              <div key={i} className="flex gap-2 flex-wrap">
-                <Input className="w-10" placeholder="🔥" value={link.icon||""}
-                  onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],icon:e.target.value}; return {...p,headerNavLinks:a}; })} />
-                <Input className="w-36" placeholder="Label" value={link.label}
-                  onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],label:e.target.value}; return {...p,headerNavLinks:a}; })} />
-                <Input className="flex-1" placeholder="/shop/best-sellers" value={link.href}
-                  onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],href:e.target.value}; return {...p,headerNavLinks:a}; })} />
-                <Button size="icon" variant="ghost" onClick={() =>
-                  setForm((p) => ({ ...p, headerNavLinks: p.headerNavLinks.filter((_,j)=>j!==i) }))
-                }><Trash2 className="w-4 h-4 text-red-400" /></Button>
-              </div>
-            ))}
+            <div className="p-5 space-y-3">
+              {(form.headerNavLinks || []).length === 0 && (
+                <p className="text-xs text-muted-foreground italic py-2">No nav links — add one above</p>
+              )}
+              {(form.headerNavLinks || []).map((link, i) => (
+                <div key={i} className="grid grid-cols-[40px_1fr_2fr_36px] gap-2 items-end">
+                  <div className="space-y-0.5">
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Icon</label>
+                    <Input value={link.icon||""} placeholder="🔥" className="h-9 rounded-xl border-gray-200 text-center text-base"
+                      onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],icon:e.target.value}; return {...p,headerNavLinks:a}; })} />
+                  </div>
+                  <div className="space-y-0.5">
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Label *</label>
+                    <Input value={link.label} placeholder="Best Sellers" className="h-9 rounded-xl border-gray-200 text-sm"
+                      onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],label:e.target.value}; return {...p,headerNavLinks:a}; })} />
+                  </div>
+                  <div className="space-y-0.5">
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">URL / Link</label>
+                    <Input value={link.href} placeholder="/shop/best-sellers" className="h-9 rounded-xl border-gray-200 text-sm"
+                      onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],href:e.target.value}; return {...p,headerNavLinks:a}; })} />
+                  </div>
+                  <button type="button" onClick={() => setForm((p) => ({ ...p, headerNavLinks: p.headerNavLinks.filter((_,j)=>j!==i) }))}
+                    className="w-9 h-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center self-end">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </TabsContent>
 
         {/* ══ HERO SLIDES TAB ══ */}
         <TabsContent value="heroslides" className="space-y-4 mt-6">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-forest">🖼️ Hero Carousel Slides</h3>
-              <p className="text-xs text-muted-foreground">Full-width image carousel shown at the top of the home page. Add up to 6 slides.</p>
+              <h3 className="font-bold text-forest text-base">🖼️ Hero Carousel Slides</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Full-width image carousel at the top of home page. Up to 6 slides.</p>
             </div>
-            <Button size="sm" variant="outline" onClick={() =>
+            <Button size="sm" className="bg-forest hover:bg-forest/90 gap-1.5 rounded-xl" onClick={() =>
               setForm((p) => ({ ...p, heroSlides: [...(p.heroSlides||[]), { image:"", video:"", badge:"", title:"", subtitle:"", cta:"Shop Now", link:"/shop/listing", accent:"#C8A54A" }] }))
-            }><Plus className="w-4 h-4 mr-1" />Add Slide</Button>
+            }><Plus className="w-4 h-4" /> Add Slide</Button>
           </div>
-          {(form.heroSlides || []).map((s, i) => {
-            function upd(field, val) {
-              setForm((p) => { const a = JSON.parse(JSON.stringify(p.heroSlides)); a[i][field] = val; return { ...p, heroSlides: a }; });
-            }
-            return (
-            <div key={i} className="border rounded-xl p-4 space-y-3 bg-gray-50">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-semibold text-forest">Slide {i + 1}</span>
-                <Button size="icon" variant="ghost" onClick={() =>
-                  setForm((p) => ({ ...p, heroSlides: p.heroSlides.filter((_,j)=>j!==i) }))
-                }><Trash2 className="w-4 h-4 text-red-500" /></Button>
-              </div>
 
-              {/* ── Media: image + video upload ── */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <SlideMediaUpload label="Background Image" icon={Image} accept="image/*" field="image"
-                  value={s.image} onChange={(v) => upd("image", v)} />
-                <SlideMediaUpload label="Background Video (overrides image)" icon={Film} accept="video/*" field="video"
-                  value={s.video} onChange={(v) => upd("video", v)} />
-              </div>
-
-              {/* ── Text ── */}
-              <div className="grid grid-cols-2 gap-2">
-                <Input placeholder="Badge (e.g. 🏆 Best Seller)" value={s.badge||""} onChange={(e) => upd("badge", e.target.value)} />
-                <Input placeholder="CTA button text (e.g. Shop Now)"  value={s.cta||""}   onChange={(e) => upd("cta",   e.target.value)} />
-              </div>
-              <Input placeholder="Title (e.g. Immunity & Wellness Drops)" value={s.title||""}    onChange={(e) => upd("title",    e.target.value)} />
-              <Input placeholder="Subtitle — short tagline"               value={s.subtitle||""} onChange={(e) => upd("subtitle", e.target.value)} />
-              <div className="grid grid-cols-2 gap-2">
-                <Input placeholder="Link (/shop/listing?category=...)" value={s.link||""} onChange={(e) => upd("link", e.target.value)} />
-                <div className="flex items-center gap-2">
-                  <input type="color" value={s.accent||"#C8A54A"} onChange={(e) => upd("accent", e.target.value)}
-                    className="h-9 w-12 rounded border border-gray-200 cursor-pointer p-0.5 shrink-0" title="Badge & button accent color" />
-                  <span className="text-xs text-gray-500">Accent color (badge + CTA)</span>
-                </div>
-              </div>
-            </div>
-          );})}
           {(!form.heroSlides || form.heroSlides.length === 0) && (
-            <div className="text-center py-10 text-muted-foreground border-2 border-dashed border-forest/10 rounded-xl">
-              No slides yet. Click "Add Slide" to create your first hero slide.
+            <div className="border-2 border-dashed border-forest/15 rounded-2xl py-16 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-leaf flex items-center justify-center mx-auto mb-4">
+                <Image className="w-8 h-8 text-forest/50" />
+              </div>
+              <p className="font-bold text-forest text-sm">No slides yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Click "Add Slide" to create your first hero carousel slide</p>
             </div>
           )}
+
+          <div className="space-y-4">
+            {(form.heroSlides || []).map((s, i) => {
+              function upd(field, val) {
+                setForm((p) => { const a = JSON.parse(JSON.stringify(p.heroSlides)); a[i][field] = val; return { ...p, heroSlides: a }; });
+              }
+              return (
+                <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  {/* Slide header */}
+                  <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-forest text-white text-xs font-bold flex items-center justify-center">{i+1}</div>
+                      <span className="font-bold text-forest text-sm">Slide {i+1}</span>
+                      {s.title && <span className="text-xs text-muted-foreground">— {s.title.slice(0,30)}{s.title.length>30?"…":""}</span>}
+                    </div>
+                    <button type="button" onClick={() => setForm((p) => ({ ...p, heroSlides: p.heroSlides.filter((_,j)=>j!==i) }))}
+                      className="w-8 h-8 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="p-5 space-y-4">
+                    {/* Media */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <SlideMediaUpload label="Background Image" icon={Image} accept="image/*" field="image"
+                        value={s.image} onChange={(v) => upd("image", v)} />
+                      <SlideMediaUpload label="Background Video (overrides image)" icon={Film} accept="video/*" field="video"
+                        value={s.video} onChange={(v) => upd("video", v)} />
+                    </div>
+
+                    {/* Text fields — labeled */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Badge Text</label>
+                        <Input value={s.badge||""} placeholder="🏆 Best Seller" className="h-9 rounded-xl border-gray-200 text-sm"
+                          onChange={(e) => upd("badge", e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">CTA Button Text</label>
+                        <Input value={s.cta||""} placeholder="Shop Now" className="h-9 rounded-xl border-gray-200 text-sm"
+                          onChange={(e) => upd("cta", e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Headline / Title *</label>
+                      <Input value={s.title||""} placeholder="e.g. Immunity & Wellness Drops" className="h-9 rounded-xl border-gray-200 text-sm"
+                        onChange={(e) => upd("title", e.target.value)} />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Subtitle / Tagline</label>
+                      <Input value={s.subtitle||""} placeholder="Short supporting line" className="h-9 rounded-xl border-gray-200 text-sm"
+                        onChange={(e) => upd("subtitle", e.target.value)} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Button Link (URL)</label>
+                        <Input value={s.link||""} placeholder="/shop/listing?category=..." className="h-9 rounded-xl border-gray-200 text-sm"
+                          onChange={(e) => upd("link", e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Accent Color (badge & CTA)</label>
+                        <div className="flex items-center gap-2 h-9 px-3 border border-gray-200 rounded-xl bg-gray-50">
+                          <input type="color" value={s.accent||"#C8A54A"} onChange={(e) => upd("accent", e.target.value)}
+                            className="w-7 h-7 rounded-lg border border-gray-200 cursor-pointer p-0.5 shrink-0" />
+                          <span className="text-xs text-muted-foreground font-mono">{s.accent||"#C8A54A"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </TabsContent>
 
         {/* ══ HERBS TAB ══ */}
@@ -472,53 +544,114 @@ function AdminSettings() {
 
         {/* ── Quick Filters + Categories + Brands ── */}
         <TabsContent value="categories" className="space-y-6 mt-6">
-          <div>
-            <div className="flex items-center justify-between mb-3">
+
+          {/* Quick Filter Tabs */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-emerald-50 border-b border-emerald-100">
               <div>
-                <Label>Quick Filter Tabs</Label>
-                <p className="text-xs text-muted-foreground mt-0.5">Shown as filter tabs in "Today's Wellness Deals" section on home page.</p>
+                <p className="font-bold text-forest text-sm">Quick Filter Tabs</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Filter buttons shown in "Today's Wellness Deals" section on home page.</p>
               </div>
-              <Button size="sm" variant="outline" onClick={() => addListItem("quickFilters", { label: "", category: "" })}>
-                <Plus className="w-4 h-4 mr-1" /> Add Filter
-              </Button>
+              <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1"
+                onClick={() => addListItem("quickFilters", { label: "", category: "" })}>
+                <Plus className="w-3.5 h-3.5" /> Add Filter
+              </button>
             </div>
-            {(form.quickFilters || []).map((f, i) => (
-              <div key={i} className="flex gap-2 mb-2">
-                <Input placeholder="Label (e.g. Immunity)" value={f.label} onChange={(e) => updateList("quickFilters", i, "label", e.target.value)} />
-                <Input placeholder="category id (e.g. immunity-drops)" value={f.category} onChange={(e) => updateList("quickFilters", i, "category", e.target.value)} />
-                <Button size="icon" variant="ghost" onClick={() => removeListItem("quickFilters", i)}><Trash2 className="w-4 h-4" /></Button>
-              </div>
-            ))}
+            <div className="p-5 space-y-2">
+              {!(form.quickFilters||[]).length && <p className="text-xs text-muted-foreground italic py-1">No filters yet</p>}
+              {/* Column headers */}
+              {(form.quickFilters||[]).length > 0 && (
+                <div className="grid grid-cols-[1fr_1fr_36px] gap-2 mb-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Tab Label</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Category ID / Slug</span>
+                  <span />
+                </div>
+              )}
+              {(form.quickFilters || []).map((f, i) => (
+                <div key={i} className="grid grid-cols-[1fr_1fr_36px] gap-2 items-center">
+                  <Input value={f.label} placeholder="e.g. Immunity" className="h-9 rounded-xl border-gray-200 text-sm"
+                    onChange={(e) => updateList("quickFilters", i, "label", e.target.value)} />
+                  <Input value={f.category} placeholder="e.g. immunity-drops" className="h-9 rounded-xl border-gray-200 text-sm font-mono text-xs"
+                    onChange={(e) => updateList("quickFilters", i, "category", e.target.value)} />
+                  <button type="button" onClick={() => removeListItem("quickFilters", i)}
+                    className="w-9 h-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <Label>Product Categories</Label>
-              <Button size="sm" variant="outline" onClick={() => addListItem("productCategories", { id: "", label: "" })}>
-                <Plus className="w-4 h-4 mr-1" /> Add Category
-              </Button>
-            </div>
-            {(form.productCategories || []).map((cat, i) => (
-              <div key={i} className="flex gap-2 mb-2">
-                <Input placeholder="id (e.g. liver-care)" value={cat.id} onChange={(e) => updateList("productCategories", i, "id", e.target.value)} />
-                <Input placeholder="Label" value={cat.label} onChange={(e) => updateList("productCategories", i, "label", e.target.value)} />
-                <Button size="icon" variant="ghost" onClick={() => removeListItem("productCategories", i)}><Trash2 className="w-4 h-4" /></Button>
+
+          {/* Product Categories */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-blue-50 border-b border-blue-100">
+              <div>
+                <p className="font-bold text-forest text-sm">Product Categories</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Available categories for product listing and filtering.</p>
               </div>
-            ))}
+              <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1"
+                onClick={() => addListItem("productCategories", { id: "", label: "" })}>
+                <Plus className="w-3.5 h-3.5" /> Add Category
+              </button>
+            </div>
+            <div className="p-5 space-y-2">
+              {!(form.productCategories||[]).length && <p className="text-xs text-muted-foreground italic py-1">No categories yet</p>}
+              {(form.productCategories||[]).length > 0 && (
+                <div className="grid grid-cols-[1fr_1fr_36px] gap-2 mb-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">ID / Slug (used internally)</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Display Label</span>
+                  <span />
+                </div>
+              )}
+              {(form.productCategories || []).map((cat, i) => (
+                <div key={i} className="grid grid-cols-[1fr_1fr_36px] gap-2 items-center">
+                  <Input value={cat.id} placeholder="e.g. liver-care" className="h-9 rounded-xl border-gray-200 text-sm font-mono text-xs"
+                    onChange={(e) => updateList("productCategories", i, "id", e.target.value)} />
+                  <Input value={cat.label} placeholder="e.g. Liver Care" className="h-9 rounded-xl border-gray-200 text-sm"
+                    onChange={(e) => updateList("productCategories", i, "label", e.target.value)} />
+                  <button type="button" onClick={() => removeListItem("productCategories", i)}
+                    className="w-9 h-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <Label>Brands</Label>
-              <Button size="sm" variant="outline" onClick={() => addListItem("brands", { id: "", label: "" })}>
-                <Plus className="w-4 h-4 mr-1" /> Add Brand
-              </Button>
-            </div>
-            {(form.brands || []).map((b, i) => (
-              <div key={i} className="flex gap-2 mb-2">
-                <Input placeholder="id" value={b.id} onChange={(e) => updateList("brands", i, "id", e.target.value)} />
-                <Input placeholder="Label" value={b.label} onChange={(e) => updateList("brands", i, "label", e.target.value)} />
-                <Button size="icon" variant="ghost" onClick={() => removeListItem("brands", i)}><Trash2 className="w-4 h-4" /></Button>
+
+          {/* Brands */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-amber-50 border-b border-amber-100">
+              <div>
+                <p className="font-bold text-forest text-sm">Brands</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Available brands for product assignment.</p>
               </div>
-            ))}
+              <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1"
+                onClick={() => addListItem("brands", { id: "", label: "" })}>
+                <Plus className="w-3.5 h-3.5" /> Add Brand
+              </button>
+            </div>
+            <div className="p-5 space-y-2">
+              {!(form.brands||[]).length && <p className="text-xs text-muted-foreground italic py-1">No brands yet</p>}
+              {(form.brands||[]).length > 0 && (
+                <div className="grid grid-cols-[1fr_1fr_36px] gap-2 mb-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">ID / Slug</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Display Name</span>
+                  <span />
+                </div>
+              )}
+              {(form.brands || []).map((b, i) => (
+                <div key={i} className="grid grid-cols-[1fr_1fr_36px] gap-2 items-center">
+                  <Input value={b.id} placeholder="e.g. mother-tatwa" className="h-9 rounded-xl border-gray-200 text-sm font-mono text-xs"
+                    onChange={(e) => updateList("brands", i, "id", e.target.value)} />
+                  <Input value={b.label} placeholder="e.g. Mother Tatwa" className="h-9 rounded-xl border-gray-200 text-sm"
+                    onChange={(e) => updateList("brands", i, "label", e.target.value)} />
+                  <button type="button" onClick={() => removeListItem("brands", i)}
+                    className="w-9 h-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </TabsContent>
 
