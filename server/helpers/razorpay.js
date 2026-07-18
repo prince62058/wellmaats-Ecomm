@@ -1,0 +1,16 @@
+const Razorpay = require("razorpay");
+
+let razorpayInstance = null;
+
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+  razorpayInstance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
+} else {
+  console.warn(
+    "[razorpay] RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET missing. Payments disabled until set in .env"
+  );
+}
+
+module.exports = razorpayInstance;
