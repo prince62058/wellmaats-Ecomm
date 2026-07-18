@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Heart,
   LogIn,
+  UserPlus,
 } from "lucide-react";
 import { useLoginModal } from "@/context/LoginModalContext";
 import MegaMenu from "./mega-menu";
@@ -254,6 +255,7 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
   const { cartItems } = useSelector((state) => state.shopCart);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { openLoginModal } = useLoginModal();
   const cartCount = cartItems?.items?.reduce((n, i) => n + (i.quantity || 0), 0) || 0;
 
   function closeAnd(fn) {
@@ -291,11 +293,7 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
           <p className="px-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             {user?.userName ? `Hi, ${user.userName}` : "Account"}
           </p>
-          <button
-            type="button"
-            className={actionClass}
-            onClick={() => closeAnd(onOpenCart)}
-          >
+          <button type="button" className={actionClass} onClick={() => closeAnd(onOpenCart)}>
             <ShoppingCart className="w-5 h-5 text-forest shrink-0" />
             <span className="flex-1 text-left">My Cart</span>
             {cartCount > 0 && (
@@ -304,22 +302,33 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
               </span>
             )}
           </button>
-          <button
-            type="button"
-            className={actionClass}
-            onClick={() => closeAnd(() => navigate("/shop/account"))}
-          >
-            <UserCog className="w-5 h-5 text-forest shrink-0" />
-            My Account
-          </button>
-          <button
-            type="button"
-            className={`${actionClass} text-red-600 hover:bg-red-50`}
-            onClick={() => closeAnd(() => dispatch(logoutUser()))}
-          >
-            <LogOut className="w-5 h-5 shrink-0" />
-            Logout
-          </button>
+
+          {user ? (
+            <>
+              <button type="button" className={actionClass} onClick={() => closeAnd(() => navigate("/shop/account"))}>
+                <UserCog className="w-5 h-5 text-forest shrink-0" />
+                My Account
+              </button>
+              <button type="button" className={`${actionClass} text-red-600 hover:bg-red-50`}
+                onClick={() => closeAnd(() => dispatch(logoutUser()))}>
+                <LogOut className="w-5 h-5 shrink-0" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button type="button" className={actionClass}
+                onClick={() => { onOpenChange(false); openLoginModal(); }}>
+                <LogIn className="w-5 h-5 text-forest shrink-0" />
+                Login
+              </button>
+              <button type="button" className={actionClass}
+                onClick={() => closeAnd(() => navigate("/auth/register"))}>
+                <UserPlus className="w-5 h-5 text-forest shrink-0" />
+                Sign Up
+              </button>
+            </>
+          )}
         </div>
       </SheetContent>
     </Sheet>
