@@ -3,91 +3,125 @@ import { loginUser } from "@/store/auth-slice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Lock, Phone, ArrowRight, UserPlus } from "lucide-react";
+import { Eye, EyeOff, Lock, Phone, Mail, ArrowRight, UserPlus } from "lucide-react";
 
 function AuthLogin() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [mode, setMode] = useState("email"); // "email" | "phone"
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
-  const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [notFound, setNotFound] = useState(null); // holds identifier if account not found
+  const [notFound, setNotFound] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const isPhone = /^[0-9+]/.test(formData.email?.trim() || "");
-
-  function handleChange(e) {
-    setNotFound(null); // reset "not found" state on input change
-    setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
+  function switchMode(m) {
+    setMode(m);
+    setNotFound(false);
+    setPassword("");
   }
 
   async function onSubmit(e) {
     e.preventDefault();
-    setNotFound(null);
+    setNotFound(false);
+    const identifier = mode === "phone" ? phone.trim() : email.trim();
+    if (!identifier) return;
     setLoading(true);
-    const result = await dispatch(loginUser(formData));
+    const result = await dispatch(loginUser({ email: identifier, password }));
     setLoading(false);
 
     if (result?.payload?.success) {
       toast({ title: "Logged in successfully! 🎉" });
     } else {
       const msg = result?.payload?.message || "Login failed";
-      // Detect "not found" so we can show create-account CTA
       if (msg.toLowerCase().includes("no account") || msg.toLowerCase().includes("doesn't exist")) {
-        setNotFound(formData.email.trim());
+        setNotFound(true);
       } else {
         toast({ title: msg, variant: "destructive" });
       }
     }
   }
 
-  const inputClass =
-    "w-full pl-11 pr-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-forest/30 focus:border-forest transition placeholder-gray-400";
+  const inputBase =
+    "w-full pl-11 pr-4 py-3.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-forest/25 focus:border-forest transition placeholder-gray-400 bg-white";
+
+  const identifier = mode === "phone" ? phone : email;
 
   return (
     <div className="w-full">
       <div className="text-center mb-6">
         <h2 className="font-display text-2xl sm:text-3xl font-bold text-gray-900">Welcome Back!</h2>
-        <p className="text-gray-500 text-sm mt-1">Login with your email or phone number</p>
+        <p className="text-gray-500 text-sm mt-1">Login to continue to your account</p>
+      </div>
+
+      {/* ── Mode toggle ── */}
+      <div className="flex bg-gray-100 rounded-2xl p-1 mb-5 gap-1">
+        <button
+          type="button"
+          onClick={() => switchMode("email")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+            mode === "email"
+              ? "bg-white text-forest shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <Mail className="w-4 h-4" /> Email
+        </button>
+        <button
+          type="button"
+          onClick={() => switchMode("phone")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+            mode === "phone"
+              ? "bg-white text-forest shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <Phone className="w-4 h-4" /> Phone Number
+        </button>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-3.5">
-
-        {/* Email / Phone input */}
-        <div className="space-y-1">
+        {/* Identifier field */}
+        {mode === "email" ? (
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-              <Phone className="w-4 h-4" />
-            </span>
+            <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
-              type="text"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Email address or Phone number"
+              type="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setNotFound(false); }}
+              placeholder="Enter your email address"
               required
-              autoComplete="username"
-              className={`${inputClass} ${notFound ? "border-red-300 bg-red-50/30" : ""}`}
+              autoComplete="email"
+              className={`${inputBase} ${notFound ? "border-red-300 bg-red-50/30" : "border-gray-200"}`}
             />
           </div>
-          {formData.email && !notFound && (
-            <p className="text-[11px] text-gray-400 pl-1">
-              {isPhone ? "📱 Logging in with phone number" : "📧 Logging in with email"}
-            </p>
-          )}
-        </div>
+        ) : (
+          <div className="relative">
+            <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => { setPhone(e.target.value); setNotFound(false); }}
+              placeholder="Enter your phone number"
+              required
+              autoComplete="tel"
+              className={`${inputBase} ${notFound ? "border-red-300 bg-red-50/30" : "border-gray-200"}`}
+            />
+          </div>
+        )}
 
-        {/* ── Account Not Found Banner ── */}
+        {/* Not-found inline banner */}
         {notFound && (
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 space-y-3">
             <div className="flex items-start gap-3">
-              <span className="text-2xl mt-0.5">🔍</span>
+              <span className="text-xl mt-0.5">🔍</span>
               <div>
                 <p className="font-semibold text-amber-800 text-sm">No account found</p>
                 <p className="text-amber-700 text-xs mt-0.5">
                   We couldn't find an account with{" "}
-                  <span className="font-semibold">"{notFound}"</span>
+                  <span className="font-semibold break-all">"{identifier}"</span>
                 </p>
               </div>
             </div>
@@ -95,42 +129,40 @@ function AuthLogin() {
               <button
                 type="button"
                 onClick={() => {
-                  const param = isPhone ? `phone=${encodeURIComponent(notFound)}` : `email=${encodeURIComponent(notFound)}`;
+                  const param =
+                    mode === "phone"
+                      ? `phone=${encodeURIComponent(identifier)}`
+                      : `email=${encodeURIComponent(identifier)}`;
                   navigate(`/auth/register?${param}`);
                 }}
                 className="flex-1 flex items-center justify-center gap-2 bg-forest text-white text-sm font-semibold py-2.5 px-4 rounded-xl hover:bg-forest/90 transition shadow-sm"
               >
-                <UserPlus className="w-4 h-4" />
-                Create Account
-                <ArrowRight className="w-3.5 h-3.5" />
+                <UserPlus className="w-4 h-4" /> Create Account <ArrowRight className="w-3.5 h-3.5" />
               </button>
               <button
                 type="button"
-                onClick={() => setNotFound(null)}
+                onClick={() => setNotFound(false)}
                 className="flex-1 text-sm text-gray-500 py-2.5 px-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition"
               >
-                Try different login
+                Try again
               </button>
             </div>
           </div>
         )}
 
-        {/* Password */}
+        {/* Password + submit — hidden when "not found" */}
         {!notFound && (
           <>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                <Lock className="w-4 h-4" />
-              </span>
+              <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type={showPass ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 required
                 autoComplete="current-password"
-                className={inputClass}
+                className={`${inputBase} border-gray-200 pr-12`}
               />
               <button
                 type="button"
@@ -142,18 +174,8 @@ function AuthLogin() {
               </button>
             </div>
 
-            {/* Remember + Forgot */}
-            <div className="flex items-center justify-between text-sm pt-1">
-              <label className="flex items-center gap-2 cursor-pointer select-none text-gray-600">
-                <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
-                  className="w-4 h-4 rounded accent-forest"
-                />
-                Remember Me
-              </label>
-              <Link to="/auth/forgot" className="text-[#C8A54A] font-medium hover:underline">
+            <div className="flex items-center justify-end text-sm pt-0.5">
+              <Link to="/auth/forgot" className="text-[#C8A54A] font-medium hover:underline text-xs">
                 Forgot Password?
               </Link>
             </div>
@@ -161,9 +183,9 @@ function AuthLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-forest hover:bg-forest/90 text-white font-semibold py-3.5 rounded-xl text-sm transition-all shadow-md hover:shadow-lg mt-2 disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-2 bg-forest hover:bg-forest/90 text-white font-semibold py-3.5 rounded-xl text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-60"
             >
-              {loading ? "Logging in..." : <> Login <span className="text-lg leading-none">›</span> </>}
+              {loading ? "Logging in…" : <>Login <span className="text-lg leading-none">›</span></>}
             </button>
           </>
         )}
