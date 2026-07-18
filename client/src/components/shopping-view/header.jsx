@@ -290,26 +290,26 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
         <div className="shrink-0 px-5 pt-12 pb-4 border-b border-forest/10 bg-white">
           <div className="flex items-center gap-2.5 mb-4 pr-8">
             {brand.logo ? (
-              <span className="flex items-center justify-center h-12 rounded-2xl bg-white border border-forest/10 px-2.5 py-1.5 shrink-0 shadow-sm">
-                <img
-                  src={brand.logo}
-                  alt=""
-                  className="h-9 w-auto max-w-[140px] object-contain"
-                />
-              </span>
+              <img
+                src={brand.logo}
+                alt={brand.name || "Wellmaats"}
+                className="h-12 w-auto max-w-[200px] object-contain object-left"
+              />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-forest flex items-center justify-center shrink-0">
-                <Leaf className="h-5 w-5 text-white" />
-              </div>
+              <>
+                <div className="w-10 h-10 rounded-full bg-forest flex items-center justify-center shrink-0">
+                  <Leaf className="h-5 w-5 text-white" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-display font-bold text-forest truncate text-base">
+                    {brand.company || brand.name || "Wellmaats"}
+                  </p>
+                  <p className="text-[10px] text-gold truncate font-semibold">
+                    {brand.tagline || "Nature Cures Life"}
+                  </p>
+                </div>
+              </>
             )}
-            <div className="min-w-0">
-              <p className="font-display font-bold text-forest truncate text-base">
-                {brand.company || brand.name || "Wellmaats"}
-              </p>
-              <p className="text-[10px] text-gold truncate font-semibold">
-                {brand.tagline || "Nature Cures Life"}
-              </p>
-            </div>
           </div>
           <HeaderSearch className="w-full" onResultClick={() => onOpenChange(false)} />
         </div>
@@ -432,43 +432,28 @@ function ShoppingHeader() {
           <Menu className="h-5 w-5" />
         </Button>
 
-        {/* Logo + wordmark — always high contrast */}
+        {/* Logo only */}
         <Link
           to="/shop/home"
-          className="flex items-center gap-2.5 shrink-0 min-w-0 max-w-[min(58vw,320px)]"
+          className="flex items-center shrink-0"
           aria-label={brand.name || "Wellmaats"}
         >
           {brand.logo ? (
-            <span className="flex items-center justify-center h-12 md:h-14 rounded-2xl bg-white shadow-md border border-black/5 px-2.5 py-1.5 shrink-0">
-              <img
-                src={brand.logo}
-                alt=""
-                className="h-9 md:h-11 w-auto max-w-[120px] md:max-w-[160px] object-contain"
-              />
-            </span>
+            <img
+              src={brand.logo}
+              alt={brand.name || "Wellmaats"}
+              className="h-12 sm:h-14 md:h-16 w-auto max-w-[200px] sm:max-w-[260px] md:max-w-[300px] object-contain object-left"
+            />
           ) : (
-            <span className={`w-11 h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-md ${light ? "bg-white/20 backdrop-blur" : "bg-forest"}`}>
-              <Leaf className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            <span className="flex items-center gap-2">
+              <span className={`w-11 h-11 rounded-full flex items-center justify-center ${light ? "bg-white/20" : "bg-forest"}`}>
+                <Leaf className="h-5 w-5 text-white" />
+              </span>
+              <span className={`font-display font-bold text-lg ${light ? "text-white" : "text-forest"}`}>
+                {brand.company || brand.name || "Wellmaats"}
+              </span>
             </span>
           )}
-          <span className="leading-tight min-w-0 hidden min-[400px]:block">
-            <span
-              className={`font-display font-bold text-base sm:text-lg md:text-xl block truncate drop-shadow-sm ${
-                light ? "text-white" : "text-forest"
-              }`}
-            >
-              {brand.company || brand.name || "Wellmaats"}
-            </span>
-            {(brand.tagline || "Nature Cures Life") && (
-              <span
-                className={`block text-[10px] sm:text-xs font-semibold tracking-wide truncate ${
-                  light ? "text-gold" : "text-gold"
-                }`}
-              >
-                {brand.tagline || "Nature Cures Life"}
-              </span>
-            )}
-          </span>
         </Link>
 
         {/* Search — center, prominent */}
