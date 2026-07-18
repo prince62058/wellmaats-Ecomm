@@ -181,6 +181,7 @@ function AdminSettings() {
           <TabsTrigger value="categories">Categories</TabsTrigger>
           <TabsTrigger value="promobanners">Promo Banners</TabsTrigger>
           <TabsTrigger value="megamenu">Mega Menu</TabsTrigger>
+          <TabsTrigger value="herbs">Herbs</TabsTrigger>
           <TabsTrigger value="homepage">Homepage</TabsTrigger>
           <TabsTrigger value="footer">Footer</TabsTrigger>
         </TabsList>
@@ -323,6 +324,39 @@ function AdminSettings() {
           {(!form.heroSlides || form.heroSlides.length === 0) && (
             <div className="text-center py-10 text-muted-foreground border-2 border-dashed border-forest/10 rounded-xl">
               No slides yet. Click "Add Slide" to create your first hero slide.
+            </div>
+          )}
+        </TabsContent>
+
+        {/* ══ HERBS TAB ══ */}
+        <TabsContent value="herbs" className="space-y-4 mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h3 className="font-semibold text-forest">🌿 Ayurvedic Herbs Strip</h3>
+              <p className="text-xs text-muted-foreground">Shown on home page after "How it Works". Add emoji, name and benefit for each herb.</p>
+            </div>
+            <Button size="sm" variant="outline" onClick={() =>
+              addListItem("herbs", { emoji: "🌿", name: "", benefit: "" })
+            }><Plus className="w-4 h-4 mr-1" />Add Herb</Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {(form.herbs || []).map((h, i) => (
+              <div key={i} className="border rounded-xl p-3 bg-gray-50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">{h.emoji || "🌿"}</span>
+                  <Button size="icon" variant="ghost" onClick={() => removeListItem("herbs", i)}>
+                    <Trash2 className="w-4 h-4 text-red-400" />
+                  </Button>
+                </div>
+                <Input placeholder="Emoji (🌿)" value={h.emoji || ""} onChange={(e) => updateListItem("herbs", i, "emoji", e.target.value)} className="text-center text-lg" />
+                <Input placeholder="Herb name (e.g. Ashwagandha)" value={h.name || ""} onChange={(e) => updateListItem("herbs", i, "name", e.target.value)} />
+                <Input placeholder="Benefit (e.g. Stress & Anxiety)" value={h.benefit || ""} onChange={(e) => updateListItem("herbs", i, "benefit", e.target.value)} />
+              </div>
+            ))}
+          </div>
+          {(!form.herbs || form.herbs.length === 0) && (
+            <div className="text-center py-10 text-muted-foreground border-2 border-dashed border-forest/10 rounded-xl">
+              No herbs yet. Click "Add Herb" to add your first ingredient.
             </div>
           )}
         </TabsContent>

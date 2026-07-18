@@ -17,6 +17,7 @@ import FlashSaleSection from "@/components/shopping-view/home/FlashSaleSection";
 import SpotlightSection from "@/components/shopping-view/home/SpotlightSection";
 import PromoBannerSection from "@/components/shopping-view/home/PromoBannerSection";
 import BestSellersSection from "@/components/shopping-view/home/BestSellersSection";
+import IngredientsStrip from "@/components/shopping-view/home/IngredientsStrip";
 
 function MarqueeBand() {
   const { marqueeMessages } = useSiteSettings();
@@ -91,7 +92,10 @@ function ShoppingHome() {
       {/* 9. How it Works */}
       <HowItWorks />
 
-      {/* 10. Stats */}
+      {/* 10. Ingredients Strip — dynamic from admin */}
+      <IngredientsStrip />
+
+      {/* 11. Stats */}
       <StatsBanner />
 
       {/* 11. Why Choose Us */}

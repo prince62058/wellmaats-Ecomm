@@ -103,6 +103,16 @@ export function useSiteSettings() {
       { label: "Express Delivery", icon: "Truck" },
       { label: "COD Available",    icon: "Shield" },
     ],
+    herbs: data?.herbs?.length ? data.herbs : [
+      { emoji: "🌿", name: "Ashwagandha",  benefit: "Stress & Anxiety"    },
+      { emoji: "🌸", name: "Shatavari",    benefit: "Women's Wellness"    },
+      { emoji: "❤️", name: "Arjuna",       benefit: "Heart Health"         },
+      { emoji: "⚡", name: "Shilajit",     benefit: "Energy & Stamina"    },
+      { emoji: "🛡️", name: "Neem",         benefit: "Immunity Boost"      },
+      { emoji: "🌙", name: "Brahmi",       benefit: "Mind & Memory"       },
+      { emoji: "🌺", name: "Tulsi",        benefit: "Respiratory Care"    },
+      { emoji: "🔆", name: "Kutki",        benefit: "Liver Detox"         },
+    ],
   };
 }
 
