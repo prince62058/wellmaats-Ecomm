@@ -44,7 +44,7 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
   return (
     <Card className="group w-full h-full flex flex-col bg-white rounded-2xl border border-forest/10 overflow-hidden hover:shadow-xl hover:border-forest/25 hover:-translate-y-1 transition-all duration-300">
       <div
-        onClick={() => handleGetProductDetails(product?._id)}
+        onClick={() => navigate(`/shop/product/${product?._id}`)}
         className="cursor-pointer relative"
       >
         <div className="relative overflow-hidden bg-leaf/30 aspect-[4/5]">

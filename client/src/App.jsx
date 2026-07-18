@@ -30,6 +30,7 @@ import Blogs from "./pages/shopping-view/blogs";
 import BlogDetail from "./pages/shopping-view/blog-detail";
 import WishlistPage from "./pages/shopping-view/wishlist";
 import AdminBlogs from "./pages/admin-view/blogs";
+import ProductDetailPage from "./pages/shopping-view/product-detail";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -102,6 +103,7 @@ function App() {
           <Route path="offer-zone" element={<OfferZone />} />
           <Route path="best-sellers" element={<BestSellers />} />
           <Route path="wishlist" element={<WishlistPage />} />
+          <Route path="product/:id" element={<ProductDetailPage />} />
         </Route>
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/blogs/:slug" element={<BlogDetail />} />
