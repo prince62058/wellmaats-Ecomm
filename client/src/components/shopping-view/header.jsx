@@ -303,7 +303,7 @@ function ShoppingHeader() {
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const { brand } = useSiteSettings();
+  const { brand, headerNavLinks } = useSiteSettings();
   const isHome = location.pathname === "/shop/home";
   const light = isHome && !scrolled;
 
@@ -322,12 +322,7 @@ function ShoppingHeader() {
     setOpenCartSheet(true);
   }
 
-  const navLinks = [
-    { label: "Best Sellers", href: "/shop/best-sellers", icon: "🏆" },
-    { label: "Offer Zone", href: "/shop/offer-zone", icon: "🔥" },
-    { label: "Blogs", href: "/blogs", icon: "📖" },
-    { label: "Track Order", href: "/shop/account", icon: "🚚" },
-  ];
+  const navLinks = headerNavLinks || [];
 
   return (
     <header

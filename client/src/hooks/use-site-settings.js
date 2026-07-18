@@ -18,62 +18,91 @@ import {
 export function buildCategoryOptionsMap(categories) {
   return Object.fromEntries((categories || []).map((c) => [c.id, c.label]));
 }
-
 export function buildBrandOptionsMap(brands) {
   return Object.fromEntries((brands || []).map((b) => [b.id, b.label]));
 }
+
+const DEFAULT_MARQUEE = [
+  "🌿 100% Ayurvedic",
+  "🧪 Lab Tested",
+  "✅ GMP Certified",
+  "🇮🇳 Made in India",
+  "🚚 Free Shipping above ₹499",
+  "💊 35+ Herbs Extract",
+  "⭐ 4.8 Customer Rating",
+  "🔒 Secure Payments",
+];
+
+const DEFAULT_NAV_LINKS = [
+  { label: "Best Sellers", href: "/shop/best-sellers", icon: "🏆" },
+  { label: "Offer Zone",   href: "/shop/offer-zone",   icon: "🔥" },
+  { label: "Blogs",        href: "/blogs",              icon: "📖" },
+  { label: "Track Order",  href: "/shop/account",       icon: "🚚" },
+];
 
 export function useSiteSettings() {
   const { data, isLoading } = useSelector((state) => state.siteSettings);
 
   const productCategories = data?.productCategories?.length
-    ? data.productCategories
-    : PRODUCT_CATEGORIES;
+    ? data.productCategories : PRODUCT_CATEGORIES;
 
-  const brands = data?.brands?.length ? data.brands : [{ id: "mother-tatwa", label: "Mother Tatwa" }];
+  const brands = data?.brands?.length
+    ? data.brands : [{ id: "mother-tatwa", label: "Mother Tatwa" }];
 
   return {
     isLoading,
     settings: data,
-    megaMenu: data?.megaMenu || [],
-    quickFilters: data?.quickFilters || [],
-    promoBanners: data?.promoBanners || [],
-    brand: data?.brand || BRAND,
+
+    // Brand / contact
+    brand:   data?.brand   || BRAND,
     contact: data?.contact || BRAND.contact,
-    social: data?.social || [],
+    social:  data?.social  || [],
+
+    // Header / announcement
+    announcementBar: data?.announcementBar || { enabled: true, messages: [] },
+    heroSlides:      data?.heroSlides      || [],
+    headerNavLinks:  data?.headerNavLinks?.length ? data.headerNavLinks : DEFAULT_NAV_LINKS,
+    marqueeMessages: data?.marqueeMessages?.length ? data.marqueeMessages : DEFAULT_MARQUEE,
+
+    // Shop
     productCategories,
     brands,
     categoryOptionsMap: data?.productCategories?.length
-      ? buildCategoryOptionsMap(data.productCategories)
-      : categoryOptionsMap,
+      ? buildCategoryOptionsMap(data.productCategories) : categoryOptionsMap,
     brandOptionsMap: data?.brands?.length
-      ? buildBrandOptionsMap(data.brands)
-      : brandOptionsMap,
-    whyChooseUs: data?.whyChooseUs?.length ? data.whyChooseUs : WHY_CHOOSE_US,
+      ? buildBrandOptionsMap(data.brands) : brandOptionsMap,
+
+    // Menus & filters
+    megaMenu:     data?.megaMenu     || [],
+    quickFilters: data?.quickFilters || [],
+    promoBanners: data?.promoBanners || [],
+
+    // Content sections
+    whyChooseUs:    data?.whyChooseUs?.length    ? data.whyChooseUs    : WHY_CHOOSE_US,
     healthBenefits: data?.healthBenefits?.length ? data.healthBenefits : HEALTH_BENEFITS,
-    testimonials: data?.testimonials?.length ? data.testimonials : TESTIMONIALS,
-    doctors: data?.doctors?.length ? data.doctors : DOCTORS,
-    faq: data?.faq?.length ? data.faq : FAQ_ITEMS,
-    footerLinks: data?.footerLinks || FOOTER_LINKS,
-    trustBadges: data?.trustBadges?.length ? data.trustBadges : TRUST_BADGES,
-    paymentMethods: data?.paymentMethods?.length ? data.paymentMethods : PAYMENT_METHODS,
-    deliveryPartners: data?.deliveryPartners?.length ? data.deliveryPartners : DELIVERY_PARTNERS,
-    productBadges: data?.productBadges || [
-      { label: "Express Delivery", icon: "Truck" },
-      { label: "COD Available", icon: "Shield" },
+    testimonials:   data?.testimonials?.length   ? data.testimonials   : TESTIMONIALS,
+    doctors:        data?.doctors?.length        ? data.doctors        : DOCTORS,
+    faq:            data?.faq?.length            ? data.faq            : FAQ_ITEMS,
+    stats: data?.stats?.length ? data.stats : [
+      { value: 12,  suffix: "+", label: "Ayurvedic Drops",   decimals: 0 },
+      { value: 4.8, suffix: "★", label: "Customer Rating",   decimals: 1 },
+      { value: 100, suffix: "%", label: "Herbal Formulas",   decimals: 0 },
+      { value: 28,  suffix: "",  label: "States Delivered",  decimals: 0 },
     ],
-    stats: data?.stats?.length
-      ? data.stats
-      : [
-          { value: 12, suffix: "+", label: "Ayurvedic Drops", decimals: 0 },
-          { value: 4.8, suffix: "★", label: "Customer Rating", decimals: 1 },
-          { value: 100, suffix: "%", label: "Herbal Formulas", decimals: 0 },
-          { value: 28, suffix: "", label: "States Delivered", decimals: 0 },
-        ],
     newsletter: data?.newsletter || {
-      title: "Get ₹100 OFF Your First Order",
+      title:    "Get ₹100 OFF Your First Order",
       subtitle: "Subscribe to wellness tips & exclusive offers",
     },
+
+    // Footer
+    footerLinks:      data?.footerLinks      || FOOTER_LINKS,
+    trustBadges:      data?.trustBadges?.length      ? data.trustBadges      : TRUST_BADGES,
+    paymentMethods:   data?.paymentMethods?.length   ? data.paymentMethods   : PAYMENT_METHODS,
+    deliveryPartners: data?.deliveryPartners?.length ? data.deliveryPartners : DELIVERY_PARTNERS,
+    productBadges:    data?.productBadges || [
+      { label: "Express Delivery", icon: "Truck" },
+      { label: "COD Available",    icon: "Shield" },
+    ],
   };
 }
 

@@ -121,12 +121,152 @@ function AdminSettings() {
         <TabsList className="flex flex-wrap h-auto gap-1">
           <TabsTrigger value="brand">Brand</TabsTrigger>
           <TabsTrigger value="contact">Contact</TabsTrigger>
+          <TabsTrigger value="header">Header</TabsTrigger>
+          <TabsTrigger value="heroslides">Hero Slides</TabsTrigger>
           <TabsTrigger value="categories">Categories</TabsTrigger>
           <TabsTrigger value="promobanners">Promo Banners</TabsTrigger>
           <TabsTrigger value="megamenu">Mega Menu</TabsTrigger>
           <TabsTrigger value="homepage">Homepage</TabsTrigger>
           <TabsTrigger value="footer">Footer</TabsTrigger>
         </TabsList>
+
+        {/* ══ HEADER TAB ══ */}
+        <TabsContent value="header" className="space-y-6 mt-6">
+          {/* Announcement Bar */}
+          <div className="border rounded-xl p-5 space-y-4 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-forest">📢 Announcement Bar</h3>
+                <p className="text-xs text-muted-foreground">Top banner — shows cycling messages to all visitors.</p>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox"
+                  checked={form.announcementBar?.enabled !== false}
+                  onChange={(e) => setForm((p) => ({ ...p, announcementBar: { ...(p.announcementBar||{}), enabled: e.target.checked } }))}
+                  className="w-4 h-4 accent-forest"
+                />
+                <span className="text-sm font-medium">Enabled</span>
+              </label>
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground">Messages</Label>
+                <Button size="sm" variant="outline" onClick={() =>
+                  setForm((p) => ({ ...p, announcementBar: { ...(p.announcementBar||{}), messages: [...(p.announcementBar?.messages||[]), ""] } }))
+                }><Plus className="w-3 h-3 mr-1" />Add</Button>
+              </div>
+              {(form.announcementBar?.messages || []).map((msg, i) => (
+                <div key={i} className="flex gap-2 mb-2">
+                  <Input placeholder="🚚 Free Shipping above ₹499" value={msg}
+                    onChange={(e) => setForm((p) => { const m=[...(p.announcementBar?.messages||[])]; m[i]=e.target.value; return {...p, announcementBar:{...(p.announcementBar||{}), messages:m}}; })} />
+                  <Button size="icon" variant="ghost" onClick={() =>
+                    setForm((p) => { const m=(p.announcementBar?.messages||[]).filter((_,j)=>j!==i); return {...p, announcementBar:{...(p.announcementBar||{}), messages:m}}; })
+                  }><Trash2 className="w-4 h-4 text-red-400" /></Button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Marquee Trust Strip */}
+          <div className="border rounded-xl p-5 space-y-3 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-forest">📌 Marquee Trust Strip</h3>
+                <p className="text-xs text-muted-foreground">Dark-green scrolling band below the hero (e.g. "🌿 100% Ayurvedic").</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() =>
+                setForm((p) => ({ ...p, marqueeMessages: [...(p.marqueeMessages||[]), ""] }))
+              }><Plus className="w-3 h-3 mr-1" />Add</Button>
+            </div>
+            {(form.marqueeMessages || []).map((msg, i) => (
+              <div key={i} className="flex gap-2">
+                <Input placeholder="🌿 100% Ayurvedic" value={msg}
+                  onChange={(e) => setForm((p) => { const m=[...(p.marqueeMessages||[])]; m[i]=e.target.value; return {...p, marqueeMessages:m}; })} />
+                <Button size="icon" variant="ghost" onClick={() =>
+                  setForm((p) => ({ ...p, marqueeMessages: (p.marqueeMessages||[]).filter((_,j)=>j!==i) }))
+                }><Trash2 className="w-4 h-4 text-red-400" /></Button>
+              </div>
+            ))}
+          </div>
+
+          {/* Header Nav Links */}
+          <div className="border rounded-xl p-5 space-y-3 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-forest">🔗 Header Nav Links</h3>
+                <p className="text-xs text-muted-foreground">Links shown in the 2nd nav row on desktop (Best Sellers, Offer Zone, Blogs…).</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() =>
+                setForm((p) => ({ ...p, headerNavLinks: [...(p.headerNavLinks||[]), { label:"", href:"", icon:"" }] }))
+              }><Plus className="w-3 h-3 mr-1" />Add Link</Button>
+            </div>
+            {(form.headerNavLinks || []).map((link, i) => (
+              <div key={i} className="flex gap-2 flex-wrap">
+                <Input className="w-10" placeholder="🔥" value={link.icon||""}
+                  onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],icon:e.target.value}; return {...p,headerNavLinks:a}; })} />
+                <Input className="w-36" placeholder="Label" value={link.label}
+                  onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],label:e.target.value}; return {...p,headerNavLinks:a}; })} />
+                <Input className="flex-1" placeholder="/shop/best-sellers" value={link.href}
+                  onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],href:e.target.value}; return {...p,headerNavLinks:a}; })} />
+                <Button size="icon" variant="ghost" onClick={() =>
+                  setForm((p) => ({ ...p, headerNavLinks: p.headerNavLinks.filter((_,j)=>j!==i) }))
+                }><Trash2 className="w-4 h-4 text-red-400" /></Button>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* ══ HERO SLIDES TAB ══ */}
+        <TabsContent value="heroslides" className="space-y-4 mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h3 className="font-semibold text-forest">🖼️ Hero Carousel Slides</h3>
+              <p className="text-xs text-muted-foreground">Full-width image carousel shown at the top of the home page. Add up to 6 slides.</p>
+            </div>
+            <Button size="sm" variant="outline" onClick={() =>
+              setForm((p) => ({ ...p, heroSlides: [...(p.heroSlides||[]), { image:"", badge:"", title:"", subtitle:"", cta:"Shop Now", link:"/shop/listing", gradient:"from-forest/90 via-forest/60 to-transparent" }] }))
+            }><Plus className="w-4 h-4 mr-1" />Add Slide</Button>
+          </div>
+          {(form.heroSlides || []).map((s, i) => (
+            <div key={i} className="border rounded-xl p-4 space-y-3 bg-gray-50">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-semibold text-forest">Slide {i + 1}</span>
+                <Button size="icon" variant="ghost" onClick={() =>
+                  setForm((p) => ({ ...p, heroSlides: p.heroSlides.filter((_,j)=>j!==i) }))
+                }><Trash2 className="w-4 h-4 text-red-500" /></Button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Input placeholder="Badge (e.g. Best Seller)" value={s.badge||""}
+                  onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].badge=e.target.value; return {...p,heroSlides:a}; })} />
+                <Input placeholder="CTA button text (e.g. Shop Now)" value={s.cta||""}
+                  onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].cta=e.target.value; return {...p,heroSlides:a}; })} />
+              </div>
+              <Input placeholder="Title (e.g. Immunity & Wellness Drops)" value={s.title||""}
+                onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].title=e.target.value; return {...p,heroSlides:a}; })} />
+              <Input placeholder="Subtitle — short tagline" value={s.subtitle||""}
+                onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].subtitle=e.target.value; return {...p,heroSlides:a}; })} />
+              <div className="grid grid-cols-2 gap-2">
+                <Input placeholder="Image URL (/products/immunity.jpg)" value={s.image||""}
+                  onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].image=e.target.value; return {...p,heroSlides:a}; })} />
+                <Input placeholder="Link (/shop/listing?category=...)" value={s.link||""}
+                  onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].link=e.target.value; return {...p,heroSlides:a}; })} />
+              </div>
+              <Input placeholder="CSS gradient (e.g. from-forest/90 via-forest/60 to-transparent)" value={s.gradient||""}
+                onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].gradient=e.target.value; return {...p,heroSlides:a}; })} />
+              {s.image && (
+                <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-forest/10">
+                  <img src={s.image} alt="" className="w-16 h-10 object-cover rounded" onError={(e)=>e.target.style.display='none'} />
+                  <span className="text-xs text-muted-foreground">Preview</span>
+                </div>
+              )}
+            </div>
+          ))}
+          {(!form.heroSlides || form.heroSlides.length === 0) && (
+            <div className="text-center py-10 text-muted-foreground border-2 border-dashed border-forest/10 rounded-xl">
+              No slides yet. Click "Add Slide" to create your first hero slide.
+            </div>
+          )}
+        </TabsContent>
 
         <TabsContent value="brand" className="space-y-4 mt-6 max-w-2xl">
           <Field label="Company Name">

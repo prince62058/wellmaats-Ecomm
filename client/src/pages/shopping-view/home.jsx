@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 import { fetchAllFilteredProducts, fetchProductDetails } from "@/store/shop/products-slice";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
@@ -16,6 +17,25 @@ import FlashSaleSection from "@/components/shopping-view/home/FlashSaleSection";
 import SpotlightSection from "@/components/shopping-view/home/SpotlightSection";
 import PromoBannerSection from "@/components/shopping-view/home/PromoBannerSection";
 import BestSellersSection from "@/components/shopping-view/home/BestSellersSection";
+
+function MarqueeBand() {
+  const { marqueeMessages } = useSiteSettings();
+  const msgs = marqueeMessages?.length ? marqueeMessages : [];
+  if (!msgs.length) return null;
+  const doubled = [...msgs, ...msgs];
+  return (
+    <div className="relative bg-forest overflow-hidden py-2.5 border-y border-gold/30">
+      <div className="flex animate-marquee whitespace-nowrap">
+        {doubled.map((item, i) => (
+          <span key={i} className="inline-flex items-center text-white/90 text-xs font-semibold tracking-widest uppercase mx-8">
+            {item}
+            <span className="text-gold mx-4">◆</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function ShoppingHome() {
   const { productList } = useSelector((state) => state.shopProducts);
@@ -47,24 +67,8 @@ function ShoppingHome() {
       {/* 1. Hero Carousel */}
       <HeroCarousel />
 
-      {/* 2. Trust marquee */}
-      <div className="relative bg-forest overflow-hidden py-3 border-y border-gold/30">
-        <div className="flex animate-marquee whitespace-nowrap">
-          {[
-            "🌿 100% Ayurvedic", "🧪 Lab Tested", "✅ GMP Certified",
-            "🇮🇳 Made in India", "🚚 Pan-India Delivery", "💊 35+ Herbs Extract",
-            "⭐ 4.8 Customer Rating", "🔒 Secure Payments",
-            "🌿 100% Ayurvedic", "🧪 Lab Tested", "✅ GMP Certified",
-            "🇮🇳 Made in India", "🚚 Pan-India Delivery", "💊 35+ Herbs Extract",
-            "⭐ 4.8 Customer Rating", "🔒 Secure Payments",
-          ].map((item, i) => (
-            <span key={i} className="inline-flex items-center text-white/90 text-xs font-semibold tracking-widest uppercase mx-8">
-              {item}
-              <span className="text-gold mx-4">◆</span>
-            </span>
-          ))}
-        </div>
-      </div>
+      {/* 2. Trust marquee — dynamic from admin */}
+      <MarqueeBand />
 
       {/* 3. Today's Wellness Deals — spotlight with filter tabs */}
       <SpotlightSection products={productList || []} {...cartProps} />
