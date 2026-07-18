@@ -1,10 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchProductDetails,
-  fetchAllFilteredProducts,
-} from "@/store/shop/products-slice";
+import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { toggleWishlistItem } from "@/store/shop/wishlist-slice";
 import { addReview, getReviews } from "@/store/shop/review-slice";
@@ -22,6 +19,7 @@ import {
   Truck, Shield, Package, Star, ChevronRight, Share2,
 } from "lucide-react";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
+import axiosInstance from "@/lib/axiosInstance";
 
 const FALLBACK = "/products/signature.jpg";
 
@@ -31,7 +29,6 @@ export default function ProductDetailPage() {
   const dispatch = useDispatch();
   const { toast } = useToast();
 
-  const { productDetails } = useSelector((s) => s.shopProducts);
   const { productList } = useSelector((s) => s.shopProducts);
   const { cartItems } = useSelector((s) => s.shopCart);
   const { user } = useSelector((s) => s.auth);
@@ -39,24 +36,39 @@ export default function ProductDetailPage() {
   const wishlistProducts = useSelector((s) => s.wishlist?.products || []);
   const { categoryOptionsMap, productBadges } = useSiteSettings();
 
+  // Local product state — avoids Redux productDetails being reset by modal
+  const [product, setProduct] = useState(null);
+  const [loadError, setLoadError] = useState(false);
   const [imgSrc, setImgSrc] = useState(FALLBACK);
   const [reviewMsg, setReviewMsg] = useState("");
   const [rating, setRating] = useState(0);
   const [qty, setQty] = useState(1);
   const isWishlisted = wishlistProducts.includes(id);
 
+  const loadProduct = useCallback(async (pid) => {
+    setProduct(null);
+    setLoadError(false);
+    try {
+      const res = await axiosInstance.get(`/api/shop/products/get/${pid}`);
+      if (res.data?.success) {
+        setProduct(res.data.data);
+        setImgSrc(resolveProductImage(res.data.data?.image));
+      } else {
+        setLoadError(true);
+      }
+    } catch {
+      setLoadError(true);
+    }
+  }, []);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    dispatch(fetchProductDetails(id));
-  }, [id, dispatch]);
+    loadProduct(id);
+  }, [id, loadProduct]);
 
   useEffect(() => {
-    if (productDetails?._id) dispatch(getReviews(productDetails._id));
-  }, [productDetails?._id, dispatch]);
-
-  useEffect(() => {
-    setImgSrc(resolveProductImage(productDetails?.image));
-  }, [productDetails?.image]);
+    if (product?._id) dispatch(getReviews(product._id));
+  }, [product?._id, dispatch]);
 
   // Load related products (same category)
   useEffect(() => {
@@ -65,7 +77,7 @@ export default function ProductDetailPage() {
     }
   }, []);
 
-  const p = productDetails;
+  const p = product;
   const price = p?.salePrice > 0 ? p.salePrice : p?.price;
   const discount = getDiscountPercent(p);
   const savings = p?.salePrice > 0 ? (p.price - p.salePrice) : 0;
