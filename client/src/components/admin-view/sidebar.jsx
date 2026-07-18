@@ -17,25 +17,11 @@ const NAV = [
 function Brand({ brand, onClick }) {
   return (
     <div onClick={onClick} className={`flex items-center gap-3 mb-8 ${onClick ? "cursor-pointer" : ""}`}>
-      {brand.logo ? (
-        <img
-          src={brand.logo}
-          alt={brand.name}
-          className="h-12 w-auto max-w-[200px] object-contain object-left shrink-0 scale-125 origin-left"
-        />
-      ) : (
-        <>
-          <div className="w-11 h-11 rounded-2xl bg-white/15 flex items-center justify-center shrink-0 border border-white/20">
-            <Leaf className="w-5 h-5 text-white" />
-          </div>
-          <div className="min-w-0">
-            <h1 className="font-display font-bold text-white text-sm leading-tight truncate">
-              {brand.company || brand.name}
-            </h1>
-            <p className="text-white/50 text-[10px] truncate">Admin Panel</p>
-          </div>
-        </>
-      )}
+      <img
+        src="/wellmaats-logo.png?v=5"
+        alt={brand?.name || "Wellmaats"}
+        className="h-12 w-auto max-w-[200px] object-contain object-left shrink-0"
+      />
     </div>
   );
 }

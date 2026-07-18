@@ -290,13 +290,9 @@ function MobileNavSheet({ open, onOpenChange, brand, onOpenCart }) {
         <div className="shrink-0 px-5 pt-12 pb-4 border-b border-forest/10 bg-white">
           <div className="flex items-center gap-2.5 mb-4 pr-8">
             <img
-              src={
-                brand.logo?.startsWith("/wellmaats-logo")
-                  ? "/wellmaats-logo.png?v=4"
-                  : brand.logo || "/wellmaats-logo.png?v=4"
-              }
+              src="/wellmaats-logo.png?v=5"
               alt={brand.company || brand.name || "Wellmaats"}
-              className="h-14 w-auto max-w-[220px] object-contain object-left"
+              className="h-14 w-auto max-w-[240px] object-contain object-left"
             />
           </div>
           <HeaderSearch className="w-full" onResultClick={() => onOpenChange(false)} />
@@ -420,29 +416,17 @@ function ShoppingHeader() {
           <Menu className="h-5 w-5" />
         </Button>
 
-        {/* Logo only — brand mark as provided */}
+        {/* Logo — always local transparent brand mark (ignore Cloudinary uploads) */}
         <Link
           to="/shop/home"
           className="flex items-center shrink-0"
           aria-label={brand.company || brand.name || "Wellmaats"}
         >
-          {brand.logo ? (
-            <img
-              src={
-                brand.logo.startsWith("/wellmaats-logo")
-                  ? "/wellmaats-logo.png?v=4"
-                  : brand.logo
-              }
-              alt={brand.company || brand.name || "Wellmaats"}
-              className="h-16 sm:h-[4.5rem] md:h-20 w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[400px] object-contain object-left"
-            />
-          ) : (
-            <img
-              src="/wellmaats-logo.png?v=4"
-              alt="Wellmaats"
-              className="h-16 sm:h-[4.5rem] md:h-20 w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[400px] object-contain object-left"
-            />
-          )}
+          <img
+            src="/wellmaats-logo.png?v=5"
+            alt={brand.company || brand.name || "Wellmaats"}
+            className="h-16 sm:h-[4.5rem] md:h-20 w-auto max-w-[260px] sm:max-w-[340px] md:max-w-[420px] object-contain object-left"
+          />
         </Link>
 
         {/* Search — center, prominent */}
