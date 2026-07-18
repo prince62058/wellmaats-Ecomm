@@ -411,7 +411,7 @@ function ShoppingHeader() {
         </div>
 
         {/* Right: Cart + Wishlist + User */}
-        <div className="flex items-center shrink-0">
+        <div className="flex items-center shrink-0 ml-auto">
           <HeaderRightContent
             light={light}
             openCartSheet={openCartSheet}
