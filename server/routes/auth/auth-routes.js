@@ -1,7 +1,8 @@
 const express = require("express");
 const {
   registerUser,
-  loginUser,
+  sendOTP,
+  verifyOTP,
   logoutUser,
   updateProfile,
   authMiddleware,
@@ -11,13 +12,14 @@ const { upload, imageUploadUtil } = require("../../helpers/cloudinary");
 
 const router = express.Router();
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.post("/logout", logoutUser);
-router.put("/update-profile", authMiddleware, updateProfile);
-router.get("/check-auth", authMiddleware, checkAuth);
+router.post("/register",       registerUser);
+router.post("/send-otp",       sendOTP);
+router.post("/verify-otp",     verifyOTP);
+router.post("/logout",         logoutUser);
+router.put("/update-profile",  authMiddleware, updateProfile);
+router.get("/check-auth",      authMiddleware, checkAuth);
 
-// Upload avatar image → Cloudinary
+// Upload avatar → Cloudinary
 router.post("/upload-avatar", authMiddleware, upload.single("avatar"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: "No file uploaded" });
@@ -26,7 +28,7 @@ router.post("/upload-avatar", authMiddleware, upload.single("avatar"), async (re
     res.json({ success: true, url: result.secure_url });
   } catch (e) {
     console.error("Avatar upload error:", e);
-    res.status(500).json({ success: false, message: "Upload failed. Please try again." });
+    res.status(500).json({ success: false, message: "Upload failed. Try again." });
   }
 });
 

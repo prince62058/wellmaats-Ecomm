@@ -34,6 +34,16 @@ export const updateProfile = createAsyncThunk("/auth/updateProfile", async (form
   return response.data;
 });
 
+export const sendOTP = createAsyncThunk("/auth/sendOTP", async ({ identifier }) => {
+  const response = await axiosInstance.post(`/api/auth/send-otp`, { identifier });
+  return response.data;
+});
+
+export const verifyOTPLogin = createAsyncThunk("/auth/verifyOTP", async ({ identifier, otp }) => {
+  const response = await axiosInstance.post(`/api/auth/verify-otp`, { identifier, otp });
+  return response.data;
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -68,7 +78,14 @@ const authSlice = createSlice({
 
       .addCase(updateProfile.fulfilled, (state, action) => {
         if (action.payload.success) state.user = action.payload.user;
-      });
+      })
+      .addCase(verifyOTPLogin.pending, (state) => { state.isLoading = true; })
+      .addCase(verifyOTPLogin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.success ? action.payload.user : null;
+        state.isAuthenticated = action.payload.success;
+      })
+      .addCase(verifyOTPLogin.rejected, (state) => { state.isLoading = false; });
   },
 });
 
