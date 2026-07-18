@@ -392,19 +392,27 @@ function ShoppingHeader() {
 
         {/* Logo */}
         <Link to="/shop/home" className="flex items-center gap-2 shrink-0">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center overflow-hidden ${light ? "bg-white/20 backdrop-blur" : "bg-forest"}`}>
-            {brand.logo
-              ? <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain p-0.5" />
-              : <Leaf className="h-4.5 w-4.5 text-white" />}
-          </div>
-          <div className="leading-tight hidden sm:block">
-            <span className={`font-display font-bold text-sm md:text-base block truncate ${light ? "text-white" : "text-forest"}`}>
-              {brand.name}
-            </span>
-            <span className={`block text-[9px] -mt-0.5 ${light ? "text-gold/90" : "text-gold"}`}>
-              {brand.tagline}
-            </span>
-          </div>
+          {brand.logo ? (
+            <img
+              src={brand.logo}
+              alt={brand.name}
+              className="h-9 w-auto max-w-[120px] object-contain"
+            />
+          ) : (
+            <>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${light ? "bg-white/20 backdrop-blur" : "bg-forest"}`}>
+                <Leaf className="h-4.5 w-4.5 text-white" />
+              </div>
+              <div className="leading-tight hidden sm:block">
+                <span className={`font-display font-bold text-sm md:text-base block truncate ${light ? "text-white" : "text-forest"}`}>
+                  {brand.name}
+                </span>
+                <span className={`block text-[9px] -mt-0.5 ${light ? "text-gold/90" : "text-gold"}`}>
+                  {brand.tagline}
+                </span>
+              </div>
+            </>
+          )}
         </Link>
 
         {/* Search — center, prominent */}
