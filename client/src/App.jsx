@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { LoginModalProvider } from "./context/LoginModalContext";
 import LoginModal from "./components/common/login-modal";
+import AutoLoginPrompt from "./components/common/auto-login-prompt";
 import AuthLayout from "./components/auth/layout";
 import AuthLogin from "./pages/auth/login";
 import AuthRegister from "./pages/auth/register";
@@ -53,6 +54,7 @@ function App() {
     <LoginModalProvider>
     <div className="flex flex-col min-h-screen bg-white">
       <LoginModal />
+      <AutoLoginPrompt />
       <ScrollToTop />
       <Routes>
         <Route
