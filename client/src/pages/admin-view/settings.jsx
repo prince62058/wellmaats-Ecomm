@@ -9,15 +9,70 @@ import {
   resetSiteSettings,
   updateSiteSettings,
 } from "@/store/site-settings-slice";
-import { Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Plus, Trash2, Upload, Loader2, Film, Image } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import axiosInstance from "@/lib/axiosInstance";
 
 function Field({ label, children }) {
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
       {children}
+    </div>
+  );
+}
+
+// ── Slide media uploader (image or video) ─────────────────
+function SlideMediaUpload({ label, icon: Icon, accept, field, slideIdx, value, onChange }) {
+  const [uploading, setUploading] = useState(false);
+  const ref = useRef();
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("my_file", file);
+      const res = await axiosInstance.post("/api/admin/products/upload-image", fd);
+      if (res.data?.result?.url) onChange(res.data.result.url);
+      else throw new Error("No URL returned");
+    } catch {
+      alert("Upload failed. Try again.");
+    }
+    setUploading(false);
+    e.target.value = "";
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-gray-600 flex items-center gap-1"><Icon className="w-3.5 h-3.5" />{label}</label>
+      <div className="flex gap-2">
+        <Input
+          placeholder={`Paste URL or upload ↑`}
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="text-xs"
+        />
+        <button
+          type="button"
+          onClick={() => ref.current?.click()}
+          disabled={uploading}
+          className="shrink-0 flex items-center gap-1.5 bg-forest text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-forest/90 disabled:opacity-60 transition"
+        >
+          {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+          {uploading ? "Uploading…" : "Upload"}
+        </button>
+        <input ref={ref} type="file" accept={accept} className="hidden" onChange={handleFile} />
+      </div>
+      {/* Preview */}
+      {value && field === "image" && (
+        <img src={value} alt="" className="h-16 w-32 object-cover rounded-lg border border-forest/15 mt-1" onError={(e) => e.target.style.display = "none"} />
+      )}
+      {value && field === "video" && (
+        <video src={value} className="h-16 w-32 rounded-lg border border-forest/15 mt-1 object-cover" muted playsInline />
+      )}
     </div>
   );
 }
@@ -224,10 +279,14 @@ function AdminSettings() {
               <p className="text-xs text-muted-foreground">Full-width image carousel shown at the top of the home page. Add up to 6 slides.</p>
             </div>
             <Button size="sm" variant="outline" onClick={() =>
-              setForm((p) => ({ ...p, heroSlides: [...(p.heroSlides||[]), { image:"", badge:"", title:"", subtitle:"", cta:"Shop Now", link:"/shop/listing", gradient:"from-forest/90 via-forest/60 to-transparent" }] }))
+              setForm((p) => ({ ...p, heroSlides: [...(p.heroSlides||[]), { image:"", video:"", badge:"", title:"", subtitle:"", cta:"Shop Now", link:"/shop/listing", accent:"#C8A54A" }] }))
             }><Plus className="w-4 h-4 mr-1" />Add Slide</Button>
           </div>
-          {(form.heroSlides || []).map((s, i) => (
+          {(form.heroSlides || []).map((s, i) => {
+            function upd(field, val) {
+              setForm((p) => { const a = JSON.parse(JSON.stringify(p.heroSlides)); a[i][field] = val; return { ...p, heroSlides: a }; });
+            }
+            return (
             <div key={i} className="border rounded-xl p-4 space-y-3 bg-gray-50">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-semibold text-forest">Slide {i + 1}</span>
@@ -235,32 +294,32 @@ function AdminSettings() {
                   setForm((p) => ({ ...p, heroSlides: p.heroSlides.filter((_,j)=>j!==i) }))
                 }><Trash2 className="w-4 h-4 text-red-500" /></Button>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <Input placeholder="Badge (e.g. Best Seller)" value={s.badge||""}
-                  onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].badge=e.target.value; return {...p,heroSlides:a}; })} />
-                <Input placeholder="CTA button text (e.g. Shop Now)" value={s.cta||""}
-                  onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].cta=e.target.value; return {...p,heroSlides:a}; })} />
+
+              {/* ── Media: image + video upload ── */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <SlideMediaUpload label="Background Image" icon={Image} accept="image/*" field="image"
+                  value={s.image} onChange={(v) => upd("image", v)} />
+                <SlideMediaUpload label="Background Video (overrides image)" icon={Film} accept="video/*" field="video"
+                  value={s.video} onChange={(v) => upd("video", v)} />
               </div>
-              <Input placeholder="Title (e.g. Immunity & Wellness Drops)" value={s.title||""}
-                onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].title=e.target.value; return {...p,heroSlides:a}; })} />
-              <Input placeholder="Subtitle — short tagline" value={s.subtitle||""}
-                onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].subtitle=e.target.value; return {...p,heroSlides:a}; })} />
+
+              {/* ── Text ── */}
               <div className="grid grid-cols-2 gap-2">
-                <Input placeholder="Image URL (/products/immunity.jpg)" value={s.image||""}
-                  onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].image=e.target.value; return {...p,heroSlides:a}; })} />
-                <Input placeholder="Link (/shop/listing?category=...)" value={s.link||""}
-                  onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].link=e.target.value; return {...p,heroSlides:a}; })} />
+                <Input placeholder="Badge (e.g. 🏆 Best Seller)" value={s.badge||""} onChange={(e) => upd("badge", e.target.value)} />
+                <Input placeholder="CTA button text (e.g. Shop Now)"  value={s.cta||""}   onChange={(e) => upd("cta",   e.target.value)} />
               </div>
-              <Input placeholder="CSS gradient (e.g. from-forest/90 via-forest/60 to-transparent)" value={s.gradient||""}
-                onChange={(e) => setForm((p) => { const a=JSON.parse(JSON.stringify(p.heroSlides)); a[i].gradient=e.target.value; return {...p,heroSlides:a}; })} />
-              {s.image && (
-                <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-forest/10">
-                  <img src={s.image} alt="" className="w-16 h-10 object-cover rounded" onError={(e)=>e.target.style.display='none'} />
-                  <span className="text-xs text-muted-foreground">Preview</span>
+              <Input placeholder="Title (e.g. Immunity & Wellness Drops)" value={s.title||""}    onChange={(e) => upd("title",    e.target.value)} />
+              <Input placeholder="Subtitle — short tagline"               value={s.subtitle||""} onChange={(e) => upd("subtitle", e.target.value)} />
+              <div className="grid grid-cols-2 gap-2">
+                <Input placeholder="Link (/shop/listing?category=...)" value={s.link||""} onChange={(e) => upd("link", e.target.value)} />
+                <div className="flex items-center gap-2">
+                  <input type="color" value={s.accent||"#C8A54A"} onChange={(e) => upd("accent", e.target.value)}
+                    className="h-9 w-12 rounded border border-gray-200 cursor-pointer p-0.5 shrink-0" title="Badge & button accent color" />
+                  <span className="text-xs text-gray-500">Accent color (badge + CTA)</span>
                 </div>
-              )}
+              </div>
             </div>
-          ))}
+          );})}
           {(!form.heroSlides || form.heroSlides.length === 0) && (
             <div className="text-center py-10 text-muted-foreground border-2 border-dashed border-forest/10 rounded-xl">
               No slides yet. Click "Add Slide" to create your first hero slide.
