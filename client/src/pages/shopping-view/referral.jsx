@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchReferralInfo } from "@/store/shop/referral-slice";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 import {
   Gift, Copy, Check, Share2, Users, Wallet, TrendingUp,
   Clock, CheckCircle2, ChevronRight, Star, IndianRupee,
@@ -32,11 +33,13 @@ export default function ReferralPage() {
   const { toast } = useToast();
   const { info, isLoading } = useSelector((s) => s.referral);
   const { user }            = useSelector((s) => s.auth);
+  const { siteUrl }         = useSiteSettings();
   const [copied, setCopied] = useState(false);
 
   useEffect(() => { dispatch(fetchReferralInfo()); }, [dispatch]);
 
-  const host        = window.location.origin;
+  // Use admin-configured domain if set, otherwise fall back to current origin
+  const host        = (siteUrl || "").replace(/\/$/, "") || window.location.origin;
   const referralUrl = info ? `${host}/ref/${info.referralCode}` : "";
 
   function copyLink() {

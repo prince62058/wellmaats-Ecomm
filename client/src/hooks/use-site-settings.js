@@ -55,6 +55,7 @@ export function useSiteSettings() {
 
     // Brand / contact
     brand:   data?.brand   || BRAND,
+    siteUrl: data?.brand?.siteUrl?.trim() || "",
     contact: data?.contact || BRAND.contact,
     social:  data?.social  || [],
 

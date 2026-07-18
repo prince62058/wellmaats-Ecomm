@@ -557,6 +557,16 @@ function AdminSettings() {
           <Field label="Brand Name">
             <Input value={form.brand?.name || ""} onChange={(e) => update("brand.name", e.target.value)} />
           </Field>
+          <Field label="Site URL">
+            <Input
+              value={form.brand?.siteUrl || ""}
+              onChange={(e) => update("brand.siteUrl", e.target.value)}
+              placeholder="https://yourdomain.com"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Used for referral links. Set your production domain (e.g. <code>https://mothertatwa.com</code>).
+            </p>
+          </Field>
           <Field label="Tagline">
             <Input value={form.brand?.tagline || ""} onChange={(e) => update("brand.tagline", e.target.value)} />
           </Field>
