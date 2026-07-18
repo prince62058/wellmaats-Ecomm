@@ -23,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
 import HeaderSearch from "./header-search";
@@ -201,6 +201,7 @@ function HeaderRightContent({ light, openCartSheet, setOpenCartSheet }) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className={`cursor-pointer ring-2 ${light ? "ring-white/30" : "ring-forest/10"}`}>
+            {user?.avatar && <AvatarImage src={user.avatar} alt={user.userName} className="object-cover" />}
             <AvatarFallback className="bg-forest text-white font-bold text-sm">
               {user?.userName?.[0]?.toUpperCase()}
             </AvatarFallback>
