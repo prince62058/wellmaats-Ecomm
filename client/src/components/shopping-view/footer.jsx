@@ -44,6 +44,11 @@ function ShoppingFooter() {
     deliveryPartners,
   } = useSiteSettings();
 
+  const logoSrc =
+    brand.logo?.startsWith("/wellmaats-logo")
+      ? "/wellmaats-logo.png?v=6"
+      : brand.logo || "/wellmaats-logo.png?v=6";
+
   return (
     <footer className="bg-forest text-white mt-auto">
       <div className="border-b border-white/10">
@@ -58,10 +63,18 @@ function ShoppingFooter() {
 
       <div className="container mx-auto px-4 py-12 grid grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
         <div className="col-span-1 min-[420px]:col-span-2 md:col-span-3 lg:col-span-1">
-          <h3 className="font-display text-2xl font-bold text-gold">{brand.name}</h3>
-          <p className="text-white/60 text-sm mt-1">by {brand.company}</p>
-          <p className="text-gold italic text-sm mt-2">{brand.tagline}</p>
-          <p className="text-white/70 text-sm mt-4">{contact.phone}</p>
+          <Link
+            to="/shop/home"
+            className="inline-flex items-center bg-white rounded-2xl px-4 py-3 shadow-sm hover:shadow-md transition-shadow"
+            aria-label={brand.company || brand.name || "Wellmaats"}
+          >
+            <img
+              src={logoSrc}
+              alt={brand.company || brand.name || "Wellmaats"}
+              className="h-12 sm:h-14 w-auto max-w-[200px] object-contain"
+            />
+          </Link>
+          <p className="text-white/70 text-sm mt-5">{contact.phone}</p>
           <p className="text-white/70 text-sm">{contact.email}</p>
           <p className="text-white/60 text-xs mt-3 leading-relaxed break-words">{contact.office}</p>
           <p className="text-white/60 text-xs mt-1 break-words">{contact.manufacturing}</p>
