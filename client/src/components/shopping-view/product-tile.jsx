@@ -103,7 +103,7 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
               <>
                 <span className="text-xs text-muted-foreground line-through">₹{product?.price}</span>
                 {discount > 0 && (
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                  <span className="text-[10px] font-bold text-forest-700 bg-forest-50 px-1.5 py-0.5 rounded">
                     {discount}% off
                   </span>
                 )}
@@ -111,7 +111,7 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
             )}
           </div>
           {savings > 0 && (
-            <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
+            <p className="text-[10px] text-forest-600 font-semibold mt-0.5">
               You save ₹{savings}
             </p>
           )}

@@ -35,7 +35,7 @@ function BestSellers() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#2d6a4f] to-forest text-white py-10 px-4">
+      <div className="bg-gradient-to-r from-[#149a4f] to-forest text-white py-10 px-4">
         <div className="container mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <Award className="w-6 h-6 text-gold" />

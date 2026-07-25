@@ -1,11 +1,11 @@
 import { useSiteSettings } from "@/hooks/use-site-settings";
 
 const EMOJI_BG = [
-  "from-emerald-600 to-green-800",
+  "from-forest-600 to-forest-800",
   "from-pink-500 to-rose-700",
   "from-red-500 to-rose-800",
   "from-amber-500 to-yellow-700",
-  "from-lime-600 to-green-700",
+  "from-forest-500 to-forest-800",
   "from-violet-600 to-purple-800",
   "from-teal-500 to-cyan-700",
   "from-orange-500 to-amber-700",

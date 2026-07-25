@@ -52,9 +52,9 @@ function navLinkAccent(href = "", label = "") {
   }
   if (key.includes("blog")) {
     return {
-      light: "text-emerald-200 hover:text-emerald-100 hover:bg-emerald-400/20",
-      solid: "text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50",
-      chip: "bg-emerald-100",
+      light: "text-forest-200 hover:text-forest-100 hover:bg-forest-400/20",
+      solid: "text-forest-700 hover:text-forest-800 hover:bg-forest-50",
+      chip: "bg-forest-100",
     };
   }
   if (key.includes("track") || key.includes("account")) {

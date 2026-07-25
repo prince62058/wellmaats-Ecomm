@@ -14,7 +14,7 @@ function AdminPageHeader({ title, subtitle, action }) {
 
 /* Gradient stat cards matching dashboard style */
 const GRADIENTS = [
-  "bg-gradient-to-br from-emerald-500 to-emerald-700",
+  "bg-gradient-to-br from-forest-500 to-forest-700",
   "bg-gradient-to-br from-amber-400 to-amber-600",
   "bg-gradient-to-br from-violet-500 to-violet-700",
   "bg-gradient-to-br from-blue-500 to-blue-700",

@@ -17,8 +17,8 @@ import { Link } from "react-router-dom";
 
 /* ── Avatar color mapping ── */
 const COLORS = [
-  ["#1a5c38","#f5f0e8"],["#7c3aed","#faf5ff"],["#b45309","#fffbeb"],
-  ["#0e7490","#ecfeff"],["#be123c","#fff1f2"],["#166534","#f0fdf4"],
+  ["#108644","#f5f0e8"],["#7c3aed","#faf5ff"],["#b45309","#fffbeb"],
+  ["#0e7490","#ecfeff"],["#be123c","#fff1f2"],["#108644","#eefbf3"],
 ];
 function avatarColor(name = "") {
   return COLORS[(name.charCodeAt(0) || 0) % COLORS.length];
@@ -177,9 +177,9 @@ function ProfileTab({ user }) {
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Account Role</label>
             <div className="flex items-center gap-2 px-3.5 py-3.5 rounded-xl border border-gray-200 bg-gray-50">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+              <ShieldCheck className="w-4 h-4 text-forest-500" />
               <span className="text-sm text-gray-600 capitalize">{user?.role || "User"}</span>
-              <span className="ml-auto text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Verified</span>
+              <span className="ml-auto text-[10px] bg-forest-100 text-forest-700 px-2 py-0.5 rounded-full font-medium">Verified</span>
             </div>
           </div>
         </div>
@@ -218,7 +218,7 @@ function ProfileTab({ user }) {
       {/* Save button */}
       <button type="submit" disabled={saving}
         className={`w-full flex items-center justify-center gap-2.5 font-semibold py-4 rounded-xl text-sm transition-all shadow-md
-          ${saved ? "bg-emerald-500 hover:bg-emerald-500" : "bg-forest hover:bg-forest/90"} text-white disabled:opacity-60`}>
+          ${saved ? "bg-forest-500 hover:bg-forest-500" : "bg-forest hover:bg-forest/90"} text-white disabled:opacity-60`}>
         {saving ? (
           <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</>
         ) : saved ? (
@@ -257,7 +257,7 @@ function ShoppingAccount() {
     <div className="min-h-screen bg-gradient-to-b from-leaf/50 via-white to-leaf/20">
 
       {/* ══ Hero Banner ══ */}
-      <div className="bg-gradient-to-br from-forest via-[#1a5c38] to-[#0d3d22] text-white relative overflow-hidden">
+      <div className="bg-gradient-to-br from-forest via-[#108644] to-[#0a542b] text-white relative overflow-hidden">
         <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/5 pointer-events-none" />
         <div className="absolute top-8 right-32 w-28 h-28 rounded-full bg-gold/8 pointer-events-none" />
         <div className="absolute -bottom-10 left-10 w-36 h-36 rounded-full bg-white/4 pointer-events-none" />
@@ -293,7 +293,7 @@ function ShoppingAccount() {
                 <span className="flex items-center gap-1.5 text-white/55 text-xs">
                   <Calendar className="w-3 h-3" /> Member since {memberSince}
                 </span>
-                <span className="flex items-center gap-1.5 text-emerald-300 text-xs font-medium">
+                <span className="flex items-center gap-1.5 text-forest-300 text-xs font-medium">
                   <ShieldCheck className="w-3 h-3" /> Verified Account
                 </span>
               </div>

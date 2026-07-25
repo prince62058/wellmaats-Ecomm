@@ -46,7 +46,7 @@ function ShoppingCheckout() {
       description: "Ayurvedic Wellness Order",
       order_id: paymentData.razorpayOrderId,
       prefill: { name: user?.userName, email: user?.email },
-      theme: { color: "#1F6B4F" },
+      theme: { color: "#108644" },
       handler: function (response) {
         dispatch(
           capturePayment({

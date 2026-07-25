@@ -8,50 +8,50 @@
   :root {
     --header-h: 120px;
     --background: 120 100% 98%;
-    --foreground: 158 55% 12%;
+    --foreground: 147 79% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 158 55% 12%;
+    --card-foreground: 147 79% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 158 55% 12%;
-    --primary: 158 55% 28%;
+    --popover-foreground: 147 79% 12%;
+    --primary: 147 79% 29%;
     --primary-foreground: 0 0% 100%;
     --secondary: 120 40% 95%;
-    --secondary-foreground: 158 55% 20%;
+    --secondary-foreground: 147 79% 20%;
     --muted: 120 30% 94%;
-    --muted-foreground: 158 20% 40%;
+    --muted-foreground: 147 25% 40%;
     --accent: 42 52% 54%;
-    --accent-foreground: 158 55% 12%;
+    --accent-foreground: 147 79% 12%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 158 25% 88%;
-    --input: 158 25% 88%;
-    --ring: 158 55% 28%;
+    --border: 147 25% 88%;
+    --input: 147 25% 88%;
+    --ring: 147 79% 29%;
     --radius: 0.75rem;
-    --forest: 158 55% 28%;
+    --forest: 147 79% 29%;
     --gold: 42 52% 54%;
     --leaf: 120 100% 98%;
   }
 
   .dark {
-    --background: 158 40% 8%;
+    --background: 147 40% 8%;
     --foreground: 120 30% 96%;
-    --card: 158 35% 12%;
+    --card: 147 35% 12%;
     --card-foreground: 120 30% 96%;
-    --popover: 158 35% 12%;
+    --popover: 147 35% 12%;
     --popover-foreground: 120 30% 96%;
-    --primary: 158 45% 42%;
+    --primary: 147 70% 38%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 158 30% 16%;
+    --secondary: 147 30% 16%;
     --secondary-foreground: 120 30% 96%;
-    --muted: 158 25% 18%;
+    --muted: 147 25% 18%;
     --muted-foreground: 120 15% 65%;
     --accent: 42 52% 54%;
-    --accent-foreground: 158 55% 12%;
+    --accent-foreground: 147 79% 12%;
     --destructive: 0 62% 40%;
     --destructive-foreground: 0 0% 100%;
-    --border: 158 25% 20%;
-    --input: 158 25% 20%;
-    --ring: 158 45% 42%;
+    --border: 147 25% 20%;
+    --input: 147 25% 20%;
+    --ring: 147 70% 38%;
   }
 }
 
@@ -137,8 +137,8 @@ html {
   50% { transform: translateY(-12px) rotate(-5deg); }
 }
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 30px rgba(31, 107, 79, 0.2); }
-  50% { box-shadow: 0 0 60px rgba(31, 107, 79, 0.4); }
+  0%, 100% { box-shadow: 0 0 30px rgba(16, 134, 68, 0.2); }
+  50% { box-shadow: 0 0 60px rgba(16, 134, 68, 0.4); }
 }
 .animate-float { animation: float 6s ease-in-out infinite; }
 .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }

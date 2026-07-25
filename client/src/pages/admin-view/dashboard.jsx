@@ -19,11 +19,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 /* ─── Palette ─── */
-const FOREST  = "#1a4731";
+const FOREST  = "#108644";
 const GOLD    = "#c8963e";
-const CAT_COLORS = ["#1a4731","#c8963e","#3b82f6","#f59e0b","#8b5cf6","#ef4444","#06b6d4","#10b981"];
-const STOCK_COLORS = ["#22c55e","#f59e0b","#ef4444"];
-const STATUS_COLORS = ["#3b82f6","#f59e0b","#8b5cf6","#06b6d4","#22c55e","#ef4444"];
+const CAT_COLORS = ["#108644","#c8963e","#3b82f6","#f59e0b","#8b5cf6","#ef4444","#06b6d4","#1a9a54"];
+const STOCK_COLORS = ["#108644","#f59e0b","#ef4444"];
+const STATUS_COLORS = ["#3b82f6","#f59e0b","#8b5cf6","#06b6d4","#108644","#ef4444"];
 
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -32,7 +32,7 @@ const STATUS_META = {
   confirmed:  { color: "bg-blue-100 text-blue-700 border-blue-200",       icon: <CheckCircle2 className="w-3 h-3" /> },
   processing: { color: "bg-purple-100 text-purple-700 border-purple-200", icon: <Package className="w-3 h-3" /> },
   shipped:    { color: "bg-indigo-100 text-indigo-700 border-indigo-200", icon: <Truck className="w-3 h-3" /> },
-  delivered:  { color: "bg-green-100 text-green-700 border-green-200",    icon: <CheckCircle2 className="w-3 h-3" /> },
+  delivered:  { color: "bg-forest-100 text-forest-700 border-forest-200",    icon: <CheckCircle2 className="w-3 h-3" /> },
   rejected:   { color: "bg-red-100 text-red-700 border-red-200",          icon: <XCircle className="w-3 h-3" /> },
 };
 
@@ -43,8 +43,8 @@ function RevTooltip({ active, payload, label }) {
     <div className="bg-white/95 backdrop-blur border border-gray-100 rounded-2xl shadow-xl px-4 py-3 text-sm">
       <p className="font-bold text-forest mb-2">{label}</p>
       <div className="space-y-1">
-        <p className="text-emerald-600 flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+        <p className="text-forest-600 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-forest-500 inline-block" />
           ₹{(payload[0]?.value || 0).toLocaleString("en-IN")}
         </p>
         {payload[1] && (
@@ -193,7 +193,7 @@ export default function AdminDashboard() {
     .slice(0, 5);
 
   const quickLinks = [
-    { label: "Products",   desc: `${products.length} items`,   path: "/admin/products", icon: Package,     grad: "from-forest to-[#0d3320]" },
+    { label: "Products",   desc: `${products.length} items`,   path: "/admin/products", icon: Package,     grad: "from-forest to-[#0a542b]" },
     { label: "Orders",     desc: `${pendingOrders} pending`,   path: "/admin/orders",   icon: ShoppingBag, grad: "from-blue-600 to-blue-800" },
     { label: "Settings",   desc: "Brand & content",             path: "/admin/settings", icon: Settings,    grad: "from-purple-600 to-purple-800" },
     { label: "View Store", desc: "Live storefront",             path: "/shop/home",      icon: ExternalLink,grad: "from-amber-500 to-amber-700", external: true },
@@ -218,13 +218,13 @@ export default function AdminDashboard() {
       {/* ── Gradient Stat Cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Total Revenue" value={`₹${totalRevenue.toLocaleString("en-IN")}`}
-          icon={IndianRupee} gradient="bg-gradient-to-br from-emerald-500 to-emerald-700"
+          icon={IndianRupee} gradient="bg-gradient-to-br from-forest-500 to-forest-700"
           iconBg="bg-white/20" sub={`Avg ₹${avgOrder.toLocaleString("en-IN")} / order`} />
         <StatCard label="Total Orders"  value={orders.length}
           icon={ShoppingBag} gradient="bg-gradient-to-br from-blue-500 to-blue-700"
           iconBg="bg-white/20" sub={`${pendingOrders} pending action`} />
         <StatCard label="Products"      value={products.length}
-          icon={Package} gradient="bg-gradient-to-br from-forest to-[#0d3320]"
+          icon={Package} gradient="bg-gradient-to-br from-forest to-[#0a542b]"
           iconBg="bg-white/20" sub={`${outOfStock} out of stock`} />
         <StatCard label="Low Stock"     value={lowStock}
           icon={AlertTriangle} gradient="bg-gradient-to-br from-orange-400 to-orange-600"
@@ -238,8 +238,8 @@ export default function AdminDashboard() {
         <Card className="lg:col-span-2 border-forest/8 shadow-sm rounded-2xl">
           <CardHeader className="pb-1">
             <CardTitle className="text-sm font-bold text-forest flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-emerald-600" />
+              <div className="w-7 h-7 rounded-lg bg-forest-50 flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 text-forest-600" />
               </div>
               Revenue — Last 6 Months
             </CardTitle>
@@ -249,8 +249,8 @@ export default function AdminDashboard() {
               <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                 <defs>
                   <linearGradient id="gRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%"   stopColor="#1a4731" stopOpacity={0.25} />
-                    <stop offset="100%" stopColor="#1a4731" stopOpacity={0} />
+                    <stop offset="0%"   stopColor="#108644" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#108644" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="gOrd" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%"   stopColor="#c8963e" stopOpacity={0.25} />
@@ -334,8 +334,8 @@ export default function AdminDashboard() {
         <Card className="border-forest/8 shadow-sm rounded-2xl">
           <CardHeader className="pb-1">
             <CardTitle className="text-sm font-bold text-forest flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center">
-                <BarChart3 className="w-4 h-4 text-green-600" />
+              <div className="w-7 h-7 rounded-lg bg-forest-50 flex items-center justify-center">
+                <BarChart3 className="w-4 h-4 text-forest-600" />
               </div>
               Inventory Health
             </CardTitle>
@@ -457,7 +457,7 @@ export default function AdminDashboard() {
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold text-forest truncate">{p.title}</p>
                   <div className="flex items-center gap-1 mt-0.5">
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${p.totalStock === 0 ? "bg-red-100 text-red-600" : p.totalStock <= 10 ? "bg-orange-100 text-orange-600" : "bg-green-100 text-green-600"}`}>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${p.totalStock === 0 ? "bg-red-100 text-red-600" : p.totalStock <= 10 ? "bg-orange-100 text-orange-600" : "bg-forest-100 text-forest-600"}`}>
                       {p.totalStock === 0 ? "Out of stock" : `${p.totalStock} units`}
                     </span>
                   </div>

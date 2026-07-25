@@ -71,7 +71,7 @@ export default function ReferralPage() {
       {/* ══════════════════════════════════════
           HERO — Invite Banner
       ══════════════════════════════════════ */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0d2b1a] via-[#1a4731] to-[#0f3a25] shadow-2xl">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#073d20] via-[#108644] to-[#0c6534] shadow-2xl">
         {/* Decorative circles */}
         <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/[0.03]" />
         <div className="absolute -bottom-10 -left-10 w-52 h-52 rounded-full bg-[#c8963e]/10" />
@@ -104,7 +104,7 @@ export default function ReferralPage() {
                 <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider">You get</p>
               </div>
               <div className="bg-white/10 border border-white/15 rounded-2xl px-4 py-2.5 text-center">
-                <p className="text-2xl font-black text-emerald-400">₹{REFERRED_REWARD}</p>
+                <p className="text-2xl font-black text-forest-400">₹{REFERRED_REWARD}</p>
                 <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider">Friend gets</p>
               </div>
             </div>
@@ -118,8 +118,8 @@ export default function ReferralPage() {
             </div>
             <div className="flex gap-1.5 pr-1.5 shrink-0">
               <button onClick={copyLink}
-                className="flex items-center gap-1.5 bg-white text-[#1a4731] text-xs font-bold px-3.5 py-2.5 rounded-xl hover:bg-gray-50 transition-all active:scale-95">
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                className="flex items-center gap-1.5 bg-white text-[#108644] text-xs font-bold px-3.5 py-2.5 rounded-xl hover:bg-gray-50 transition-all active:scale-95">
+                {copied ? <Check className="w-3.5 h-3.5 text-forest-600" /> : <Copy className="w-3.5 h-3.5" />}
                 {copied ? "Copied!" : "Copy"}
               </button>
               <button onClick={shareWhatsApp} title="Share on WhatsApp"
@@ -153,8 +153,8 @@ export default function ReferralPage() {
           {
             icon: Wallet, label: "Wallet Balance", value: `₹${balance}`,
             sub: "Use at checkout",
-            bg: "bg-gradient-to-br from-emerald-500 to-teal-600",
-            glow: "shadow-emerald-200",
+            bg: "bg-gradient-to-br from-forest-500 to-teal-600",
+            glow: "shadow-forest-200",
           },
           {
             icon: Users, label: "Friends Invited", value: stats.total || 0,
@@ -165,8 +165,8 @@ export default function ReferralPage() {
           {
             icon: Trophy, label: "Converted", value: stats.rewarded || 0,
             sub: "Placed first order",
-            bg: "bg-gradient-to-br from-[#1a4731] to-[#0d3320]",
-            glow: "shadow-green-200",
+            bg: "bg-gradient-to-br from-[#108644] to-[#0a542b]",
+            glow: "shadow-forest-200",
           },
           {
             icon: TrendingUp, label: "Total Earned", value: `₹${stats.earned || 0}`,
@@ -213,7 +213,7 @@ export default function ReferralPage() {
               num: "3", emoji: "🎁",
               title: "Both earn rewards",
               desc: `You get ₹${REFERRER_REWARD} wallet credits instantly. Your friend gets ₹${REFERRED_REWARD} off that order.`,
-              color: "from-emerald-50 to-green-50 border-emerald-100",
+              color: "from-forest-50 to-forest-50 border-forest-100",
             },
           ].map((s) => (
             <div key={s.num} className={`relative rounded-2xl border bg-gradient-to-br ${s.color} p-4`}>
@@ -272,10 +272,10 @@ export default function ReferralPage() {
                   </div>
                   {r.status === "rewarded" ? (
                     <div className="text-right shrink-0">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-forest-100 text-forest-700 px-2 py-1 rounded-full">
                         <CheckCircle2 className="w-3 h-3" /> Rewarded
                       </span>
-                      <p className="text-xs font-black text-emerald-600 mt-0.5">+₹{r.reward}</p>
+                      <p className="text-xs font-black text-forest-600 mt-0.5">+₹{r.reward}</p>
                     </div>
                   ) : (
                     <div className="text-right shrink-0">
@@ -294,7 +294,7 @@ export default function ReferralPage() {
         {/* ── Wallet ── */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
           {/* Wallet balance hero */}
-          <div className="bg-gradient-to-br from-[#1a4731] to-[#0d3320] px-5 py-5">
+          <div className="bg-gradient-to-br from-[#108644] to-[#0a542b] px-5 py-5">
             <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest mb-1">Wallet Balance</p>
             <p className="text-4xl font-black text-white">₹{balance}</p>
             <p className="text-white/50 text-xs mt-1">Available to redeem at checkout</p>
@@ -321,9 +321,9 @@ export default function ReferralPage() {
             <div className="divide-y divide-gray-50 flex-1 overflow-y-auto max-h-72">
               {txns.map((tx, i) => (
                 <div key={i} className="flex items-center gap-3 px-5 py-3">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${tx.type === "credit" ? "bg-emerald-50" : "bg-red-50"}`}>
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${tx.type === "credit" ? "bg-forest-50" : "bg-red-50"}`}>
                     {tx.type === "credit"
-                      ? <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-600" />
+                      ? <ArrowDownLeft className="w-3.5 h-3.5 text-forest-600" />
                       : <ArrowUpRight className="w-3.5 h-3.5 text-red-500" />}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -332,7 +332,7 @@ export default function ReferralPage() {
                       {tx.date ? new Date(tx.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" }) : ""}
                     </p>
                   </div>
-                  <p className={`text-sm font-black shrink-0 ${tx.type === "credit" ? "text-emerald-600" : "text-red-500"}`}>
+                  <p className={`text-sm font-black shrink-0 ${tx.type === "credit" ? "text-forest-600" : "text-red-500"}`}>
                     {tx.type === "credit" ? "+" : "−"}₹{tx.amount}
                   </p>
                 </div>

@@ -70,7 +70,7 @@ function AdminOrdersView() {
       { label: "Total Orders", value: list.length,                                  icon: ShoppingBag,  bg: "bg-blue-50",   color: "text-blue-600"   },
       { label: "Pending",      value: pending,                                       icon: Clock,        bg: "bg-amber-50",  color: "text-amber-600"  },
       { label: "In Progress",  value: ship,                                          icon: Truck,        bg: "bg-violet-50", color: "text-violet-600" },
-      { label: "Revenue",      value: `₹${revenue.toLocaleString("en-IN")}`,        icon: IndianRupee,  bg: "bg-emerald-50",color: "text-emerald-600"},
+      { label: "Revenue",      value: `₹${revenue.toLocaleString("en-IN")}`,        icon: IndianRupee,  bg: "bg-forest-50",color: "text-forest-600"},
     ];
   }, [orderList]);
 

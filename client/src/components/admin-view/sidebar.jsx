@@ -74,7 +74,7 @@ function AdminSideBar({ open, setOpen }) {
   const { brand }  = useSiteSettings();
 
   const sidebarClass = `
-    bg-gradient-to-b from-[#1a4731] via-[#163d2a] to-[#0f2d1e]
+    bg-gradient-to-b from-[#108644] via-[#0c6534] to-[#073d20]
     flex flex-col p-5 h-full
   `;
 
@@ -82,7 +82,7 @@ function AdminSideBar({ open, setOpen }) {
     <Fragment>
       {/* Mobile sheet */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className="w-64 p-0 border-0" style={{ background: "linear-gradient(180deg,#1a4731,#0f2d1e)" }}>
+        <SheetContent side="left" className="w-64 p-0 border-0" style={{ background: "linear-gradient(180deg,#108644,#073d20)" }}>
           <SheetHeader className="sr-only">
             <SheetTitle>Admin Navigation</SheetTitle>
           </SheetHeader>
@@ -97,7 +97,7 @@ function AdminSideBar({ open, setOpen }) {
       </Sheet>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-60 shrink-0 flex-col" style={{ background: "linear-gradient(180deg,#1a4731,#0f2d1e)" }}>
+      <aside className="hidden lg:flex w-60 shrink-0 flex-col" style={{ background: "linear-gradient(180deg,#108644,#073d20)" }}>
         <div className={sidebarClass}>
           <Brand brand={brand} onClick={() => navigate("/admin/dashboard")} />
           <MenuItems />

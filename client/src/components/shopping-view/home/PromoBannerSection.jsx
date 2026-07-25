@@ -29,7 +29,7 @@ function PromoBannerSection({ bannerIndex }) {
       <div className="container mx-auto">
         <div
           className="relative rounded-2xl overflow-hidden min-h-[180px] md:min-h-[220px] flex items-center"
-          style={{ background: b.bgGradient || "linear-gradient(135deg, #1a3a2a 0%, #2d6a4f 60%, #40916c 100%)" }}
+          style={{ background: b.bgGradient || "linear-gradient(135deg, #0a542b 0%, #149a4f 60%, #1aad58 100%)" }}
         >
           {/* Background image if provided */}
           {b.image && (

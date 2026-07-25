@@ -10,7 +10,7 @@ const DEFAULTS = [
     subtitle: "35+ Ayurvedic herbs in one powerful drop. Boost your immunity naturally.",
     cta: "Shop Now",
     link: "/shop/listing",
-    bg: "linear-gradient(135deg,#0d3d22 0%,#1a5c38 60%,#2d7a4f 100%)",
+    bg: "linear-gradient(135deg,#0a542b 0%,#108644 60%,#1aad58 100%)",
     accent: "#C8A54A",
     image: "",
     video: "",

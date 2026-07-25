@@ -4,7 +4,7 @@ export const BRAND = {
   tagline: "Nature Cures Life",
   category: "Ayurvedic Wellness & Herbal Drops",
   colors: {
-    forest: "#1F6B4F",
+    forest: "#108644",
     white: "#FFFFFF",
     gold: "#C8A54A",
     leaf: "#F5FFF3",

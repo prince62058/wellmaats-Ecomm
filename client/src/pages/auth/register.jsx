@@ -62,9 +62,9 @@ function AuthRegister() {
 
       {/* Pre-filled notice */}
       {(prePhone || preEmail) && (
-        <div className="mb-4 flex items-center gap-2.5 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3">
-          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-          <p className="text-emerald-700 text-xs">
+        <div className="mb-4 flex items-center gap-2.5 bg-forest-50 border border-forest-200 rounded-xl px-4 py-3">
+          <CheckCircle2 className="w-4 h-4 text-forest-500 shrink-0" />
+          <p className="text-forest-700 text-xs">
             {prePhone
               ? <>Phone <strong>{prePhone}</strong> pre-filled — add your details to continue.</>
               : <>Email <strong>{preEmail}</strong> pre-filled — add your details to continue.</>}

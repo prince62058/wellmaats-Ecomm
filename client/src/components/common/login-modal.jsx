@@ -155,7 +155,7 @@ export default function LoginModal() {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top brand strip */}
-        <div className="bg-gradient-to-r from-forest to-[#0a3020] px-6 pt-6 pb-8 text-center relative">
+        <div className="bg-gradient-to-r from-forest to-[#0a542b] px-6 pt-6 pb-8 text-center relative">
           <button
             onClick={handleClose}
             className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"

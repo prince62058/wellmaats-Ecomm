@@ -108,7 +108,7 @@ function BlogDetail() {
         )}
 
         {/* CTA */}
-        <div className="mt-10 bg-gradient-to-r from-forest to-emerald-700 rounded-2xl p-6 text-white text-center">
+        <div className="mt-10 bg-gradient-to-r from-forest to-forest-700 rounded-2xl p-6 text-white text-center">
           <p className="font-display text-lg font-bold mb-2">Ready to Start Your Wellness Journey?</p>
           <p className="text-white/75 text-sm mb-4">Explore our authentic Ayurvedic drops, crafted from 35+ herbs.</p>
           <Link to="/shop/listing" className="inline-block bg-gold hover:bg-gold/90 text-white font-bold px-6 py-2.5 rounded-full text-sm transition-colors">

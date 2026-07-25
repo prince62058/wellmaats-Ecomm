@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 
 const STEP_COLORS = [
-  "from-emerald-500 to-green-700",
+  "from-forest-500 to-forest-700",
   "from-amber-400 to-yellow-600",
-  "from-forest to-[#0a3020]",
+  "from-forest to-[#0a542b]",
   "from-blue-500 to-indigo-700",
   "from-rose-500 to-pink-700",
 ];

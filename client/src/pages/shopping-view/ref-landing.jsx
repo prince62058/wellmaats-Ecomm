@@ -31,7 +31,7 @@ export default function RefLanding() {
     <div className="min-h-screen bg-gradient-to-br from-[#f5faf4] to-[#e8f5e1] flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-br from-[#1a4731] to-[#0f2d1e] p-8 text-center relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#108644] to-[#073d20] p-8 text-center relative overflow-hidden">
           <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-white/5" />
           <div className="relative">
             <div className="w-16 h-16 rounded-2xl bg-[#c8963e] flex items-center justify-center mx-auto mb-4 shadow-lg">
@@ -57,7 +57,7 @@ export default function RefLanding() {
             </div>
           )}
 
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-4 text-center border border-emerald-100">
+          <div className="bg-gradient-to-r from-forest-50 to-forest-50 rounded-2xl p-4 text-center border border-forest-100">
             <p className="text-3xl font-bold text-forest">₹50 OFF</p>
             <p className="text-sm text-muted-foreground mt-1">on your first order at Mother Tatwa</p>
           </div>
@@ -80,7 +80,7 @@ export default function RefLanding() {
           <div className="flex flex-col gap-2.5">
             <button
               onClick={() => navigate("/auth/register")}
-              className="w-full bg-gradient-to-r from-[#1a4731] to-[#0d3320] text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg transition-all"
+              className="w-full bg-gradient-to-r from-[#108644] to-[#0a542b] text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg transition-all"
             >
               Create Free Account <ArrowRight className="w-4 h-4" />
             </button>

@@ -36,7 +36,7 @@ function OfferZone() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header banner */}
-      <div className="bg-gradient-to-r from-forest to-emerald-600 text-white py-10 px-4">
+      <div className="bg-gradient-to-r from-forest to-forest-600 text-white py-10 px-4">
         <div className="container mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <Tag className="w-6 h-6 text-gold" />

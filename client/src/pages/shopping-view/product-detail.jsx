@@ -252,7 +252,7 @@ export default function ProductDetailPage() {
                 <span className="text-sm text-muted-foreground">({reviews?.length || 0} reviews)</span>
               </div>
               {p.totalStock > 0
-                ? <span className="self-start text-xs bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-1 rounded-full border border-emerald-200">✓ In Stock ({p.totalStock} left)</span>
+                ? <span className="self-start text-xs bg-forest-50 text-forest-700 font-semibold px-2.5 py-1 rounded-full border border-forest-200">✓ In Stock ({p.totalStock} left)</span>
                 : <span className="self-start text-xs bg-red-50 text-red-600 font-semibold px-2.5 py-1 rounded-full border border-red-200">Out of Stock</span>
               }
             </div>

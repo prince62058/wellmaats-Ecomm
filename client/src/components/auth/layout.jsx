@@ -94,7 +94,7 @@ export default function AuthLayout() {
           <p className="text-[11px] font-bold tracking-[0.28em] uppercase mb-3 text-[#C8A54A]">
             {brand.name || "Mother Tatwa"} · Drops
           </p>
-          <h1 className="font-display font-bold text-[#1a3d2a] leading-[1.08] text-[clamp(2.2rem,3.2vw,3.4rem)] mb-3">
+          <h1 className="font-display font-bold text-[#0c6534] leading-[1.08] text-[clamp(2.2rem,3.2vw,3.4rem)] mb-3">
             Nature
             <br />
             Cures Life
@@ -109,7 +109,7 @@ export default function AuthLayout() {
                 className="flex items-center gap-2.5 px-3 py-2 rounded-xl w-fit bg-white/55 backdrop-blur-sm border border-white/60"
               >
                 <span className="text-base leading-none">{f.emoji}</span>
-                <span className="font-semibold text-sm text-[#1a3d2a]">{f.label}</span>
+                <span className="font-semibold text-sm text-[#0c6534]">{f.label}</span>
               </div>
             ))}
           </div>
@@ -132,7 +132,7 @@ export default function AuthLayout() {
             <div className="flex flex-col items-center mb-6 select-none">
               <TreeLogo size={56} />
               <div className="text-center mt-2">
-                <p className="font-display font-bold text-[1.05rem] tracking-[0.18em] uppercase text-[#1a3d2a]">
+                <p className="font-display font-bold text-[1.05rem] tracking-[0.18em] uppercase text-[#0c6534]">
                   {brand.name || "Mother Tatwa"}
                 </p>
                 <div className="flex items-center justify-center gap-2 my-0.5">

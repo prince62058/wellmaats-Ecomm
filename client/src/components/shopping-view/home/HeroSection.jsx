@@ -79,7 +79,7 @@ function HeroSection() {
 
   return (
     <section ref={containerRef} className="relative h-screen -mt-14 md:-mt-16">
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#0a1f17]">
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#062e18]">
         <video
           ref={videoRef}
           src={heroVideo}

@@ -13,7 +13,7 @@ import { Badge } from "../ui/badge";
 import { shortOrderId, formatOrderDate } from "@/lib/order-utils";
 
 function statusBadgeClass(status) {
-  if (status === "confirmed") return "bg-green-500";
+  if (status === "confirmed") return "bg-forest-500";
   if (status === "rejected") return "bg-red-600";
   return "bg-forest";
 }

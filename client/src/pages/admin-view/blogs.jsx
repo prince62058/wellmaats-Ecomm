@@ -94,7 +94,7 @@ function AdminBlogs() {
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-semibold text-forest text-sm truncate">{b.title}</h3>
                   {b.isPublished
-                    ? <Badge className="bg-emerald-100 text-emerald-700 text-[10px] gap-1 shrink-0"><Globe className="w-2.5 h-2.5" />Published</Badge>
+                    ? <Badge className="bg-forest-100 text-forest-700 text-[10px] gap-1 shrink-0"><Globe className="w-2.5 h-2.5" />Published</Badge>
                     : <Badge variant="secondary" className="text-[10px] gap-1 shrink-0"><Lock className="w-2.5 h-2.5" />Draft</Badge>
                   }
                 </div>
@@ -163,7 +163,7 @@ function AdminBlogs() {
               <Label>Content (HTML supported)</Label>
               <Textarea rows={10} placeholder="<p>Write your article here...</p>" value={form.content} onChange={(e) => set("content", e.target.value)} className="mt-1 font-mono text-xs" />
             </div>
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl">
+            <div className="flex items-center gap-3 p-3 bg-forest-50 rounded-xl">
               <input type="checkbox" id="published" checked={form.isPublished} onChange={(e) => set("isPublished", e.target.checked)} className="w-4 h-4 accent-forest cursor-pointer" />
               <Label htmlFor="published" className="cursor-pointer">
                 {form.isPublished ? "Published (visible to users)" : "Draft (not visible)"}

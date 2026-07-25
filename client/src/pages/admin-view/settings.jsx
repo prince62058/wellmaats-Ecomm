@@ -342,7 +342,7 @@ function AdminSettings() {
 
           {/* Marquee Trust Strip */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 bg-[#1a4731]/5 border-b border-[#1a4731]/10">
+            <div className="flex items-center justify-between px-5 py-4 bg-[#108644]/5 border-b border-[#108644]/10">
               <div>
                 <h3 className="font-bold text-forest text-sm">📌 Marquee Trust Strip</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">Dark-green scrolling band below the hero — short trust phrases.</p>
@@ -612,7 +612,7 @@ function AdminSettings() {
 
           {/* Quick Filter Tabs */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 bg-emerald-50 border-b border-emerald-100">
+            <div className="flex items-center justify-between px-5 py-4 bg-forest-50 border-b border-forest-100">
               <div>
                 <p className="font-bold text-forest text-sm">Quick Filter Tabs</p>
                 <p className="text-xs text-muted-foreground mt-0.5">Filter buttons shown in "Today's Wellness Deals" section on home page.</p>
@@ -736,7 +736,7 @@ function AdminSettings() {
                 promoBanners: [...(prev.promoBanners || []), {
                   badge: "New", title: "Banner Title", subtitle: "Add a short description here",
                   cta: "Shop Now", link: "/shop/listing",
-                  bgGradient: "linear-gradient(135deg, #1a3a2a 0%, #40916c 100%)",
+                  bgGradient: "linear-gradient(135deg, #0a542b 0%, #1aad58 100%)",
                   productImage: "/products/signature.jpg",
                 }],
               }))
@@ -763,8 +763,8 @@ function AdminSettings() {
 
             // Extract colors from gradient for pickers
             const colorMatch = (b.bgGradient || "").match(/#[0-9a-fA-F]{6}/g) || [];
-            const col1 = colorMatch[0] || "#1a3a2a";
-            const col2 = colorMatch[1] || "#40916c";
+            const col1 = colorMatch[0] || "#0a542b";
+            const col2 = colorMatch[1] || "#1aad58";
 
             function applyColors(c1, c2) {
               setBannerField("bgGradient", `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`);
@@ -775,7 +775,7 @@ function AdminSettings() {
                 {/* ── Live mini preview ── */}
                 <div
                   className="relative h-24 flex items-center px-6 gap-4 overflow-hidden"
-                  style={{ background: b.bgGradient || "linear-gradient(135deg,#1a3a2a,#40916c)" }}
+                  style={{ background: b.bgGradient || "linear-gradient(135deg,#0a542b,#1aad58)" }}
                 >
                   <div className="flex-1 min-w-0">
                     {b.badge && (
