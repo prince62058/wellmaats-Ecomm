@@ -37,6 +37,8 @@ import ProductDetailPage from "./pages/shopping-view/product-detail";
 import ReferralPage from "./pages/shopping-view/referral";
 import RefLanding from "./pages/shopping-view/ref-landing";
 
+import DynamicThemeInjector from "./components/common/dynamic-theme-injector";
+
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
     (state) => state.auth
@@ -54,6 +56,7 @@ function App() {
 
   return (
     <LoginModalProvider>
+    <DynamicThemeInjector />
     <div className="flex flex-col min-h-screen bg-white">
       <LoginModal />
       <AutoLoginPrompt />

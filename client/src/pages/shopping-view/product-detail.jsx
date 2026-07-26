@@ -312,14 +312,15 @@ export default function ProductDetailPage() {
                   <Button
                     onClick={() => handleAddToCart(p._id, p.totalStock, qty)}
                     variant="outline"
-                    className="w-full sm:flex-1 h-12 sm:h-13 rounded-2xl border-2 border-forest text-forest hover:bg-leaf font-bold text-sm py-4"
+                    className="w-full sm:flex-1 h-12 sm:h-13 rounded-2xl font-bold text-sm py-4 btn-dynamic-secondary"
                   >
                     <ShoppingBag className="w-4 h-4 mr-2 shrink-0" />
                     <span className="truncate">Add to Cart — ₹{price * qty}</span>
                   </Button>
                   <Button
                     onClick={handleBuyNow}
-                    className="w-full sm:flex-1 h-12 sm:h-13 rounded-2xl bg-forest hover:bg-forest/90 font-bold text-sm py-4 shadow-lg"
+                    variant="buynow"
+                    className="w-full sm:flex-1 h-12 sm:h-13 rounded-2xl font-bold text-sm py-4 shadow-lg btn-dynamic-buynow"
                   >
                     <Zap className="w-4 h-4 mr-2 shrink-0" />
                     Buy Now

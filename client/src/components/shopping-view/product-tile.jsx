@@ -128,14 +128,15 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
             <Button
               onClick={() => handleAddtoCart(product?._id, product?.totalStock)}
               variant="outline"
-              className="w-full rounded-full h-9 border-forest text-forest hover:bg-leaf font-semibold text-xs"
+              className="w-full rounded-full h-9 font-semibold text-xs btn-dynamic-secondary"
             >
               <ShoppingBag className="w-3.5 h-3.5 mr-1 shrink-0" />
               <span className="truncate">Add to Cart</span>
             </Button>
             <Button
               onClick={handleBuyNow}
-              className="w-full rounded-full h-9 bg-gold hover:bg-gold/90 text-white font-semibold text-xs shadow-sm"
+              variant="buynow"
+              className="w-full rounded-full h-9 font-semibold text-xs btn-dynamic-buynow"
             >
               <Zap className="w-3.5 h-3.5 mr-1 shrink-0" />
               <span className="truncate">Buy Now</span>

@@ -31,12 +31,12 @@ function AnnouncementBar() {
   const msg = msgs[current];
 
   return (
-    <div className="relative bg-forest text-white text-center text-xs font-semibold py-2 px-10 sm:px-14 overflow-hidden select-none">
-      <span className="animate-fade-in inline-block max-w-[calc(100%-3rem)] px-1 align-middle line-clamp-2 sm:truncate sm:line-clamp-none">{msg.text}</span>
+    <div className="relative bg-[#108644] text-white text-center text-xs font-semibold py-2 px-10 sm:px-14 overflow-hidden select-none shadow-sm">
+      <span className="animate-fade-in inline-block max-w-[calc(100%-3rem)] px-1 align-middle line-clamp-2 sm:truncate sm:line-clamp-none font-bold text-white">{msg.text}</span>
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100 transition-opacity"
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-opacity"
         aria-label="Dismiss"
       >
         <X className="w-3.5 h-3.5" />
@@ -49,7 +49,7 @@ function AnnouncementBar() {
               key={i}
               type="button"
               onClick={() => setCurrent(i)}
-              className={`rounded-full transition-all ${i === current ? "bg-gold w-3 h-1.5" : "bg-white/30 w-1.5 h-1.5"}`}
+              className={`rounded-full transition-all ${i === current ? "bg-amber-300 w-3 h-1.5" : "bg-white/40 w-1.5 h-1.5"}`}
             />
           ))}
         </div>

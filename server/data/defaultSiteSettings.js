@@ -7,6 +7,16 @@ module.exports = {
     category: "Ayurvedic Wellness & Herbal Drops",
     logo: "/wellmaats-logo.png",
   },
+  themeColors: {
+    primaryBtnBg: "#065f3d",
+    primaryBtnText: "#ffffff",
+    primaryBtnHover: "#04432b",
+    secondaryBtnBg: "#ffffff",
+    secondaryBtnText: "#065f3d",
+    secondaryBtnBorder: "#065f3d",
+    buyNowBtnBg: "#c8963e",
+    buyNowBtnText: "#ffffff",
+  },
   contact: {
     phone: "+91 98765 43210",
     email: "hello@wellmaats.com",

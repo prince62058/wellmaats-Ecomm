@@ -53,11 +53,21 @@ export function useSiteSettings() {
     isLoading,
     settings: data,
 
-    // Brand / contact
+    // Brand / contact / theme
     brand:   data?.brand   || BRAND,
     siteUrl: data?.brand?.siteUrl?.trim() || "",
     contact: data?.contact || BRAND.contact,
     social:  data?.social  || [],
+    themeColors: data?.themeColors || {
+      primaryBtnBg: "#065f3d",
+      primaryBtnText: "#ffffff",
+      primaryBtnHover: "#04432b",
+      secondaryBtnBg: "#ffffff",
+      secondaryBtnText: "#065f3d",
+      secondaryBtnBorder: "#065f3d",
+      buyNowBtnBg: "#c8963e",
+      buyNowBtnText: "#ffffff",
+    },
 
     // Header / announcement
     announcementBar: data?.announcementBar || { enabled: true, messages: [] },

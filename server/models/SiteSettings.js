@@ -4,6 +4,7 @@ const SiteSettingsSchema = new mongoose.Schema(
   {
     key: { type: String, default: "site", unique: true },
     brand: { company: String, name: String, tagline: String, category: String, logo: String, siteUrl: String },
+    themeColors: mongoose.Schema.Types.Mixed,
     contact: { phone: String, email: String, whatsapp: String, office: String, manufacturing: String, hours: String },
     social: [{ platform: String, url: String }],
 

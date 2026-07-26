@@ -38,43 +38,43 @@ function navLinkAccent(href = "", label = "") {
   const key = `${href} ${label}`.toLowerCase();
   if (key.includes("best-seller") || key.includes("best seller")) {
     return {
-      light: "text-amber-200 hover:text-amber-100 hover:bg-amber-400/20",
-      solid: "text-amber-700 hover:text-amber-800 hover:bg-amber-50",
-      chip: "bg-amber-100",
+      light: "text-amber-300 hover:text-white hover:bg-white/15 font-bold",
+      solid: "text-amber-300 hover:text-white hover:bg-white/15 font-bold",
+      chip: "bg-amber-400/25 text-amber-200",
     };
   }
   if (key.includes("offer")) {
     return {
-      light: "text-orange-200 hover:text-orange-100 hover:bg-orange-400/20",
-      solid: "text-orange-600 hover:text-orange-700 hover:bg-orange-50",
-      chip: "bg-orange-100",
+      light: "text-amber-200 hover:text-white hover:bg-white/15 font-bold",
+      solid: "text-amber-200 hover:text-white hover:bg-white/15 font-bold",
+      chip: "bg-amber-400/25 text-amber-200",
     };
   }
   if (key.includes("blog")) {
     return {
-      light: "text-forest-200 hover:text-forest-100 hover:bg-forest-400/20",
-      solid: "text-forest-700 hover:text-forest-800 hover:bg-forest-50",
-      chip: "bg-forest-100",
+      light: "text-emerald-100 hover:text-white hover:bg-white/15 font-semibold",
+      solid: "text-emerald-100 hover:text-white hover:bg-white/15 font-semibold",
+      chip: "bg-white/20 text-emerald-100",
     };
   }
   if (key.includes("track") || key.includes("account")) {
     return {
-      light: "text-sky-200 hover:text-sky-100 hover:bg-sky-400/20",
-      solid: "text-sky-700 hover:text-sky-800 hover:bg-sky-50",
-      chip: "bg-sky-100",
+      light: "text-sky-200 hover:text-white hover:bg-white/15 font-semibold",
+      solid: "text-sky-200 hover:text-white hover:bg-white/15 font-semibold",
+      chip: "bg-sky-400/25 text-sky-200",
     };
   }
   if (key.includes("gift")) {
     return {
-      light: "text-rose-200 hover:text-rose-100 hover:bg-rose-400/20",
-      solid: "text-rose-600 hover:text-rose-700 hover:bg-rose-50",
-      chip: "bg-rose-100",
+      light: "text-rose-200 hover:text-white hover:bg-white/15 font-semibold",
+      solid: "text-rose-200 hover:text-white hover:bg-white/15 font-semibold",
+      chip: "bg-rose-400/25 text-rose-200",
     };
   }
   return {
-    light: "text-white/90 hover:text-white hover:bg-white/15",
-    solid: "text-forest hover:text-forest hover:bg-leaf",
-    chip: "bg-leaf",
+    light: "text-white hover:text-white hover:bg-white/15 font-semibold",
+    solid: "text-white hover:text-white hover:bg-white/15 font-semibold",
+    chip: "bg-white/20 text-white",
   };
 }
 
@@ -85,9 +85,7 @@ function MenuItems({ onNavigate, light, mobile = false }) {
 
   const linkClass = mobile
     ? "w-full text-left px-4 py-3.5 rounded-xl text-base font-medium text-forest hover:bg-leaf active:bg-leaf transition-colors"
-    : light
-      ? "text-sm font-semibold cursor-pointer text-white hover:text-gold transition-colors"
-      : "text-sm font-semibold cursor-pointer text-forest hover:text-forest/80 transition-colors";
+    : "text-sm font-semibold cursor-pointer text-white hover:text-amber-200 transition-colors";
 
   function goCategory(categoryId) {
     sessionStorage.setItem("filters", JSON.stringify({ category: [categoryId] }));
@@ -530,20 +528,16 @@ function ShoppingHeader() {
   return (
     <header
       ref={headerRef}
-      className={`w-full transition-all duration-300 ${
-        light
-          ? "bg-gradient-to-b from-black/55 to-black/5 border-b border-white/10"
-          : "bg-white/97 backdrop-blur-xl border-b border-forest/10 shadow-sm"
-      }`}
+      className="w-full bg-white text-foreground border-b border-gray-100 shadow-sm transition-all duration-300"
     >
-      {/* ── Row 1: Logo | Search | Cart+User ── */}
+      {/* ── Row 1: Logo | Search | Cart+User (WHITE BACKGROUND) ── */}
       <div className="container mx-auto flex h-14 sm:h-16 md:h-[4.75rem] items-center gap-2 md:gap-4 px-3 md:px-6">
         {/* Mobile hamburger left */}
         <Button
           variant="outline"
           size="icon"
           onClick={() => setMobileOpen(true)}
-          className={`lg:hidden rounded-full shrink-0 h-9 w-9 ${light ? "border-white/30 bg-white/10 text-white" : "border-forest/15"}`}
+          className="lg:hidden rounded-full shrink-0 h-9 w-9 border-forest/15 text-forest hover:bg-leaf"
         >
           <Menu className="h-5 w-5" />
         </Button>
@@ -551,7 +545,7 @@ function ShoppingHeader() {
         {/* Logo fills bar height; PNG is tightly cropped */}
         <Link
           to="/shop/home"
-          className="flex items-center shrink-0"
+          className="flex items-center shrink-0 hover:opacity-90 transition-opacity"
           aria-label={brand.company || brand.name || "Wellmaats"}
         >
           {brand.logo ? (
@@ -575,26 +569,22 @@ function ShoppingHeader() {
 
         {/* Search — hide on very small screens (available in menu) */}
         <div className="hidden min-[400px]:block flex-1 max-w-2xl mx-1 sm:mx-2 md:mx-4 min-w-0">
-          <HeaderSearch className="w-full" variant={light ? "dark" : "light"} />
+          <HeaderSearch className="w-full" variant="light" />
         </div>
 
         {/* Right: Cart + Wishlist + User */}
         <div className="flex items-center shrink-0 ml-auto">
           <HeaderRightContent
-            light={light}
+            light={false}
             openCartSheet={openCartSheet}
             setOpenCartSheet={setOpenCartSheet}
           />
         </div>
       </div>
 
-      {/* ── Row 2: Nav — desktop full bar + mobile scroll chips ── */}
+      {/* ── Row 2: Nav — desktop full bar + mobile scroll chips (GREEN #108644) ── */}
       <div
-        className={`border-t ${
-          light
-            ? "border-white/10 bg-black/20 backdrop-blur-md"
-            : "border-forest/8 bg-leaf/70"
-        }`}
+        className="bg-[#108644] text-white py-0.5 shadow-sm"
       >
         <div className="container mx-auto px-3 md:px-6">
           {/* Mobile / tablet: horizontal chips */}
@@ -602,11 +592,7 @@ function ShoppingHeader() {
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className={`shrink-0 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold whitespace-nowrap ${
-                light
-                  ? "bg-white/15 text-white ring-1 ring-white/25"
-                  : "bg-forest text-white"
-              }`}
+              className="shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold whitespace-nowrap bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm"
             >
               ▦ Categories
             </button>
@@ -630,24 +616,18 @@ function ShoppingHeader() {
           {/* Desktop */}
           <div className="hidden lg:flex items-center gap-1.5 h-11 overflow-x-auto scrollbar-hide">
             <div className="shrink-0">
-              <MegaMenu light={light} onNavigate={() => {}} />
+              <MegaMenu light={true} onNavigate={() => {}} />
             </div>
-            <div className={`w-px h-5 mx-1.5 shrink-0 ${light ? "bg-white/25" : "bg-forest/15"}`} />
+            <div className="w-px h-5 mx-1.5 shrink-0 bg-white/25" />
             {navLinks.map((link) => {
               const accent = navLinkAccent(link.href, link.label);
               return (
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${
-                    light ? accent.light : accent.solid
-                  }`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${accent.light}`}
                 >
-                  <span
-                    className={`inline-flex h-5 w-5 items-center justify-center rounded-md text-[11px] ${
-                      light ? "bg-white/15" : accent.chip
-                    }`}
-                  >
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-md text-[12px] bg-white/15">
                     {link.icon}
                   </span>
                   {link.label}
@@ -656,7 +636,7 @@ function ShoppingHeader() {
             })}
             <div className="flex-1 min-w-2" />
             <div className="hidden xl:flex shrink-0">
-              <MenuItems light={light} />
+              <MenuItems light={true} />
             </div>
           </div>
         </div>

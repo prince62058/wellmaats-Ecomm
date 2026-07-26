@@ -285,6 +285,7 @@ function AdminSettings() {
       <Tabs defaultValue="brand" className="w-full">
         <TabsList className="flex flex-wrap h-auto gap-1">
           <TabsTrigger value="brand">Brand</TabsTrigger>
+          <TabsTrigger value="buttoncolors">🎨 Button Colors</TabsTrigger>
           <TabsTrigger value="contact">Contact</TabsTrigger>
           <TabsTrigger value="header">Header</TabsTrigger>
           <TabsTrigger value="heroslides">Hero Slides</TabsTrigger>
@@ -295,6 +296,233 @@ function AdminSettings() {
           <TabsTrigger value="homepage">Homepage</TabsTrigger>
           <TabsTrigger value="footer">Footer</TabsTrigger>
         </TabsList>
+
+        {/* ══ BUTTON COLORS TAB ══ */}
+        <TabsContent value="buttoncolors" className="space-y-6 mt-6">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+            <div>
+              <h3 className="font-bold text-forest text-lg flex items-center gap-2">
+                🎨 Dynamic Button & Theme Colors
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Customize all button colors across the entire website in real time. Changes reflect on all pages instantly upon saving.
+              </p>
+            </div>
+
+            {/* Live Interactive Preview */}
+            <div className="bg-leaf/40 rounded-2xl p-5 border border-forest/15 space-y-3">
+              <span className="text-xs font-bold text-forest uppercase tracking-wider">
+                👁️ Live Interactive Button Preview
+              </span>
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <button
+                  type="button"
+                  style={{
+                    backgroundColor: form.themeColors?.primaryBtnBg || "#065f3d",
+                    color: form.themeColors?.primaryBtnText || "#ffffff",
+                  }}
+                  className="px-5 py-2.5 rounded-full text-xs font-bold shadow-md transition-transform active:scale-95"
+                >
+                  Primary CTA Button
+                </button>
+
+                <button
+                  type="button"
+                  style={{
+                    backgroundColor: form.themeColors?.secondaryBtnBg || "#ffffff",
+                    color: form.themeColors?.secondaryBtnText || "#065f3d",
+                    borderColor: form.themeColors?.secondaryBtnBorder || "#065f3d",
+                    borderWidth: "1px",
+                  }}
+                  className="px-5 py-2.5 rounded-full text-xs font-bold shadow-sm transition-transform active:scale-95 flex items-center gap-1.5"
+                >
+                  🛒 Add to Cart (Secondary)
+                </button>
+
+                <button
+                  type="button"
+                  style={{
+                    backgroundColor: form.themeColors?.buyNowBtnBg || "#c8963e",
+                    color: form.themeColors?.buyNowBtnText || "#ffffff",
+                  }}
+                  className="px-5 py-2.5 rounded-full text-xs font-bold shadow-md transition-transform active:scale-95 flex items-center gap-1.5"
+                >
+                  ⚡ Buy Now Button
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+              {/* 1. Primary Buttons */}
+              <div className="border border-gray-200 rounded-xl p-4 bg-gray-50/50 space-y-4">
+                <h4 className="font-bold text-sm text-forest border-b pb-2 flex items-center gap-1.5">
+                  1. Primary CTA Buttons
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Background Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.primaryBtnBg || "#065f3d"}
+                        onChange={(e) => update("themeColors.primaryBtnBg", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.primaryBtnBg || "#065f3d"}
+                        onChange={(e) => update("themeColors.primaryBtnBg", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Text Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.primaryBtnText || "#ffffff"}
+                        onChange={(e) => update("themeColors.primaryBtnText", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.primaryBtnText || "#ffffff"}
+                        onChange={(e) => update("themeColors.primaryBtnText", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Hover Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.primaryBtnHover || "#04432b"}
+                        onChange={(e) => update("themeColors.primaryBtnHover", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.primaryBtnHover || "#04432b"}
+                        onChange={(e) => update("themeColors.primaryBtnHover", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Secondary / Add to Cart Buttons */}
+              <div className="border border-gray-200 rounded-xl p-4 bg-gray-50/50 space-y-4">
+                <h4 className="font-bold text-sm text-forest border-b pb-2 flex items-center gap-1.5">
+                  2. Add to Cart (Secondary)
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Background Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.secondaryBtnBg || "#ffffff"}
+                        onChange={(e) => update("themeColors.secondaryBtnBg", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.secondaryBtnBg || "#ffffff"}
+                        onChange={(e) => update("themeColors.secondaryBtnBg", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Text Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.secondaryBtnText || "#065f3d"}
+                        onChange={(e) => update("themeColors.secondaryBtnText", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.secondaryBtnText || "#065f3d"}
+                        onChange={(e) => update("themeColors.secondaryBtnText", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Border Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.secondaryBtnBorder || "#065f3d"}
+                        onChange={(e) => update("themeColors.secondaryBtnBorder", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.secondaryBtnBorder || "#065f3d"}
+                        onChange={(e) => update("themeColors.secondaryBtnBorder", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Buy Now Buttons */}
+              <div className="border border-gray-200 rounded-xl p-4 bg-gray-50/50 space-y-4">
+                <h4 className="font-bold text-sm text-forest border-b pb-2 flex items-center gap-1.5">
+                  3. Buy Now (Action)
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Background Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.buyNowBtnBg || "#c8963e"}
+                        onChange={(e) => update("themeColors.buyNowBtnBg", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.buyNowBtnBg || "#c8963e"}
+                        onChange={(e) => update("themeColors.buyNowBtnBg", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Text Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.buyNowBtnText || "#ffffff"}
+                        onChange={(e) => update("themeColors.buyNowBtnText", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.buyNowBtnText || "#ffffff"}
+                        onChange={(e) => update("themeColors.buyNowBtnText", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Presets */}
+            <div className="border-t pt-4 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-bold text-muted-foreground mr-2">⚡ Quick Color Presets:</span>
+              <button
+                type="button"
+                onClick={() => setForm((p) => ({
+                  ...p,
+                  themeColors: {
+                    primaryBtnBg: "#065f3d", primaryBtnText: "#ffffff", primaryBtnHover: "#04432b",
+                    secondaryBtnBg: "#ffffff", secondaryBtnText: "#065f3d", secondaryBtnBorder: "#065f3d",
+                    buyNowBtnBg: "#c8963e", buyNowBtnText: "#ffffff"
+                  }
+                }))}
+                className="px-3 py-1 rounded-lg text-xs font-medium bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+              >
+                🌿 Emerald & Gold (Default)
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm((p) => ({
+                  ...p,
+                  themeColors: {
+                    primaryBtnBg: "#108644", primaryBtnText: "#ffffff", primaryBtnHover: "#0b6633",
+                    secondaryBtnBg: "#ffffff", secondaryBtnText: "#108644", secondaryBtnBorder: "#108644",
+                    buyNowBtnBg: "#f59e0b", buyNowBtnText: "#ffffff"
+                  }
+                }))}
+                className="px-3 py-1 rounded-lg text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200"
+              >
+                🌱 Classic Green & Amber
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm((p) => ({
+                  ...p,
+                  themeColors: {
+                    primaryBtnBg: "#1e3a8a", primaryBtnText: "#ffffff", primaryBtnHover: "#1e40af",
+                    secondaryBtnBg: "#ffffff", secondaryBtnText: "#1e3a8a", secondaryBtnBorder: "#1e3a8a",
+                    buyNowBtnBg: "#d97706", buyNowBtnText: "#ffffff"
+                  }
+                }))}
+                className="px-3 py-1 rounded-lg text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200"
+              >
+                🔷 Royal Blue & Gold
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm((p) => ({
+                  ...p,
+                  themeColors: {
+                    primaryBtnBg: "#831843", primaryBtnText: "#ffffff", primaryBtnHover: "#9d174d",
+                    secondaryBtnBg: "#ffffff", secondaryBtnText: "#831843", secondaryBtnBorder: "#831843",
+                    buyNowBtnBg: "#eab308", buyNowBtnText: "#ffffff"
+                  }
+                }))}
+                className="px-3 py-1 rounded-lg text-xs font-medium bg-rose-100 text-rose-800 hover:bg-rose-200"
+              >
+                🌺 Deep Rose & Gold
+              </button>
+            </div>
+          </div>
+        </TabsContent>
 
         {/* ══ HEADER TAB ══ */}
         <TabsContent value="header" className="space-y-5 mt-6">

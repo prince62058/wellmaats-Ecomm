@@ -30,6 +30,15 @@
     --forest: 147 79% 29%;
     --gold: 42 52% 54%;
     --leaf: 120 100% 98%;
+
+    --btn-primary-bg: #065f3d;
+    --btn-primary-text: #ffffff;
+    --btn-primary-hover: #04432b;
+    --btn-secondary-bg: #ffffff;
+    --btn-secondary-text: #065f3d;
+    --btn-secondary-border: #065f3d;
+    --btn-buynow-bg: #c8963e;
+    --btn-buynow-text: #ffffff;
   }
 
   .dark {
@@ -143,3 +152,36 @@ html {
 .animate-float { animation: float 6s ease-in-out infinite; }
 .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+
+/* ── Dynamic Button Utility Classes ── */
+.btn-dynamic-primary {
+  background-color: var(--btn-primary-bg, #065f3d) !important;
+  color: var(--btn-primary-text, #ffffff) !important;
+  transition: all 0.2s ease-in-out;
+}
+.btn-dynamic-primary:hover {
+  background-color: var(--btn-primary-hover, #04432b) !important;
+  opacity: 0.95;
+}
+
+.btn-dynamic-secondary {
+  background-color: var(--btn-secondary-bg, #ffffff) !important;
+  color: var(--btn-secondary-text, #065f3d) !important;
+  border-color: var(--btn-secondary-border, #065f3d) !important;
+  transition: all 0.2s ease-in-out;
+}
+.btn-dynamic-secondary:hover {
+  filter: brightness(0.96);
+  opacity: 0.95;
+}
+
+.btn-dynamic-buynow {
+  background-color: var(--btn-buynow-bg, #c8963e) !important;
+  color: var(--btn-buynow-text, #ffffff) !important;
+  transition: all 0.2s ease-in-out;
+}
+.btn-dynamic-buynow:hover {
+  filter: brightness(0.94);
+  opacity: 0.95;
+}
+

@@ -155,7 +155,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               <Button disabled className="w-full mt-6">Out of Stock</Button>
             ) : (
               <Button
-                className="w-full mt-6 bg-forest hover:bg-forest/90 py-6 text-lg"
+                className="w-full mt-6 btn-dynamic-primary py-6 text-lg"
                 onClick={() => handleAddToCart(productDetails?._id, productDetails?.totalStock)}
               >
                 Add to Cart — ₹{price}
