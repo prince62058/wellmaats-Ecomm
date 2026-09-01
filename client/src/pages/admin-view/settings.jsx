@@ -1,0 +1,1551 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  fetchSiteSettings,
+  resetSiteSettings,
+  updateSiteSettings,
+} from "@/store/site-settings-slice";
+import {
+  Plus, Trash2, Upload, Loader2, Film, Image,
+  Leaf, ShieldCheck, FlaskConical, Ban, Heart, Flag,
+  Truck, Star, Clock, Zap, Award, CheckCircle,
+  ChevronDown, ChevronRight, GripVertical, Sparkles,
+} from "lucide-react";
+import IconPicker from "@/components/common/icon-picker";
+import DynamicIcon, { DYNAMIC_ICONS_MAP } from "@/components/common/dynamic-icon";
+
+const ICON_MAP = DYNAMIC_ICONS_MAP;
+const ICON_OPTIONS = Object.keys(ICON_MAP);
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import axiosInstance from "@/lib/axiosInstance";
+
+function Field({ label, children }) {
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      {children}
+    </div>
+  );
+}
+
+// ── Small icon/image uploader (used in Mega Menu, Why Choose Us) ──
+function IconUpload({ value, iconOptions, onChange }) {
+  const [uploading, setUploading] = useState(false);
+  const ref = useRef();
+  const isImg = value && (value.startsWith("http") || value.startsWith("/"));
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("my_file", file);
+      const res = await axiosInstance.post("/api/admin/products/upload-image", fd);
+      if (res.data?.result?.url) onChange(res.data.result.url);
+    } catch { alert("Upload failed. Try again."); }
+    setUploading(false);
+    e.target.value = "";
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Icon</label>
+      <div className="flex items-center gap-2">
+        {/* Preview */}
+        <div className="w-9 h-9 rounded-xl bg-leaf border border-forest/15 flex items-center justify-center shrink-0 overflow-hidden">
+          {isImg
+            ? <img src={value} alt="" className="w-full h-full object-contain p-1" />
+            : (() => { const I = ICON_MAP[value] || Leaf; return <I className="w-4 h-4 text-forest" />; })()}
+        </div>
+        {/* Dropdown for built-in icons */}
+        <select value={isImg ? "__custom__" : (value || "Leaf")}
+          onChange={(e) => { if (e.target.value !== "__custom__") onChange(e.target.value); }}
+          className="flex-1 h-9 rounded-xl border border-gray-200 bg-white text-xs px-2 focus:outline-none focus:ring-2 focus:ring-forest/20">
+          {(iconOptions || ICON_OPTIONS).map((n) => <option key={n} value={n}>{n}</option>)}
+          {isImg && <option value="__custom__">📎 Custom (uploaded)</option>}
+        </select>
+        {/* Upload button */}
+        <input ref={ref} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+        <button type="button" onClick={() => ref.current?.click()} disabled={uploading}
+          className="h-9 px-3 rounded-xl border border-forest/20 bg-leaf text-forest text-xs font-semibold hover:bg-forest hover:text-white transition-colors flex items-center gap-1.5 shrink-0 disabled:opacity-50">
+          {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+          {uploading ? "" : "Upload"}
+        </button>
+        {isImg && (
+          <button type="button" onClick={() => onChange("Leaf")}
+            className="h-9 w-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center shrink-0">
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Logo uploader ─────────────────────────────────────────────
+function LogoUpload({ value, onChange }) {
+  const [uploading, setUploading] = useState(false);
+  const ref = useRef();
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("my_file", file);
+      const res = await axiosInstance.post("/api/admin/products/upload-image", fd);
+      if (res.data?.result?.url) onChange(res.data.result.url);
+    } catch { alert("Upload failed. Try again."); }
+    setUploading(false);
+    e.target.value = "";
+  }
+
+  return (
+    <div className="flex items-center gap-4">
+      {/* Preview */}
+      <div className="w-16 h-16 rounded-xl border border-forest/15 bg-leaf/30 flex items-center justify-center overflow-hidden shrink-0">
+        {value
+          ? <img src={value} alt="Logo" className="w-full h-full object-contain p-1" />
+          : <span className="text-2xl">🌿</span>}
+      </div>
+      <div className="flex flex-col gap-2">
+        <input ref={ref} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+        <Button type="button" size="sm" variant="outline" disabled={uploading}
+          onClick={() => ref.current?.click()}>
+          {uploading ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Uploading…</> : <><Upload className="w-3.5 h-3.5 mr-1.5" />Upload Logo</>}
+        </Button>
+        {value && (
+          <Button type="button" size="sm" variant="ghost" className="text-red-500 text-xs"
+            onClick={() => onChange("")}>Remove</Button>
+        )}
+        <p className="text-xs text-muted-foreground">PNG or SVG recommended · transparent bg</p>
+      </div>
+    </div>
+  );
+}
+
+// ── Slide media uploader (image or video) ─────────────────
+function SlideMediaUpload({ label, icon: Icon, accept, field, slideIdx, value, onChange }) {
+  const [uploading, setUploading] = useState(false);
+  const ref = useRef();
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("my_file", file);
+      const res = await axiosInstance.post("/api/admin/products/upload-image", fd);
+      if (res.data?.result?.url) onChange(res.data.result.url);
+      else throw new Error("No URL returned");
+    } catch {
+      alert("Upload failed. Try again.");
+    }
+    setUploading(false);
+    e.target.value = "";
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-gray-600 flex items-center gap-1"><Icon className="w-3.5 h-3.5" />{label}</label>
+      <div className="flex gap-2">
+        <Input
+          placeholder={`Paste URL or upload ↑`}
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="text-xs"
+        />
+        <button
+          type="button"
+          onClick={() => ref.current?.click()}
+          disabled={uploading}
+          className="shrink-0 flex items-center gap-1.5 bg-forest text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-forest/90 disabled:opacity-60 transition"
+        >
+          {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+          {uploading ? "Uploading…" : "Upload"}
+        </button>
+        <input ref={ref} type="file" accept={accept} className="hidden" onChange={handleFile} />
+      </div>
+      {/* Preview */}
+      {value && field === "image" && (
+        <img src={value} alt="" className="h-16 w-32 object-cover rounded-lg border border-forest/15 mt-1" onError={(e) => e.target.style.display = "none"} />
+      )}
+      {value && field === "video" && (
+        <video src={value} className="h-16 w-32 rounded-lg border border-forest/15 mt-1 object-cover" muted playsInline />
+      )}
+    </div>
+  );
+}
+
+function AdminSettings() {
+  const dispatch = useDispatch();
+  const { toast } = useToast();
+  const { data } = useSelector((state) => state.siteSettings);
+  const [form, setForm] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchSiteSettings());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (data) setForm(JSON.parse(JSON.stringify(data)));
+  }, [data]);
+
+  function update(path, value) {
+    setForm((prev) => {
+      const next = { ...prev };
+      const keys = path.split(".");
+      let obj = next;
+      for (let i = 0; i < keys.length - 1; i++) {
+        obj[keys[i]] = { ...obj[keys[i]] };
+        obj = obj[keys[i]];
+      }
+      obj[keys[keys.length - 1]] = value;
+      return next;
+    });
+  }
+
+  function updateList(key, index, field, value) {
+    setForm((prev) => {
+      const list = [...(prev?.[key] || [])];
+      if (list[index]) {
+        list[index] = { ...list[index], [field]: value };
+      }
+      return { ...prev, [key]: list };
+    });
+  }
+
+  function addListItem(key, template, atTop = true) {
+    setForm((prev) => {
+      const currentList = prev?.[key] || [];
+      const updated = atTop ? [template, ...currentList] : [...currentList, template];
+      return { ...prev, [key]: updated };
+    });
+    const niceName = key.replace(/([A-Z])/g, " $1").toLowerCase();
+    toast({ title: `Added new item to ${niceName} (at top) ✨` });
+  }
+
+  function removeListItem(key, index) {
+    setForm((prev) => {
+      const currentList = prev?.[key] || [];
+      return {
+        ...prev,
+        [key]: currentList.filter((_, i) => i !== index),
+      };
+    });
+    toast({ title: "Item removed" });
+  }
+
+  function updateCommaList(key, text) {
+    update(key, text.split(",").map((s) => s.trim()).filter(Boolean));
+  }
+
+  async function handleSave() {
+    if (!form) return;
+    setSaving(true);
+    const {
+      _id, key, createdAt, updatedAt, __v, ...payload
+    } = form;
+    const result = await dispatch(updateSiteSettings(payload));
+    setSaving(false);
+    if (result?.payload?.success) {
+      toast({ title: "Site settings saved successfully" });
+    } else {
+      toast({ title: "Failed to save settings", variant: "destructive" });
+    }
+  }
+
+  async function handleReset() {
+    const result = await dispatch(resetSiteSettings());
+    if (result?.payload?.success) {
+      toast({ title: "Settings reset to defaults" });
+    }
+  }
+
+  if (!form) {
+    return <p className="text-muted-foreground">Loading site settings...</p>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-forest">Site Settings</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage brand, contact, homepage content & footer — changes reflect on the live site instantly.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleReset}>Reset Defaults</Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? "Saving..." : "Save All Changes"}
+          </Button>
+        </div>
+      </div>
+
+      <Tabs defaultValue="brand" className="w-full">
+        <TabsList className="flex flex-wrap h-auto gap-1">
+          <TabsTrigger value="brand">Brand</TabsTrigger>
+          <TabsTrigger value="buttoncolors">🎨 Button Colors</TabsTrigger>
+          <TabsTrigger value="contact">Contact</TabsTrigger>
+          <TabsTrigger value="header">Header</TabsTrigger>
+          <TabsTrigger value="heroslides">Hero Slides</TabsTrigger>
+          <TabsTrigger value="categories">Categories</TabsTrigger>
+          <TabsTrigger value="promobanners">Promo Banners</TabsTrigger>
+          <TabsTrigger value="megamenu">Mega Menu</TabsTrigger>
+          <TabsTrigger value="herbs">Herbs</TabsTrigger>
+          <TabsTrigger value="homepage">Homepage</TabsTrigger>
+          <TabsTrigger value="footer">Footer</TabsTrigger>
+        </TabsList>
+
+        {/* ══ BUTTON COLORS TAB ══ */}
+        <TabsContent value="buttoncolors" className="space-y-6 mt-6">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+            <div>
+              <h3 className="font-bold text-forest text-lg flex items-center gap-2">
+                🎨 Dynamic Button & Theme Colors
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Customize all button colors across the entire website in real time. Changes reflect on all pages instantly upon saving.
+              </p>
+            </div>
+
+            {/* Live Interactive Preview */}
+            <div className="bg-leaf/40 rounded-2xl p-5 border border-forest/15 space-y-3">
+              <span className="text-xs font-bold text-forest uppercase tracking-wider">
+                👁️ Live Interactive Button Preview
+              </span>
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <button
+                  type="button"
+                  style={{
+                    backgroundColor: form.themeColors?.primaryBtnBg || "#065f3d",
+                    color: form.themeColors?.primaryBtnText || "#ffffff",
+                  }}
+                  className="px-5 py-2.5 rounded-full text-xs font-bold shadow-md transition-transform active:scale-95"
+                >
+                  Primary CTA Button
+                </button>
+
+                <button
+                  type="button"
+                  style={{
+                    backgroundColor: form.themeColors?.secondaryBtnBg || "#ffffff",
+                    color: form.themeColors?.secondaryBtnText || "#065f3d",
+                    borderColor: form.themeColors?.secondaryBtnBorder || "#065f3d",
+                    borderWidth: "1px",
+                  }}
+                  className="px-5 py-2.5 rounded-full text-xs font-bold shadow-sm transition-transform active:scale-95 flex items-center gap-1.5"
+                >
+                  🛒 Add to Cart (Secondary)
+                </button>
+
+                <button
+                  type="button"
+                  style={{
+                    backgroundColor: form.themeColors?.buyNowBtnBg || "#c8963e",
+                    color: form.themeColors?.buyNowBtnText || "#ffffff",
+                  }}
+                  className="px-5 py-2.5 rounded-full text-xs font-bold shadow-md transition-transform active:scale-95 flex items-center gap-1.5"
+                >
+                  ⚡ Buy Now Button
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+              {/* 1. Primary Buttons */}
+              <div className="border border-gray-200 rounded-xl p-4 bg-gray-50/50 space-y-4">
+                <h4 className="font-bold text-sm text-forest border-b pb-2 flex items-center gap-1.5">
+                  1. Primary CTA Buttons
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Background Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.primaryBtnBg || "#065f3d"}
+                        onChange={(e) => update("themeColors.primaryBtnBg", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.primaryBtnBg || "#065f3d"}
+                        onChange={(e) => update("themeColors.primaryBtnBg", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Text Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.primaryBtnText || "#ffffff"}
+                        onChange={(e) => update("themeColors.primaryBtnText", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.primaryBtnText || "#ffffff"}
+                        onChange={(e) => update("themeColors.primaryBtnText", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Hover Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.primaryBtnHover || "#04432b"}
+                        onChange={(e) => update("themeColors.primaryBtnHover", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.primaryBtnHover || "#04432b"}
+                        onChange={(e) => update("themeColors.primaryBtnHover", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Secondary / Add to Cart Buttons */}
+              <div className="border border-gray-200 rounded-xl p-4 bg-gray-50/50 space-y-4">
+                <h4 className="font-bold text-sm text-forest border-b pb-2 flex items-center gap-1.5">
+                  2. Add to Cart (Secondary)
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Background Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.secondaryBtnBg || "#ffffff"}
+                        onChange={(e) => update("themeColors.secondaryBtnBg", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.secondaryBtnBg || "#ffffff"}
+                        onChange={(e) => update("themeColors.secondaryBtnBg", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Text Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.secondaryBtnText || "#065f3d"}
+                        onChange={(e) => update("themeColors.secondaryBtnText", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.secondaryBtnText || "#065f3d"}
+                        onChange={(e) => update("themeColors.secondaryBtnText", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Border Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.secondaryBtnBorder || "#065f3d"}
+                        onChange={(e) => update("themeColors.secondaryBtnBorder", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.secondaryBtnBorder || "#065f3d"}
+                        onChange={(e) => update("themeColors.secondaryBtnBorder", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Buy Now Buttons */}
+              <div className="border border-gray-200 rounded-xl p-4 bg-gray-50/50 space-y-4">
+                <h4 className="font-bold text-sm text-forest border-b pb-2 flex items-center gap-1.5">
+                  3. Buy Now (Action)
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Background Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.buyNowBtnBg || "#c8963e"}
+                        onChange={(e) => update("themeColors.buyNowBtnBg", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.buyNowBtnBg || "#c8963e"}
+                        onChange={(e) => update("themeColors.buyNowBtnBg", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700 block mb-1">Text Color</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={form.themeColors?.buyNowBtnText || "#ffffff"}
+                        onChange={(e) => update("themeColors.buyNowBtnText", e.target.value)}
+                        className="w-8 h-8 rounded-lg border cursor-pointer p-0.5" />
+                      <Input value={form.themeColors?.buyNowBtnText || "#ffffff"}
+                        onChange={(e) => update("themeColors.buyNowBtnText", e.target.value)} className="text-xs font-mono" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Presets */}
+            <div className="border-t pt-4 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-bold text-muted-foreground mr-2">⚡ Quick Color Presets:</span>
+              <button
+                type="button"
+                onClick={() => setForm((p) => ({
+                  ...p,
+                  themeColors: {
+                    primaryBtnBg: "#065f3d", primaryBtnText: "#ffffff", primaryBtnHover: "#04432b",
+                    secondaryBtnBg: "#ffffff", secondaryBtnText: "#065f3d", secondaryBtnBorder: "#065f3d",
+                    buyNowBtnBg: "#c8963e", buyNowBtnText: "#ffffff"
+                  }
+                }))}
+                className="px-3 py-1 rounded-lg text-xs font-medium bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+              >
+                🌿 Emerald & Gold (Default)
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm((p) => ({
+                  ...p,
+                  themeColors: {
+                    primaryBtnBg: "#108644", primaryBtnText: "#ffffff", primaryBtnHover: "#0b6633",
+                    secondaryBtnBg: "#ffffff", secondaryBtnText: "#108644", secondaryBtnBorder: "#108644",
+                    buyNowBtnBg: "#f59e0b", buyNowBtnText: "#ffffff"
+                  }
+                }))}
+                className="px-3 py-1 rounded-lg text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200"
+              >
+                🌱 Classic Green & Amber
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm((p) => ({
+                  ...p,
+                  themeColors: {
+                    primaryBtnBg: "#1e3a8a", primaryBtnText: "#ffffff", primaryBtnHover: "#1e40af",
+                    secondaryBtnBg: "#ffffff", secondaryBtnText: "#1e3a8a", secondaryBtnBorder: "#1e3a8a",
+                    buyNowBtnBg: "#d97706", buyNowBtnText: "#ffffff"
+                  }
+                }))}
+                className="px-3 py-1 rounded-lg text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200"
+              >
+                🔷 Royal Blue & Gold
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm((p) => ({
+                  ...p,
+                  themeColors: {
+                    primaryBtnBg: "#831843", primaryBtnText: "#ffffff", primaryBtnHover: "#9d174d",
+                    secondaryBtnBg: "#ffffff", secondaryBtnText: "#831843", secondaryBtnBorder: "#831843",
+                    buyNowBtnBg: "#eab308", buyNowBtnText: "#ffffff"
+                  }
+                }))}
+                className="px-3 py-1 rounded-lg text-xs font-medium bg-rose-100 text-rose-800 hover:bg-rose-200"
+              >
+                🌺 Deep Rose & Gold
+              </button>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* ══ HEADER TAB ══ */}
+        <TabsContent value="header" className="space-y-5 mt-6">
+
+          {/* Announcement Bar */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-amber-50 border-b border-amber-100">
+              <div>
+                <h3 className="font-bold text-forest text-sm">📢 Announcement Bar</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Top banner that cycles messages for all visitors.</p>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <div className={`w-10 h-5 rounded-full transition-colors relative ${form.announcementBar?.enabled !== false ? "bg-forest" : "bg-gray-200"}`}
+                  onClick={() => setForm((p) => ({ ...p, announcementBar: { ...(p.announcementBar||{}), enabled: !(p.announcementBar?.enabled !== false) } }))}>
+                  <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${form.announcementBar?.enabled !== false ? "left-5" : "left-0.5"}`} />
+                </div>
+                <span className="text-xs font-semibold">{form.announcementBar?.enabled !== false ? "Enabled" : "Disabled"}</span>
+              </label>
+            </div>
+            <div className="p-5 space-y-2">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Messages (cycling)</p>
+                <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1"
+                  onClick={() => setForm((p) => ({ ...p, announcementBar: { ...(p.announcementBar||{}), messages: [...(p.announcementBar?.messages||[]), ""] } }))}>
+                  <Plus className="w-3.5 h-3.5" /> Add Message
+                </button>
+              </div>
+              {(form.announcementBar?.messages || []).length === 0 && (
+                <p className="text-xs text-muted-foreground italic py-2">No messages yet — add one above</p>
+              )}
+              {(form.announcementBar?.messages || []).map((msg, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-5 shrink-0 font-bold">{i+1}.</span>
+                  <Input value={msg} placeholder="🚚 Free Shipping above ₹499 | 🌿 100% Ayurvedic"
+                    className="flex-1 h-9 rounded-xl border-gray-200 text-sm"
+                    onChange={(e) => setForm((p) => { const m=[...(p.announcementBar?.messages||[])]; m[i]=e.target.value; return {...p, announcementBar:{...(p.announcementBar||{}), messages:m}}; })} />
+                  <button type="button" onClick={() => setForm((p) => { const m=(p.announcementBar?.messages||[]).filter((_,j)=>j!==i); return {...p, announcementBar:{...(p.announcementBar||{}), messages:m}}; })}
+                    className="w-8 h-8 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center shrink-0">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Marquee Trust Strip */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-[#108644]/5 border-b border-[#108644]/10">
+              <div>
+                <h3 className="font-bold text-forest text-sm">📌 Marquee Trust Strip</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Dark-green scrolling band below the hero — short trust phrases.</p>
+              </div>
+              <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1"
+                onClick={() => setForm((p) => ({ ...p, marqueeMessages: [...(p.marqueeMessages||[]), ""] }))}>
+                <Plus className="w-3.5 h-3.5" /> Add Item
+              </button>
+            </div>
+            <div className="p-5 space-y-2">
+              {(form.marqueeMessages || []).length === 0 && (
+                <p className="text-xs text-muted-foreground italic py-2">No items yet — add one above</p>
+              )}
+              {(form.marqueeMessages || []).map((msg, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-5 shrink-0 font-bold">{i+1}.</span>
+                  <Input value={msg} placeholder="🌿 100% Ayurvedic"
+                    className="flex-1 h-9 rounded-xl border-gray-200 text-sm"
+                    onChange={(e) => setForm((p) => { const m=[...(p.marqueeMessages||[])]; m[i]=e.target.value; return {...p, marqueeMessages:m}; })} />
+                  <button type="button" onClick={() => setForm((p) => ({ ...p, marqueeMessages: (p.marqueeMessages||[]).filter((_,j)=>j!==i) }))}
+                    className="w-8 h-8 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center shrink-0">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Header Nav Links */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-blue-50 border-b border-blue-100">
+              <div>
+                <h3 className="font-bold text-forest text-sm">🔗 Header Nav Links</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Quick links shown in the top nav bar (Best Sellers, Offer Zone…).</p>
+              </div>
+              <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1"
+                onClick={() => setForm((p) => ({ ...p, headerNavLinks: [...(p.headerNavLinks||[]), { label:"", href:"", icon:"" }] }))}>
+                <Plus className="w-3.5 h-3.5" /> Add Link
+              </button>
+            </div>
+            <div className="p-5 space-y-3">
+              {(form.headerNavLinks || []).length === 0 && (
+                <p className="text-xs text-muted-foreground italic py-2">No nav links — add one above</p>
+              )}
+              {(form.headerNavLinks || []).map((link, i) => (
+                <div key={i} className="grid grid-cols-1 sm:grid-cols-[40px_1fr_2fr_36px] gap-2 items-end">
+                  <div className="space-y-0.5">
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Icon</label>
+                    <Input value={link.icon||""} placeholder="🔥" className="h-9 rounded-xl border-gray-200 text-center text-base"
+                      onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],icon:e.target.value}; return {...p,headerNavLinks:a}; })} />
+                  </div>
+                  <div className="space-y-0.5">
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Label *</label>
+                    <Input value={link.label} placeholder="Best Sellers" className="h-9 rounded-xl border-gray-200 text-sm"
+                      onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],label:e.target.value}; return {...p,headerNavLinks:a}; })} />
+                  </div>
+                  <div className="space-y-0.5">
+                    <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">URL / Link</label>
+                    <Input value={link.href} placeholder="/shop/best-sellers" className="h-9 rounded-xl border-gray-200 text-sm"
+                      onChange={(e) => setForm((p) => { const a=[...p.headerNavLinks]; a[i]={...a[i],href:e.target.value}; return {...p,headerNavLinks:a}; })} />
+                  </div>
+                  <button type="button" onClick={() => setForm((p) => ({ ...p, headerNavLinks: p.headerNavLinks.filter((_,j)=>j!==i) }))}
+                    className="w-9 h-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center self-end">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* ══ HERO SLIDES TAB ══ */}
+        <TabsContent value="heroslides" className="space-y-4 mt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-forest text-base">🖼️ Hero Carousel Slides</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Full-width image carousel at the top of home page. Up to 6 slides.</p>
+            </div>
+            <Button size="sm" className="bg-forest hover:bg-forest/90 gap-1.5 rounded-xl" onClick={() =>
+              setForm((p) => ({ ...p, heroSlides: [...(p.heroSlides||[]), { image:"", video:"", badge:"", title:"", subtitle:"", cta:"Shop Now", link:"/shop/listing", accent:"#C8A54A" }] }))
+            }><Plus className="w-4 h-4" /> Add Slide</Button>
+          </div>
+
+          {(!form.heroSlides || form.heroSlides.length === 0) && (
+            <div className="border-2 border-dashed border-forest/15 rounded-2xl py-16 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-leaf flex items-center justify-center mx-auto mb-4">
+                <Image className="w-8 h-8 text-forest/50" />
+              </div>
+              <p className="font-bold text-forest text-sm">No slides yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Click "Add Slide" to create your first hero carousel slide</p>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {(form.heroSlides || []).map((s, i) => {
+              function upd(field, val) {
+                setForm((p) => { const a = JSON.parse(JSON.stringify(p.heroSlides)); a[i][field] = val; return { ...p, heroSlides: a }; });
+              }
+              return (
+                <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  {/* Slide header */}
+                  <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-forest text-white text-xs font-bold flex items-center justify-center">{i+1}</div>
+                      <span className="font-bold text-forest text-sm">Slide {i+1}</span>
+                      {s.title && <span className="text-xs text-muted-foreground">— {s.title.slice(0,30)}{s.title.length>30?"…":""}</span>}
+                    </div>
+                    <button type="button" onClick={() => setForm((p) => ({ ...p, heroSlides: p.heroSlides.filter((_,j)=>j!==i) }))}
+                      className="w-8 h-8 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="p-5 space-y-4">
+                    {/* Media */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <SlideMediaUpload label="Background Image" icon={Image} accept="image/*" field="image"
+                        value={s.image} onChange={(v) => upd("image", v)} />
+                      <SlideMediaUpload label="Background Video (overrides image)" icon={Film} accept="video/*" field="video"
+                        value={s.video} onChange={(v) => upd("video", v)} />
+                    </div>
+
+                    {/* Text fields — labeled */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Badge Text</label>
+                        <Input value={s.badge||""} placeholder="🏆 Best Seller" className="h-9 rounded-xl border-gray-200 text-sm"
+                          onChange={(e) => upd("badge", e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">CTA Button Text</label>
+                        <Input value={s.cta||""} placeholder="Shop Now" className="h-9 rounded-xl border-gray-200 text-sm"
+                          onChange={(e) => upd("cta", e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Headline / Title *</label>
+                      <Input value={s.title||""} placeholder="e.g. Immunity & Wellness Drops" className="h-9 rounded-xl border-gray-200 text-sm"
+                        onChange={(e) => upd("title", e.target.value)} />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Subtitle / Tagline</label>
+                      <Input value={s.subtitle||""} placeholder="Short supporting line" className="h-9 rounded-xl border-gray-200 text-sm"
+                        onChange={(e) => upd("subtitle", e.target.value)} />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Button Link (URL)</label>
+                        <Input value={s.link||""} placeholder="/shop/listing?category=..." className="h-9 rounded-xl border-gray-200 text-sm"
+                          onChange={(e) => upd("link", e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Accent Color (badge & CTA)</label>
+                        <div className="flex items-center gap-2 h-9 px-3 border border-gray-200 rounded-xl bg-gray-50">
+                          <input type="color" value={s.accent||"#C8A54A"} onChange={(e) => upd("accent", e.target.value)}
+                            className="w-7 h-7 rounded-lg border border-gray-200 cursor-pointer p-0.5 shrink-0" />
+                          <span className="text-xs text-muted-foreground font-mono">{s.accent||"#C8A54A"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </TabsContent>
+
+        {/* ══ HERBS TAB ══ */}
+        <TabsContent value="herbs" className="space-y-4 mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h3 className="font-semibold text-forest">🌿 Ayurvedic Herbs Strip</h3>
+              <p className="text-xs text-muted-foreground">Shown on home page after "How it Works". Add emoji, name and benefit for each herb.</p>
+            </div>
+            <Button size="sm" variant="outline" onClick={() =>
+              addListItem("herbs", { emoji: "🌿", name: "", benefit: "" })
+            }><Plus className="w-4 h-4 mr-1" />Add Herb</Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {(form.herbs || []).map((h, i) => (
+              <div key={i} className="border rounded-xl p-3 bg-gray-50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">{h.emoji || "🌿"}</span>
+                  <Button size="icon" variant="ghost" onClick={() => removeListItem("herbs", i)}>
+                    <Trash2 className="w-4 h-4 text-red-400" />
+                  </Button>
+                </div>
+                <Input placeholder="Emoji (🌿)" value={h.emoji || ""} onChange={(e) => updateList("herbs", i, "emoji", e.target.value)} className="text-center text-lg" />
+                <Input placeholder="Herb name (e.g. Ashwagandha)" value={h.name || ""} onChange={(e) => updateList("herbs", i, "name", e.target.value)} />
+                <Input placeholder="Benefit (e.g. Stress & Anxiety)" value={h.benefit || ""} onChange={(e) => updateList("herbs", i, "benefit", e.target.value)} />
+              </div>
+            ))}
+          </div>
+          {(!form.herbs || form.herbs.length === 0) && (
+            <div className="text-center py-10 text-muted-foreground border-2 border-dashed border-forest/10 rounded-xl">
+              No herbs yet. Click "Add Herb" to add your first ingredient.
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="brand" className="space-y-4 mt-6 max-w-2xl">
+          {/* Logo upload */}
+          <Field label="Brand Logo">
+            <LogoUpload
+              value={form.brand?.logo || ""}
+              onChange={(url) => update("brand.logo", url)}
+            />
+          </Field>
+          <Field label="Company Name">
+            <Input value={form.brand?.company || ""} onChange={(e) => update("brand.company", e.target.value)} />
+          </Field>
+          <Field label="Brand Name">
+            <Input value={form.brand?.name || ""} onChange={(e) => update("brand.name", e.target.value)} />
+          </Field>
+          <Field label="Site URL">
+            <Input
+              value={form.brand?.siteUrl || ""}
+              onChange={(e) => update("brand.siteUrl", e.target.value)}
+              placeholder="https://yourdomain.com"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Used for referral links. Set your production domain (e.g. <code>https://mothertatwa.com</code>).
+            </p>
+          </Field>
+          <Field label="Tagline">
+            <Input value={form.brand?.tagline || ""} onChange={(e) => update("brand.tagline", e.target.value)} />
+          </Field>
+          <Field label="Category Line">
+            <Input value={form.brand?.category || ""} onChange={(e) => update("brand.category", e.target.value)} />
+          </Field>
+          <Field label="Newsletter Title">
+            <Input value={form.newsletter?.title || ""} onChange={(e) => update("newsletter.title", e.target.value)} />
+          </Field>
+          <Field label="Newsletter Subtitle">
+            <Input value={form.newsletter?.subtitle || ""} onChange={(e) => update("newsletter.subtitle", e.target.value)} />
+          </Field>
+        </TabsContent>
+
+        <TabsContent value="contact" className="space-y-4 mt-6 max-w-2xl">
+          {["phone", "email", "whatsapp", "office", "manufacturing", "hours"].map((field) => (
+            <Field key={field} label={field.charAt(0).toUpperCase() + field.slice(1)}>
+              <Input
+                value={form.contact?.[field] || ""}
+                onChange={(e) => update(`contact.${field}`, e.target.value)}
+              />
+            </Field>
+          ))}
+          <div className="space-y-3 pt-4">
+            <div className="flex items-center justify-between">
+              <Label>Social Links</Label>
+              <Button size="sm" variant="outline" onClick={() => addListItem("social", { platform: "", url: "" })}>
+                <Plus className="w-4 h-4 mr-1" /> Add
+              </Button>
+            </div>
+            {(form.social || []).map((item, i) => (
+              <div key={i} className="flex gap-2">
+                <Input placeholder="Platform" value={item.platform} onChange={(e) => updateList("social", i, "platform", e.target.value)} />
+                <Input placeholder="URL" value={item.url} onChange={(e) => updateList("social", i, "url", e.target.value)} />
+                <Button size="icon" variant="ghost" onClick={() => removeListItem("social", i)}><Trash2 className="w-4 h-4" /></Button>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* ── Quick Filters + Categories + Brands ── */}
+        <TabsContent value="categories" className="space-y-6 mt-6">
+
+          {/* Quick Filter Tabs */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-emerald-50/70 border-b border-emerald-100">
+              <div>
+                <p className="font-bold text-forest text-sm">Quick Filter Tabs</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Filter buttons shown in "Today's Wellness Deals" section on home page.</p>
+              </div>
+              <button
+                type="button"
+                className="text-xs font-semibold bg-forest text-white hover:bg-forest/90 px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1.5 transition-all active:scale-95"
+                onClick={() => addListItem("quickFilters", { label: "", category: "" })}
+              >
+                <Plus className="w-4 h-4" /> Add Filter
+              </button>
+            </div>
+            <div className="p-5 space-y-2">
+              {!(form.quickFilters||[]).length && <p className="text-xs text-muted-foreground italic py-1">No filters yet</p>}
+              {/* Column headers */}
+              {(form.quickFilters||[]).length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_36px] gap-2 mb-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Tab Label</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Category ID / Slug</span>
+                  <span />
+                </div>
+              )}
+              {(form.quickFilters || []).map((f, i) => (
+                <div key={i} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_36px] gap-2 items-center">
+                  <Input value={f.label} placeholder="e.g. Immunity" className="h-9 rounded-xl border-gray-200 text-sm"
+                    onChange={(e) => updateList("quickFilters", i, "label", e.target.value)} />
+                  <Input value={f.category} placeholder="e.g. immunity-drops" className="h-9 rounded-xl border-gray-200 text-sm font-mono text-xs"
+                    onChange={(e) => updateList("quickFilters", i, "category", e.target.value)} />
+                  <button type="button" onClick={() => removeListItem("quickFilters", i)}
+                    className="w-9 h-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Product Categories */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-blue-50/80 border-b border-blue-100">
+              <div>
+                <p className="font-bold text-forest text-sm">Product Categories &amp; Child Categories (Subcategories)</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Manage parent categories and their nested subcategories for store browsing and filters.</p>
+              </div>
+              <button
+                type="button"
+                className="text-xs font-semibold bg-forest text-white hover:bg-forest/90 px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1.5 transition-all active:scale-95"
+                onClick={() => addListItem("productCategories", { id: "", label: "", icon: "Shield", subCategories: [] })}
+              >
+                <Plus className="w-4 h-4" /> Add Category
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              {!(form.productCategories||[]).length && <p className="text-xs text-muted-foreground italic py-1">No categories yet</p>}
+              {(form.productCategories || []).map((cat, i) => (
+                <div key={i} className="p-4 rounded-xl border border-gray-100 bg-[#f9faf9] space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto_36px] gap-2.5 items-end">
+                    <div>
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1 block mb-1">Parent Slug</span>
+                      <Input value={cat.id} placeholder="e.g. liver-care" className="h-9 rounded-xl border-gray-200 text-sm font-mono text-xs bg-white"
+                        onChange={(e) => updateList("productCategories", i, "id", e.target.value)} />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1 block mb-1">Display Label</span>
+                      <Input value={cat.label} placeholder="e.g. Liver Care" className="h-9 rounded-xl border-gray-200 text-sm bg-white"
+                        onChange={(e) => updateList("productCategories", i, "label", e.target.value)} />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1 block mb-1">Dynamic Icon</span>
+                      <IconPicker
+                        value={cat.icon || ""}
+                        categoryId={cat.id}
+                        onChange={(newIcon) => {
+                          setForm((p) => {
+                            const cats = [...(p.productCategories || [])];
+                            cats[i] = { ...cats[i], icon: newIcon };
+                            const m = (p.megaMenu || []).map((mm) =>
+                              mm.id === cat.id ? { ...mm, icon: newIcon } : mm
+                            );
+                            return { ...p, productCategories: cats, megaMenu: m };
+                          });
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <button type="button" onClick={() => removeListItem("productCategories", i)}
+                        className="w-9 h-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Nested Subcategories */}
+                  <div className="pl-4 border-l-2 border-forest/30 space-y-2 pt-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-forest uppercase tracking-wide flex items-center gap-1.5">
+                        <span>↳ Child Categories / Subcategories ({((cat.subCategories || []).length)})</span>
+                      </span>
+                      <button
+                        type="button"
+                        className="text-[11px] font-semibold text-forest bg-forest/10 hover:bg-forest/20 px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all active:scale-95"
+                        onClick={() => {
+                          const currentCats = [...(form.productCategories || [])];
+                          const subList = currentCats[i].subCategories || [];
+                          currentCats[i] = {
+                            ...currentCats[i],
+                            subCategories: [{ id: "", label: "" }, ...subList],
+                          };
+                          setForm((p) => ({ ...p, productCategories: currentCats }));
+                          toast({ title: `Added new subcategory row at top ✨` });
+                        }}
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Add Child Category
+                      </button>
+                    </div>
+
+                    {(cat.subCategories || []).map((sub, subIdx) => (
+                      <div key={subIdx} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_32px] gap-2 items-center">
+                        <Input
+                          value={sub.id}
+                          placeholder="sub-slug (e.g. fatty-liver)"
+                          className="h-8 rounded-lg border-gray-200 text-xs font-mono bg-white"
+                          onChange={(e) => {
+                            const currentCats = [...(form.productCategories || [])];
+                            const subList = [...(currentCats[i].subCategories || [])];
+                            subList[subIdx] = { ...subList[subIdx], id: e.target.value };
+                            currentCats[i] = { ...currentCats[i], subCategories: subList };
+                            setForm((p) => ({ ...p, productCategories: currentCats }));
+                          }}
+                        />
+                        <Input
+                          value={sub.label}
+                          placeholder="Subcategory Label (e.g. Fatty Liver Support)"
+                          className="h-8 rounded-lg border-gray-200 text-xs bg-white"
+                          onChange={(e) => {
+                            const currentCats = [...(form.productCategories || [])];
+                            const subList = [...(currentCats[i].subCategories || [])];
+                            subList[subIdx] = { ...subList[subIdx], label: e.target.value };
+                            currentCats[i] = { ...currentCats[i], subCategories: subList };
+                            setForm((p) => ({ ...p, productCategories: currentCats }));
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const currentCats = [...(form.productCategories || [])];
+                            const subList = (currentCats[i].subCategories || []).filter((_, idx) => idx !== subIdx);
+                            currentCats[i] = { ...currentCats[i], subCategories: subList };
+                            setForm((p) => ({ ...p, productCategories: currentCats }));
+                          }}
+                          className="w-8 h-8 rounded-lg text-red-400 hover:bg-red-50 flex items-center justify-center"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Brands */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 bg-amber-50 border-b border-amber-100">
+              <div>
+                <p className="font-bold text-forest text-sm">Brands</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Available brands for product assignment.</p>
+              </div>
+              <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1"
+                onClick={() => addListItem("brands", { id: "", label: "" })}>
+                <Plus className="w-3.5 h-3.5" /> Add Brand
+              </button>
+            </div>
+            <div className="p-5 space-y-2">
+              {!(form.brands||[]).length && <p className="text-xs text-muted-foreground italic py-1">No brands yet</p>}
+              {(form.brands||[]).length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_36px] gap-2 mb-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">ID / Slug</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Display Name</span>
+                  <span />
+                </div>
+              )}
+              {(form.brands || []).map((b, i) => (
+                <div key={i} className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_36px] gap-2 items-center">
+                  <Input value={b.id} placeholder="e.g. mother-tatwa" className="h-9 rounded-xl border-gray-200 text-sm font-mono text-xs"
+                    onChange={(e) => updateList("brands", i, "id", e.target.value)} />
+                  <Input value={b.label} placeholder="e.g. Mother Tatwa" className="h-9 rounded-xl border-gray-200 text-sm"
+                    onChange={(e) => updateList("brands", i, "label", e.target.value)} />
+                  <button type="button" onClick={() => removeListItem("brands", i)}
+                    className="w-9 h-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* ── Promo Banners ── */}
+        <TabsContent value="promobanners" className="space-y-5 mt-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-forest text-base">Promotional Banners</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Full-width banners shown on the home page. First 3 are displayed.
+              </p>
+            </div>
+            <Button size="sm" className="bg-forest hover:bg-forest/90 gap-1.5 rounded-xl" onClick={() =>
+              setForm((prev) => ({
+                ...prev,
+                promoBanners: [...(prev.promoBanners || []), {
+                  badge: "New", title: "Banner Title", subtitle: "Add a short description here",
+                  cta: "Shop Now", link: "/shop/listing",
+                  bgGradient: "linear-gradient(135deg, #0a542b 0%, #1aad58 100%)",
+                  productImage: "/products/signature.jpg",
+                }],
+              }))
+            }>
+              <Plus className="w-4 h-4" /> Add Banner
+            </Button>
+          </div>
+
+          {(form.promoBanners || []).length === 0 && (
+            <div className="border-2 border-dashed border-forest/20 rounded-2xl py-12 text-center text-muted-foreground">
+              <p className="text-sm font-medium">No banners yet</p>
+              <p className="text-xs mt-1">Click "Add Banner" to create your first promo banner</p>
+            </div>
+          )}
+
+          {(form.promoBanners || []).map((b, bi) => {
+            function setBannerField(field, val) {
+              setForm((p) => {
+                const arr = [...(p.promoBanners || [])];
+                arr[bi] = { ...arr[bi], [field]: val };
+                return { ...p, promoBanners: arr };
+              });
+            }
+
+            // Extract colors from gradient for pickers
+            const colorMatch = (b.bgGradient || "").match(/#[0-9a-fA-F]{6}/g) || [];
+            const col1 = colorMatch[0] || "#0a542b";
+            const col2 = colorMatch[1] || "#1aad58";
+
+            function applyColors(c1, c2) {
+              setBannerField("bgGradient", `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`);
+            }
+
+            return (
+              <div key={bi} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                {/* ── Live mini preview ── */}
+                <div
+                  className="relative h-24 flex items-center px-6 gap-4 overflow-hidden"
+                  style={{ background: b.bgGradient || "linear-gradient(135deg,#0a542b,#1aad58)" }}
+                >
+                  <div className="flex-1 min-w-0">
+                    {b.badge && (
+                      <span className="inline-block bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full mb-1">
+                        {b.badge}
+                      </span>
+                    )}
+                    <p className="text-white font-bold text-sm leading-tight truncate">{b.title || "Banner Title"}</p>
+                    <p className="text-white/70 text-[11px] truncate mt-0.5">{b.subtitle || "Subtitle…"}</p>
+                    {b.cta && (
+                      <span className="mt-2 inline-block bg-white text-[10px] font-bold px-3 py-1 rounded-full text-forest">
+                        {b.cta}
+                      </span>
+                    )}
+                  </div>
+                  {b.productImage && (
+                    <img src={b.productImage} alt="" className="h-20 w-20 object-contain drop-shadow-lg shrink-0" />
+                  )}
+                  {/* Banner # badge */}
+                  <div className="absolute top-2 right-2 bg-black/30 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    Banner {bi + 1}
+                  </div>
+                </div>
+
+                {/* ── Fields ── */}
+                <div className="p-5 space-y-4">
+                  {/* Row 1: Badge + Title + Delete */}
+                  <div className="flex gap-3 items-start">
+                    <div className="space-y-1 w-28 shrink-0">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Badge Label</label>
+                      <Input value={b.badge || ""} onChange={(e) => setBannerField("badge", e.target.value)}
+                        placeholder="e.g. New Launch" className="rounded-xl border-gray-200 h-9 text-sm" />
+                    </div>
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Banner Title *</label>
+                      <Input value={b.title || ""} onChange={(e) => setBannerField("title", e.target.value)}
+                        placeholder="e.g. Women's Wellness Range" className="rounded-xl border-gray-200 h-9 text-sm" />
+                    </div>
+                    <button type="button" onClick={() => setForm((p) => ({ ...p, promoBanners: p.promoBanners.filter((_,i) => i !== bi) }))}
+                      className="mt-5 w-9 h-9 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Row 2: Subtitle */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Subtitle / Description</label>
+                    <Input value={b.subtitle || ""} onChange={(e) => setBannerField("subtitle", e.target.value)}
+                      placeholder="e.g. Crafted with Shatavari & Ashwagandha for hormonal balance"
+                      className="rounded-xl border-gray-200 h-9 text-sm" />
+                  </div>
+
+                  {/* Row 3: CTA Button + Link */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Button Text</label>
+                      <Input value={b.cta || ""} onChange={(e) => setBannerField("cta", e.target.value)}
+                        placeholder="Shop Now" className="rounded-xl border-gray-200 h-9 text-sm" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Button Link (URL)</label>
+                      <Input value={b.link || ""} onChange={(e) => setBannerField("link", e.target.value)}
+                        placeholder="/shop/listing?category=..." className="rounded-xl border-gray-200 h-9 text-sm" />
+                    </div>
+                  </div>
+
+                  {/* Row 4: Colors + Image */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Color pickers */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Background Colors</label>
+                      <div className="flex items-center gap-2 p-2.5 border border-gray-200 rounded-xl bg-gray-50">
+                        <div className="flex items-center gap-1.5">
+                          <label className="text-[11px] text-muted-foreground font-medium">From</label>
+                          <input type="color" value={col1}
+                            onChange={(e) => applyColors(e.target.value, col2)}
+                            className="w-8 h-8 rounded-lg border border-gray-200 cursor-pointer p-0.5 bg-white" />
+                        </div>
+                        <div className="flex-1 h-5 rounded-lg" style={{ background: b.bgGradient }} />
+                        <div className="flex items-center gap-1.5">
+                          <label className="text-[11px] text-muted-foreground font-medium">To</label>
+                          <input type="color" value={col2}
+                            onChange={(e) => applyColors(col1, e.target.value)}
+                            className="w-8 h-8 rounded-lg border border-gray-200 cursor-pointer p-0.5 bg-white" />
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">Pick start & end colors — gradient auto-updates</p>
+                    </div>
+
+                    {/* Product Image */}
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Product Image Path</label>
+                      <Input value={b.productImage || ""} onChange={(e) => setBannerField("productImage", e.target.value)}
+                        placeholder="/products/immunity.jpg" className="rounded-xl border-gray-200 h-9 text-sm" />
+                      <p className="text-[10px] text-muted-foreground">Local path or full URL. Shows on right side of banner.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {(form.promoBanners || []).length > 0 && (
+            <p className="text-xs text-muted-foreground text-center">
+              💡 Only the first 3 banners are shown on the homepage. Click "Save All Changes" to apply.
+            </p>
+          )}
+        </TabsContent>
+
+        <TabsContent value="megamenu" className="space-y-5 mt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-forest text-base">Mega Menu Categories</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Each category shows in the navigation dropdown with grouped sub-links.</p>
+            </div>
+            <Button size="sm" className="bg-forest hover:bg-forest/90 gap-1.5 rounded-xl" onClick={() =>
+              setForm((prev) => ({
+                ...prev,
+                megaMenu: [...(prev.megaMenu || []), {
+                  id: "", label: "New Category", icon: "Leaf", href: "",
+                  columns: [{ heading: "Products", items: [{ name: "", href: "" }] }],
+                }],
+              }))
+            }>
+              <Plus className="w-4 h-4" /> Add Category
+            </Button>
+          </div>
+
+          {!(form.megaMenu || []).length && (
+            <div className="border-2 border-dashed border-gray-200 rounded-2xl py-10 text-center text-muted-foreground text-sm">
+              No mega menu categories yet
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {(form.megaMenu || []).map((cat, ci) => {
+              const CatIcon = ICON_MAP[cat.icon] || Leaf;
+              return (
+                <div key={ci} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  {/* ── Category Header ── */}
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 border-b border-gray-100">
+                    <div className="w-9 h-9 rounded-xl bg-forest/10 flex items-center justify-center shrink-0 overflow-hidden">
+                      <DynamicIcon icon={cat.icon} categoryId={cat.id} className="w-4.5 h-4.5 text-forest" />
+                    </div>
+                    <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-3 items-end">
+                      <div className="space-y-0.5">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">ID / Slug</label>
+                        <Input value={cat.id} placeholder="e.g. liver-care" className="h-8 rounded-lg border-gray-200 text-xs"
+                          onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],id:e.target.value}; return {...p,megaMenu:m}; })} />
+                      </div>
+                      <div className="space-y-0.5">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Display Label</label>
+                        <Input value={cat.label} placeholder="Liver Care" className="h-8 rounded-lg border-gray-200 text-xs"
+                          onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],label:e.target.value}; return {...p,megaMenu:m}; })} />
+                      </div>
+                      <div className="space-y-0.5">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Dynamic Icon</label>
+                        <IconPicker
+                          value={cat.icon || "Leaf"}
+                          categoryId={cat.id}
+                          onChange={(v) => {
+                            setForm((p) => {
+                              const m = [...(p.megaMenu || [])];
+                              m[ci] = { ...m[ci], icon: v };
+                              const cats = (p.productCategories || []).map((pc) =>
+                                pc.id === cat.id ? { ...pc, icon: v } : pc
+                              );
+                              return { ...p, megaMenu: m, productCategories: cats };
+                            });
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-0.5">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Main Link</label>
+                        <Input value={cat.href || ""} placeholder="/shop/listing?category=..." className="h-8 rounded-lg border-gray-200 text-xs"
+                          onChange={(e) => setForm((p) => { const m=[...p.megaMenu]; m[ci]={...m[ci],href:e.target.value}; return {...p,megaMenu:m}; })} />
+                      </div>
+                    </div>
+                    <button type="button"
+                      onClick={() => setForm((p) => ({ ...p, megaMenu: p.megaMenu.filter((_,i) => i !== ci) }))}
+                      className="w-8 h-8 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors shrink-0">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* ── Columns ── */}
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-xs font-bold text-forest uppercase tracking-wide">Dropdown Columns</p>
+                      <button type="button" className="text-xs font-semibold text-forest hover:text-forest/70 flex items-center gap-1 transition-colors"
+                        onClick={() => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns=[...(m[ci].columns||[]),{heading:"",items:[{name:"",href:""}]}]; return {...p,megaMenu:m}; })}>
+                        <Plus className="w-3.5 h-3.5" /> Add Column
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {(cat.columns || []).map((col, coli) => (
+                        <div key={coli} className="rounded-xl border border-gray-100 bg-gray-50 p-3 space-y-2">
+                          {/* Column heading */}
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 space-y-0.5">
+                              <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Column Heading</label>
+                              <Input value={col.heading} placeholder="e.g. Products"
+                                className="h-8 rounded-lg border-gray-200 text-xs bg-white"
+                                onChange={(e) => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].heading=e.target.value; return {...p,megaMenu:m}; })} />
+                            </div>
+                            <button type="button"
+                              onClick={() => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns.splice(coli,1); return {...p,megaMenu:m}; })}
+                              className="w-7 h-7 rounded-lg border border-red-100 text-red-400 hover:bg-red-50 flex items-center justify-center mt-4 shrink-0">
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+
+                          {/* Items */}
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Links</label>
+                            {(col.items || []).map((item, ii) => (
+                              <div key={ii} className="flex gap-1.5 items-center">
+                                <Input value={item.name} placeholder="Link name"
+                                  className="flex-1 h-7 rounded-lg border-gray-200 text-xs bg-white"
+                                  onChange={(e) => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items[ii].name=e.target.value; return {...p,megaMenu:m}; })} />
+                                <Input value={item.href} placeholder="/shop/..."
+                                  className="flex-1 h-7 rounded-lg border-gray-200 text-xs bg-white"
+                                  onChange={(e) => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items[ii].href=e.target.value; return {...p,megaMenu:m}; })} />
+                                <button type="button"
+                                  onClick={() => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items.splice(ii,1); return {...p,megaMenu:m}; })}
+                                  className="w-6 h-7 rounded flex items-center justify-center text-red-300 hover:text-red-500 shrink-0">
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                            <button type="button" className="text-[11px] font-semibold text-forest hover:text-forest/70 flex items-center gap-1 mt-1 transition-colors"
+                              onClick={() => setForm((p) => { const m=JSON.parse(JSON.stringify(p.megaMenu)); m[ci].columns[coli].items.push({name:"",href:""}); return {...p,megaMenu:m}; })}>
+                              <Plus className="w-3 h-3" /> Add Link
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="homepage" className="space-y-8 mt-6">
+          {/* How it Works */}
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <Label>🪜 How it Works Steps</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">Steps shown in the "How it Works" section on home page.</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => addListItem("howItWorks", { emoji: "✨", tag: `Step 0${(form.howItWorks||[]).length+1}`, title: "", desc: "" })}>
+                <Plus className="w-4 h-4 mr-1" /> Add Step
+              </Button>
+            </div>
+            {(form.howItWorks || []).map((step, i) => (
+              <div key={i} className="border rounded-lg p-4 mb-3 space-y-2 bg-gray-50">
+                <div className="flex items-center gap-2">
+                  <Input className="w-20 text-center text-xl" placeholder="Emoji" value={step.emoji||""} onChange={(e) => updateList("howItWorks", i, "emoji", e.target.value)} />
+                  <Input className="w-28" placeholder="Tag (Step 01)" value={step.tag||""} onChange={(e) => updateList("howItWorks", i, "tag", e.target.value)} />
+                  <Input className="flex-1" placeholder="Title" value={step.title||""} onChange={(e) => updateList("howItWorks", i, "title", e.target.value)} />
+                  <Button size="icon" variant="ghost" onClick={() => removeListItem("howItWorks", i)}><Trash2 className="w-4 h-4 text-red-400" /></Button>
+                </div>
+                <Input placeholder="Description" value={step.desc||""} onChange={(e) => updateList("howItWorks", i, "desc", e.target.value)} />
+              </div>
+            ))}
+          </section>
+
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <Label>FAQ</Label>
+              <Button size="sm" variant="outline" onClick={() => addListItem("faq", { q: "", a: "" })}>
+                <Plus className="w-4 h-4 mr-1" /> Add FAQ
+              </Button>
+            </div>
+            {(form.faq || []).map((item, i) => (
+              <div key={i} className="border rounded-lg p-4 mb-3 space-y-2">
+                <Input placeholder="Question" value={item.q} onChange={(e) => updateList("faq", i, "q", e.target.value)} />
+                <Textarea placeholder="Answer" value={item.a} onChange={(e) => updateList("faq", i, "a", e.target.value)} />
+                <Button size="sm" variant="ghost" onClick={() => removeListItem("faq", i)}><Trash2 className="w-4 h-4" /></Button>
+              </div>
+            ))}
+          </section>
+
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <Label>Testimonials</Label>
+              <Button size="sm" variant="outline" onClick={() => addListItem("testimonials", { name: "", city: "", rating: 5, text: "", verified: true })}>
+                <Plus className="w-4 h-4 mr-1" /> Add
+              </Button>
+            </div>
+            {(form.testimonials || []).map((t, i) => (
+              <div key={i} className="border rounded-lg p-4 mb-3 grid gap-2 md:grid-cols-2">
+                <Input placeholder="Name" value={t.name} onChange={(e) => updateList("testimonials", i, "name", e.target.value)} />
+                <Input placeholder="City" value={t.city} onChange={(e) => updateList("testimonials", i, "city", e.target.value)} />
+                <Input type="number" placeholder="Rating" value={t.rating} onChange={(e) => updateList("testimonials", i, "rating", Number(e.target.value))} />
+                <Textarea className="md:col-span-2" placeholder="Review text" value={t.text} onChange={(e) => updateList("testimonials", i, "text", e.target.value)} />
+                <Button size="sm" variant="ghost" onClick={() => removeListItem("testimonials", i)}><Trash2 className="w-4 h-4" /></Button>
+              </div>
+            ))}
+          </section>
+
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="font-bold text-forest text-sm">Why Choose Us</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Trust badges shown on the home page</p>
+              </div>
+              <Button size="sm" className="bg-forest hover:bg-forest/90 gap-1.5 rounded-xl"
+                onClick={() => addListItem("whyChooseUs", { icon: "Leaf", title: "", desc: "" })}>
+                <Plus className="w-4 h-4" /> Add Point
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {(form.whyChooseUs || []).map((item, i) => {
+                const IconComp = ICON_MAP[item.icon] || Leaf;
+                return (
+                  <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                    <div className="flex items-start gap-4">
+                      {/* Icon preview */}
+                      <div className="w-11 h-11 rounded-xl bg-leaf flex items-center justify-center shrink-0 border border-forest/10 overflow-hidden">
+                        <DynamicIcon icon={item.icon} className="w-5 h-5 text-forest" />
+                      </div>
+                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                        {/* Icon selector + upload */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Dynamic Icon</label>
+                          <IconPicker
+                            value={item.icon || "Leaf"}
+                            onChange={(v) => updateList("whyChooseUs", i, "icon", v)}
+                          />
+                        </div>
+                        {/* Title */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Title *</label>
+                          <Input value={item.title} placeholder="e.g. 100% Ayurvedic"
+                            onChange={(e) => updateList("whyChooseUs", i, "title", e.target.value)}
+                            className="h-9 rounded-xl border-gray-200 text-sm" />
+                        </div>
+                        {/* Description */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Description</label>
+                          <Input value={item.desc} placeholder="Short supporting text"
+                            onChange={(e) => updateList("whyChooseUs", i, "desc", e.target.value)}
+                            className="h-9 rounded-xl border-gray-200 text-sm" />
+                        </div>
+                      </div>
+                      <button type="button" onClick={() => removeListItem("whyChooseUs", i)}
+                        className="w-8 h-8 rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors shrink-0 mt-5">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              {!(form.whyChooseUs || []).length && (
+                <div className="border-2 border-dashed border-gray-200 rounded-2xl py-8 text-center text-muted-foreground text-sm">
+                  No trust points yet — click "Add Point" to add one
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <Label>Stats Banner</Label>
+              <Button size="sm" variant="outline" onClick={() => addListItem("stats", { value: 0, suffix: "", label: "", decimals: 0 })}>
+                <Plus className="w-4 h-4 mr-1" /> Add Stat
+              </Button>
+            </div>
+            {(form.stats || []).map((s, i) => (
+              <div key={i} className="flex flex-wrap gap-2 mb-2">
+                <Input type="number" className="w-24" placeholder="Value" value={s.value} onChange={(e) => updateList("stats", i, "value", Number(e.target.value))} />
+                <Input className="w-20" placeholder="Suffix" value={s.suffix} onChange={(e) => updateList("stats", i, "suffix", e.target.value)} />
+                <Input className="flex-1" placeholder="Label" value={s.label} onChange={(e) => updateList("stats", i, "label", e.target.value)} />
+                <Input type="number" className="w-24" placeholder="Decimals" value={s.decimals ?? 0} onChange={(e) => updateList("stats", i, "decimals", Number(e.target.value))} />
+                <Button size="icon" variant="ghost" onClick={() => removeListItem("stats", i)}><Trash2 className="w-4 h-4" /></Button>
+              </div>
+            ))}
+          </section>
+
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <Label>Doctors / Experts</Label>
+              <Button size="sm" variant="outline" onClick={() => addListItem("doctors", { name: "", title: "", exp: "", specialty: "" })}>
+                <Plus className="w-4 h-4 mr-1" /> Add
+              </Button>
+            </div>
+            {(form.doctors || []).map((d, i) => (
+              <div key={i} className="border rounded-lg p-4 mb-3 grid gap-2 md:grid-cols-2">
+                <Input placeholder="Name" value={d.name} onChange={(e) => updateList("doctors", i, "name", e.target.value)} />
+                <Input placeholder="Title" value={d.title} onChange={(e) => updateList("doctors", i, "title", e.target.value)} />
+                <Input placeholder="Experience" value={d.exp} onChange={(e) => updateList("doctors", i, "exp", e.target.value)} />
+                <Input placeholder="Specialty" value={d.specialty} onChange={(e) => updateList("doctors", i, "specialty", e.target.value)} />
+                <Button size="sm" variant="ghost" onClick={() => removeListItem("doctors", i)}><Trash2 className="w-4 h-4" /></Button>
+              </div>
+            ))}
+          </section>
+        </TabsContent>
+
+        <TabsContent value="footer" className="space-y-4 mt-6 max-w-3xl">
+          <Field label="Trust Badges (comma separated)">
+            <Textarea
+              value={(form.trustBadges || []).join(", ")}
+              onChange={(e) => updateCommaList("trustBadges", e.target.value)}
+            />
+          </Field>
+          <Field label="Payment Methods (comma separated)">
+            <Textarea
+              value={(form.paymentMethods || []).join(", ")}
+              onChange={(e) => updateCommaList("paymentMethods", e.target.value)}
+            />
+          </Field>
+          <Field label="Delivery Partners (comma separated)">
+            <Textarea
+              value={(form.deliveryPartners || []).join(", ")}
+              onChange={(e) => updateCommaList("deliveryPartners", e.target.value)}
+            />
+          </Field>
+          <Field label="Footer Links (JSON)">
+            <Textarea
+              className="font-mono text-xs min-h-[200px]"
+              value={JSON.stringify(form.footerLinks || {}, null, 2)}
+              onChange={(e) => {
+                try {
+                  update("footerLinks", JSON.parse(e.target.value));
+                } catch {
+                  /* ignore invalid json while typing */
+                }
+              }}
+            />
+            <p className="text-xs text-muted-foreground">Edit company, shop, support, legal, learn link arrays.</p>
+          </Field>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+export default AdminSettings;

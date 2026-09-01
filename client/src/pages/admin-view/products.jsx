@@ -1,0 +1,300 @@
+import AdminProductTile from "@/components/admin-view/product-tile";
+import AdminProductForm from "@/components/admin-view/product-form";
+import { AdminPageHeader, AdminStatCards, Package, ShoppingBag, Star, AlertTriangle } from "@/components/admin-view/page-header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useToast } from "@/components/ui/use-toast";
+import { useSiteSettings } from "@/hooks/use-site-settings";
+import {
+  addNewProduct,
+  deleteProduct,
+  editProduct,
+  fetchAllProducts,
+} from "@/store/admin/products-slice";
+import { updateSiteSettings, fetchSiteSettings } from "@/store/site-settings-slice";
+import { Plus, Search } from "lucide-react";
+import { getDiscountPercent } from "@/lib/product-offers";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+const initialFormData = {
+  image: "",
+  images: [],
+  video: "",
+  title: "",
+  description: "",
+  ingredients: "",
+  benefits: "",
+  howToUse: "",
+  dosage: "",
+  mainCategory: "",
+  category: "",
+  subCategory: "",
+  childCategory: "",
+  brand: "",
+  price: "",
+  salePrice: "",
+  totalStock: "",
+  averageReview: 4.5,
+  isFeatured: "false",
+  isFlashSale: "false",
+  flashSaleEndsAt: "",
+  offerLabel: "Flash Sale",
+};
+
+function AdminProducts() {
+  const [openSheet, setOpenSheet] = useState(false);
+  const [formData, setFormData] = useState(initialFormData);
+  const [currentEditedId, setCurrentEditedId] = useState(null);
+  const [search, setSearch] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const { productList } = useSelector((state) => state.adminProducts);
+  const siteSettingsData = useSelector((s) => s.siteSettings?.data);
+  const {
+    mainCategories,
+    mainCategoryOptionsMap,
+    productCategories,
+    categoryOptionsMap,
+    subCategoryOptionsMap,
+    brands,
+  } = useSiteSettings();
+  const dispatch = useDispatch();
+  const { toast } = useToast();
+
+  async function onAddMainCategory(newMain) {
+    const currentMains = siteSettingsData?.mainCategories || mainCategories;
+    const updated = [...currentMains, newMain];
+    await dispatch(updateSiteSettings({ ...siteSettingsData, mainCategories: updated }));
+    dispatch(fetchSiteSettings());
+    toast({ title: `Main Category "${newMain.label}" added ✅` });
+  }
+
+  async function onAddCategory(newCat) {
+    const updated = [...(siteSettingsData?.productCategories || productCategories), newCat];
+    await dispatch(updateSiteSettings({ ...siteSettingsData, productCategories: updated }));
+    dispatch(fetchSiteSettings());
+    toast({ title: `Sub Category "${newCat.label}" added ✅` });
+  }
+
+  async function onAddSubCategory(parentCatId, newSubCat) {
+    const cats = siteSettingsData?.productCategories || productCategories;
+    const updated = cats.map((cat) => {
+      if (cat.id === parentCatId) {
+        const subList = cat.subCategories || [];
+        return { ...cat, subCategories: [...subList, newSubCat] };
+      }
+      return cat;
+    });
+    await dispatch(updateSiteSettings({ ...siteSettingsData, productCategories: updated }));
+    dispatch(fetchSiteSettings());
+    toast({ title: `Child Category "${newSubCat.label}" added ✅` });
+  }
+
+  async function onAddBrand(newBrand) {
+    const updated = [...(siteSettingsData?.brands || brands), newBrand];
+    await dispatch(updateSiteSettings({ ...siteSettingsData, brands: updated }));
+    dispatch(fetchSiteSettings());
+    toast({ title: `Brand "${newBrand.label}" added ✅` });
+  }
+
+  function resetForm() {
+    setFormData(initialFormData);
+    setCurrentEditedId(null);
+  }
+
+  function openAdd() {
+    resetForm();
+    setOpenSheet(true);
+  }
+
+  function closeSheet() {
+    setOpenSheet(false);
+    resetForm();
+  }
+
+  function preparePayload(data) {
+    const normalizedImages = Array.isArray(data.images)
+      ? data.images.filter(Boolean)
+      : data.image
+      ? [data.image]
+      : [];
+
+    const primaryImage = data.image || (normalizedImages.length > 0 ? normalizedImages[0] : "");
+
+    return {
+      ...data,
+      image: primaryImage,
+      images: normalizedImages,
+      video: data.video || "",
+      mainCategory: data.mainCategory || "",
+      category: data.category || "",
+      subCategory: data.subCategory || data.childCategory || "",
+      childCategory: data.childCategory || data.subCategory || "",
+      isFeatured: data.isFeatured === true || data.isFeatured === "true",
+      isFlashSale: data.isFlashSale === true || data.isFlashSale === "true",
+      flashSaleEndsAt: data.flashSaleEndsAt || null,
+      offerLabel: data.offerLabel || "Flash Sale",
+      salePrice: data.salePrice === "" ? 0 : Number(data.salePrice),
+      price: Number(data.price),
+      totalStock: Number(data.totalStock),
+      averageReview: Number(data.averageReview) || 0,
+    };
+  }
+
+  async function onSubmit(event) {
+    event.preventDefault();
+    setSaving(true);
+    const payload = preparePayload(formData);
+
+    if (currentEditedId !== null) {
+      const result = await dispatch(editProduct({ id: currentEditedId, formData: payload }));
+      if (result?.payload?.success) {
+        toast({ title: "Product updated successfully" });
+        dispatch(fetchAllProducts());
+        closeSheet();
+      } else {
+        toast({ title: "Failed to update product", variant: "destructive" });
+      }
+    } else {
+      if (!payload.image && (!payload.images || payload.images.length === 0)) {
+        toast({ title: "Please add at least one product image", variant: "destructive" });
+        setSaving(false);
+        return;
+      }
+      const result = await dispatch(addNewProduct(payload));
+      if (result?.payload?.success) {
+        toast({ title: "Product added to store" });
+        dispatch(fetchAllProducts());
+        closeSheet();
+      } else {
+        toast({ title: "Failed to add product", variant: "destructive" });
+      }
+    }
+    setSaving(false);
+  }
+
+  function handleDelete(id) {
+    if (!window.confirm("Delete this product permanently?")) return;
+    dispatch(deleteProduct(id)).then((data) => {
+      if (data?.payload?.success) {
+        toast({ title: "Product deleted" });
+        dispatch(fetchAllProducts());
+      }
+    });
+  }
+
+  function isFormValid() {
+    const required = ["title", "description", "category", "brand", "price", "totalStock"];
+    return required.every((key) => formData[key] !== "" && formData[key] != null);
+  }
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return productList || [];
+    const q = search.toLowerCase();
+    return (productList || []).filter(
+      (p) =>
+        p.title?.toLowerCase().includes(q) ||
+        p.category?.toLowerCase().includes(q) ||
+        categoryOptionsMap[p.category]?.toLowerCase().includes(q)
+    );
+  }, [productList, search, categoryOptionsMap]);
+
+  const stats = useMemo(() => {
+    const list = productList || [];
+    const lowStock = list.filter((p) => p.totalStock > 0 && p.totalStock <= 10).length;
+    const outOfStock = list.filter((p) => p.totalStock === 0).length;
+    const flashSale = list.filter((p) => p.isFlashSale).length;
+    const onDiscount = list.filter((p) => getDiscountPercent(p) > 0).length;
+    return [
+      { label: "Total Products", value: list.length, icon: Package, bg: "bg-leaf", color: "text-forest" },
+      { label: "Flash Sale", value: flashSale, icon: Star, bg: "bg-red-50", color: "text-red-600" },
+      { label: "On Discount", value: onDiscount, icon: AlertTriangle, bg: "bg-orange-50", color: "text-orange-600" },
+      { label: "Out of Stock", value: outOfStock, icon: ShoppingBag, bg: "bg-red-50", color: "text-red-600" },
+    ];
+  }, [productList]);
+
+  useEffect(() => {
+    dispatch(fetchAllProducts());
+  }, [dispatch]);
+
+  return (
+    <Fragment>
+      <AdminPageHeader
+        title="Products"
+        subtitle="Manage your full Ayurvedic catalog — images, pricing, ingredients & stock"
+        action={
+          <Button onClick={openAdd} className="bg-forest hover:bg-forest/90 gap-2">
+            <Plus className="w-4 h-4" /> Add New Product
+          </Button>
+        }
+      />
+
+      <AdminStatCards stats={stats} />
+
+      <div className="relative mb-5 max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          placeholder="Search products by name or category..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-10 bg-white"
+        />
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-forest/20">
+          <Package className="w-12 h-12 text-forest/30 mx-auto mb-3" />
+          <p className="text-muted-foreground">{search ? "No products match your search" : "No products yet"}</p>
+          {!search && (
+            <Button onClick={openAdd} className="mt-4 bg-forest">Add First Product</Button>
+          )}
+        </div>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filtered.map((product) => (
+            <AdminProductTile
+              key={product._id}
+              product={product}
+              mainCategoryLabel={mainCategoryOptionsMap[product.mainCategory]}
+              categoryLabel={categoryOptionsMap[product.category]}
+              subCategoryLabel={subCategoryOptionsMap[product.subCategory || product.childCategory]}
+              setFormData={setFormData}
+              setOpenCreateProductsDialog={setOpenSheet}
+              setCurrentEditedId={setCurrentEditedId}
+              handleDelete={handleDelete}
+            />
+          ))}
+        </div>
+      )}
+
+      <Sheet open={openSheet} onOpenChange={(open) => !open && closeSheet()}>
+        <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
+          <SheetHeader className="mb-4">
+            <SheetTitle className="font-display text-xl text-forest">
+              {currentEditedId ? "Edit Product" : "Add New Product"}
+            </SheetTitle>
+          </SheetHeader>
+          <AdminProductForm
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={onSubmit}
+            isEdit={!!currentEditedId}
+            mainCategories={mainCategories}
+            productCategories={productCategories}
+            brands={brands}
+            isValid={isFormValid()}
+            saving={saving}
+            onAddMainCategory={onAddMainCategory}
+            onAddCategory={onAddCategory}
+            onAddSubCategory={onAddSubCategory}
+            onAddBrand={onAddBrand}
+          />
+        </SheetContent>
+      </Sheet>
+    </Fragment>
+  );
+}
+
+export default AdminProducts;

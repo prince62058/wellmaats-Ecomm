@@ -1,0 +1,116 @@
+const Product = require("../../models/Product");
+
+const getFilteredProducts = async (req, res) => {
+  try {
+    const {
+      mainCategory = [],
+      category = [],
+      subCategory = [],
+      childCategory = [],
+      brand = [],
+      sortBy = "price-lowtohigh",
+      flashSale,
+      onSale,
+    } = req.query;
+
+    let filters = {};
+
+    if (mainCategory.length) {
+      filters.mainCategory = { $in: mainCategory.split(",") };
+    }
+
+    if (category.length) {
+      filters.category = { $in: category.split(",") };
+    }
+
+    if (subCategory.length) {
+      filters.subCategory = { $in: subCategory.split(",") };
+    }
+
+    if (childCategory.length) {
+      filters.childCategory = { $in: childCategory.split(",") };
+    }
+
+    if (brand.length) {
+      filters.brand = { $in: brand.split(",") };
+    }
+
+    if (flashSale === "true") {
+      filters.isFlashSale = true;
+      filters.$or = [
+        { flashSaleEndsAt: null },
+        { flashSaleEndsAt: { $exists: false } },
+        { flashSaleEndsAt: { $gte: new Date() } },
+      ];
+    }
+
+    if (onSale === "true") {
+      filters.salePrice = { $gt: 0 };
+    }
+
+    let sort = {};
+
+    switch (sortBy) {
+      case "price-lowtohigh":
+        sort.price = 1;
+
+        break;
+      case "price-hightolow":
+        sort.price = -1;
+
+        break;
+      case "title-atoz":
+        sort.title = 1;
+
+        break;
+
+      case "title-ztoa":
+        sort.title = -1;
+
+        break;
+
+      default:
+        sort.price = 1;
+        break;
+    }
+
+    const products = await Product.find(filters).sort(sort);
+
+    res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (e) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Some error occured",
+    });
+  }
+};
+
+const getProductDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+
+    if (!product)
+      return res.status(404).json({
+        success: false,
+        message: "Product not found!",
+      });
+
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
+  } catch (e) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Some error occured",
+    });
+  }
+};
+
+module.exports = { getFilteredProducts, getProductDetails };

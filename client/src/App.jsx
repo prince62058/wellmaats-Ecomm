@@ -1,0 +1,165 @@
+import { Route, Routes } from "react-router-dom";
+import { LoginModalProvider } from "./context/LoginModalContext";
+import LoginModal from "./components/common/login-modal";
+import AutoLoginPrompt from "./components/common/auto-login-prompt";
+import AuthLayout from "./components/auth/layout";
+import AuthLogin from "./pages/auth/login";
+import AuthRegister from "./pages/auth/register";
+import AdminLayout from "./components/admin-view/layout";
+import AdminDashboard from "./pages/admin-view/dashboard";
+import AdminProducts from "./pages/admin-view/products";
+import AdminOrders from "./pages/admin-view/orders";
+import AdminFeatures from "./pages/admin-view/features";
+import AdminSettings from "./pages/admin-view/settings";
+import ShoppingLayout from "./components/shopping-view/layout";
+import NotFound from "./pages/not-found";
+import ShoppingHome from "./pages/shopping-view/home";
+import ShoppingListing from "./pages/shopping-view/listing";
+import ShoppingCheckout from "./pages/shopping-view/checkout";
+import ShoppingAccount from "./pages/shopping-view/account";
+import CheckAuth from "./components/common/check-auth";
+import UnauthPage from "./pages/unauth-page";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { checkAuth } from "./store/auth-slice";
+import { fetchSiteSettings } from "./store/site-settings-slice";
+import { Skeleton } from "@/components/ui/skeleton";
+import PaymentSuccessPage from "./pages/shopping-view/payment-success";
+import SearchProducts from "./pages/shopping-view/search";
+import ScrollToTop from "./components/common/scroll-to-top";
+import OfferZone from "./pages/shopping-view/offer-zone";
+import BestSellers from "./pages/shopping-view/best-sellers";
+import Blogs from "./pages/shopping-view/blogs";
+import BlogDetail from "./pages/shopping-view/blog-detail";
+import WishlistPage from "./pages/shopping-view/wishlist";
+import AdminBlogs from "./pages/admin-view/blogs";
+import ProductDetailPage from "./pages/shopping-view/product-detail";
+import ReferralPage from "./pages/shopping-view/referral";
+import RefLanding from "./pages/shopping-view/ref-landing";
+
+import AboutUsPage from "./pages/shopping-view/about-us";
+import ContactUsPage from "./pages/shopping-view/contact-us";
+import FAQPage from "./pages/shopping-view/faq";
+import LegalHubPage from "./pages/shopping-view/legal-hub";
+import CareersPage from "./pages/shopping-view/careers";
+import AyurvedaGuidePage from "./pages/shopping-view/ayurveda-guide";
+
+import DynamicThemeInjector from "./components/common/dynamic-theme-injector";
+
+function App() {
+  const { user, isAuthenticated, isLoading } = useSelector(
+    (state) => state.auth
+  );
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(checkAuth());
+    dispatch(fetchSiteSettings());
+  }, [dispatch]);
+
+  if (isLoading) return <Skeleton className="w-full max-w-md h-40 mx-auto mt-24 rounded-2xl" />;
+
+  console.log(isLoading, user);
+
+  return (
+    <LoginModalProvider>
+    <DynamicThemeInjector />
+    <div className="flex flex-col min-h-screen bg-white">
+      <LoginModal />
+      <AutoLoginPrompt />
+      <ScrollToTop />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <CheckAuth
+              isAuthenticated={isAuthenticated}
+              user={user}
+            ></CheckAuth>
+          }
+        />
+        <Route
+          path="/auth"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <AuthLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="login" element={<AuthLogin />} />
+          <Route path="register" element={<AuthRegister />} />
+        </Route>
+        <Route
+          path="/admin"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <AdminLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="features" element={<AdminFeatures />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="blogs" element={<AdminBlogs />} />
+        </Route>
+        <Route
+          path="/shop"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <ShoppingLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="home" element={<ShoppingHome />} />
+          <Route path="listing" element={<ShoppingListing />} />
+          <Route path="checkout" element={<ShoppingCheckout />} />
+          <Route path="account" element={<ShoppingAccount />} />
+          <Route path="payment-success" element={<PaymentSuccessPage />} />
+          <Route path="search" element={<SearchProducts />} />
+          <Route path="offer-zone" element={<OfferZone />} />
+          <Route path="best-sellers" element={<BestSellers />} />
+          <Route path="wishlist" element={<WishlistPage />} />
+          <Route path="product/:id" element={<ProductDetailPage />} />
+          <Route path="referral" element={<ReferralPage />} />
+          <Route path="about-us" element={<AboutUsPage />} />
+          <Route path="contact-us" element={<ContactUsPage />} />
+          <Route path="faq" element={<FAQPage />} />
+          <Route path="legal" element={<LegalHubPage />} />
+          <Route path="privacy-policy" element={<LegalHubPage defaultTab="privacy" />} />
+          <Route path="terms-conditions" element={<LegalHubPage defaultTab="terms" />} />
+          <Route path="shipping-policy" element={<LegalHubPage defaultTab="shipping" />} />
+          <Route path="refund-policy" element={<LegalHubPage defaultTab="refund" />} />
+          <Route path="disclaimer" element={<LegalHubPage defaultTab="disclaimer" />} />
+          <Route path="careers" element={<CareersPage />} />
+          <Route path="ayurveda-guide" element={<AyurvedaGuidePage />} />
+        </Route>
+        {/* Direct Root Level Informational Routes wrapped in ShoppingLayout */}
+        <Route element={<ShoppingLayout />}>
+          <Route path="/about-us" element={<AboutUsPage />} />
+          <Route path="/our-story" element={<AboutUsPage />} />
+          <Route path="/mission" element={<AboutUsPage />} />
+          <Route path="/contact-us" element={<ContactUsPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/legal" element={<LegalHubPage />} />
+          <Route path="/privacy-policy" element={<LegalHubPage defaultTab="privacy" />} />
+          <Route path="/terms-conditions" element={<LegalHubPage defaultTab="terms" />} />
+          <Route path="/shipping-policy" element={<LegalHubPage defaultTab="shipping" />} />
+          <Route path="/refund-policy" element={<LegalHubPage defaultTab="refund" />} />
+          <Route path="/disclaimer" element={<LegalHubPage defaultTab="disclaimer" />} />
+          <Route path="/careers" element={<CareersPage />} />
+          <Route path="/ayurveda-guide" element={<AyurvedaGuidePage />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/blogs/:slug" element={<BlogDetail />} />
+        </Route>
+        <Route path="/ref/:code" element={<RefLanding />} />
+        <Route path="/unauth-page" element={<UnauthPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </div>
+    </LoginModalProvider>
+  );
+}
+
+export default App;
