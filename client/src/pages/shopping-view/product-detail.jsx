@@ -176,59 +176,60 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white w-full max-w-full overflow-x-hidden">
       {/* ── Breadcrumb ── */}
-      <div className="bg-leaf/40 border-b border-forest/10 py-3 px-4">
-        <div className="container mx-auto flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-          <Link to="/shop/home" className="hover:text-forest transition">Home</Link>
-          <ChevronRight className="w-3 h-3" />
-          <Link to="/shop/listing" className="hover:text-forest transition">Products</Link>
-          <ChevronRight className="w-3 h-3" />
-          <Link to={`/shop/listing?category=${p.category}`} className="hover:text-forest transition capitalize">
+      <div className="bg-leaf/40 border-b border-forest/10 py-2.5 px-3 sm:px-4 w-full overflow-hidden">
+        <div className="container mx-auto flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground overflow-x-auto scrollbar-hide whitespace-nowrap">
+          <Link to="/shop/home" className="hover:text-forest transition shrink-0">Home</Link>
+          <ChevronRight className="w-3 h-3 shrink-0 text-forest/30" />
+          <Link to="/shop/listing" className="hover:text-forest transition shrink-0">Products</Link>
+          <ChevronRight className="w-3 h-3 shrink-0 text-forest/30" />
+          <Link to={`/shop/listing?category=${p.category}`} className="hover:text-forest transition capitalize shrink-0">
             {categoryName}
           </Link>
           {p.subCategory && subCategoryOptionsMap[p.subCategory] && (
             <>
-              <ChevronRight className="w-3 h-3" />
+              <ChevronRight className="w-3 h-3 shrink-0 text-forest/30" />
               <Link
                 to={`/shop/listing?category=${p.category}&subCategory=${p.subCategory}`}
-                className="hover:text-forest transition font-medium"
+                className="hover:text-forest transition font-medium shrink-0"
               >
                 {subCategoryOptionsMap[p.subCategory]}
               </Link>
             </>
           )}
-          <ChevronRight className="w-3 h-3" />
-          <span className="text-forest font-medium truncate max-w-[200px]">{p.title}</span>
+          <ChevronRight className="w-3 h-3 shrink-0 text-forest/30" />
+          <span className="text-forest font-medium truncate max-w-[140px] sm:max-w-[240px] shrink-0">{p.title}</span>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6 sm:py-8 pb-24 lg:pb-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-24 lg:pb-8 w-full max-w-full overflow-hidden">
         {/* ── Back button ── */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-forest mb-4 sm:mb-6 transition group"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground hover:text-forest mb-3 sm:mb-6 transition group"
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:-translate-x-1 transition-transform" />
           Back
         </button>
 
         {/* ══ Main Product Section ══ */}
-        <div className="grid lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-14 w-full max-w-full">
 
           {/* LEFT — Media Gallery */}
-          <div className="space-y-4">
-            <div className="relative bg-[#f8faf8] border border-forest/10 rounded-3xl overflow-hidden aspect-square flex items-center justify-center shadow-sm group">
-              <ProductOfferBadges product={p} className="absolute top-4 left-4 z-10" />
+          <div className="space-y-3 sm:space-y-4 w-full min-w-0 max-w-full">
+            <div className="relative w-full max-w-full bg-[#f8faf8] border border-forest/10 rounded-2xl sm:rounded-3xl overflow-hidden aspect-square flex items-center justify-center shadow-sm group">
+              <ProductOfferBadges product={p} className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-10 max-w-[70%]" />
               <button
                 onClick={handleWishlist}
-                className={`absolute top-4 right-4 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all border ${
+                className={`absolute top-2.5 right-2.5 sm:top-4 sm:right-4 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-lg transition-all border ${
                   isWishlisted
                     ? "bg-red-50 text-red-500 border-red-200"
                     : "bg-white text-forest/40 border-forest/10 hover:text-red-400 hover:bg-red-50"
                 }`}
+                aria-label="Toggle wishlist"
               >
-                <Heart className={`w-5 h-5 ${isWishlisted ? "fill-red-500" : ""}`} />
+                <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isWishlisted ? "fill-red-500" : ""}`} />
               </button>
 
               {activeMedia.type === "video" ? (
@@ -245,7 +246,7 @@ export default function ProductDetailPage() {
                   src={activeMedia.url}
                   alt={p.title}
                   onError={(e) => { e.target.src = FALLBACK; }}
-                  className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-full object-contain p-2 sm:p-6 transition-transform duration-500 group-hover:scale-105 select-none"
                 />
               )}
 
@@ -255,20 +256,20 @@ export default function ProductDetailPage() {
                   <button
                     type="button"
                     onClick={() => setActiveMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1))}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 shadow-md text-forest hover:bg-white flex items-center justify-center transition-all opacity-80 hover:opacity-100"
+                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 shadow-md text-forest hover:bg-white flex items-center justify-center transition-all opacity-80 hover:opacity-100"
                     aria-label="Previous media"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1))}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 shadow-md text-forest hover:bg-white flex items-center justify-center transition-all opacity-80 hover:opacity-100"
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 shadow-md text-forest hover:bg-white flex items-center justify-center transition-all opacity-80 hover:opacity-100"
                     aria-label="Next media"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
-                  <span className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                  <span className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">
                     {activeMediaIndex + 1} / {mediaList.length}
                   </span>
                 </>
@@ -277,13 +278,13 @@ export default function ProductDetailPage() {
 
             {/* Thumbnail Strip */}
             {mediaList.length > 1 && (
-              <div className="flex items-center gap-2.5 overflow-x-auto pb-1 px-1 scrollbar-none">
+              <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-1 px-0.5 scrollbar-hide w-full max-w-full">
                 {mediaList.map((item, idx) => (
                   <button
                     key={`${item.url}-${idx}`}
                     type="button"
                     onClick={() => setActiveMediaIndex(idx)}
-                    className={`relative w-16 sm:w-20 h-16 sm:h-20 rounded-2xl overflow-hidden border-2 bg-white flex-shrink-0 transition-all ${
+                    className={`relative w-14 sm:w-20 h-14 sm:h-20 rounded-xl sm:rounded-2xl overflow-hidden border-2 bg-white shrink-0 transition-all ${
                       activeMediaIndex === idx
                         ? "border-forest ring-2 ring-forest/20 scale-105 shadow-md"
                         : "border-gray-200 opacity-60 hover:opacity-100"
@@ -291,8 +292,8 @@ export default function ProductDetailPage() {
                   >
                     {item.type === "video" ? (
                       <div className="w-full h-full bg-forest/10 flex flex-col items-center justify-center text-forest">
-                        <Play className="w-5 h-5 fill-forest" />
-                        <span className="text-[9px] font-bold uppercase mt-1">Video</span>
+                        <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-forest" />
+                        <span className="text-[8px] sm:text-[9px] font-bold uppercase mt-0.5">Video</span>
                       </div>
                     ) : (
                       <img
@@ -308,61 +309,61 @@ export default function ProductDetailPage() {
             )}
 
             {/* Trust row */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-3 w-full max-w-full">
               {[
-                { icon: <Shield className="w-4 h-4" />, label: "100% Ayurvedic" },
-                { icon: <Truck className="w-4 h-4" />, label: "Express Delivery" },
-                { icon: <Package className="w-4 h-4" />, label: "Secure Packaging" },
+                { icon: <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4" />, label: "100% Ayurvedic" },
+                { icon: <Truck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />, label: "Express Delivery" },
+                { icon: <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4" />, label: "Secure Packaging" },
               ].map((b) => (
-                <div key={b.label} className="flex flex-col items-center gap-1 sm:gap-1.5 bg-leaf/40 rounded-xl sm:rounded-2xl py-2.5 sm:py-3 px-1 sm:px-2 text-center">
+                <div key={b.label} className="flex flex-col items-center gap-1 bg-leaf/40 rounded-xl sm:rounded-2xl py-2 sm:py-3 px-1 sm:px-2 text-center">
                   <span className="text-forest">{b.icon}</span>
-                  <span className="text-[10px] sm:text-[11px] font-semibold text-forest leading-tight">{b.label}</span>
+                  <span className="text-[9px] sm:text-[11px] font-semibold text-forest leading-tight">{b.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* RIGHT — Details */}
-          <div className="space-y-5">
+          <div className="space-y-4 sm:space-y-5 w-full min-w-0 max-w-full">
             {/* Category + Share */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <Link
                 to={`/shop/listing?category=${p.category}`}
-                className="text-gold text-xs font-bold uppercase tracking-widest hover:underline"
+                className="text-gold text-[11px] sm:text-xs font-bold uppercase tracking-wider hover:underline truncate"
               >
                 {categoryName}
               </Link>
-              <button onClick={handleShare} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-forest transition">
-                <Share2 className="w-4 h-4" /> Share
+              <button onClick={handleShare} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-forest transition shrink-0">
+                <Share2 className="w-3.5 h-3.5" /> Share
               </button>
             </div>
 
             {/* Title */}
-            <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-forest leading-tight">
+            <h1 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-forest leading-snug break-words">
               {p.title}
             </h1>
 
             {/* Rating */}
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap">
-              <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <StarRatingComponent rating={averageReview} />
-                <span className="text-sm font-semibold text-forest">{averageReview.toFixed(1)}</span>
-                <span className="text-sm text-muted-foreground">({reviews?.length || 0} reviews)</span>
+                <span className="text-xs sm:text-sm font-semibold text-forest">{averageReview.toFixed(1)}</span>
+                <span className="text-xs text-muted-foreground">({reviews?.length || 0} reviews)</span>
               </div>
               {p.totalStock > 0
-                ? <span className="self-start text-xs bg-forest-50 text-forest-700 font-semibold px-2.5 py-1 rounded-full border border-forest-200">✓ In Stock ({p.totalStock} left)</span>
-                : <span className="self-start text-xs bg-red-50 text-red-600 font-semibold px-2.5 py-1 rounded-full border border-red-200">Out of Stock</span>
+                ? <span className="text-[11px] sm:text-xs bg-forest-50 text-forest-700 font-semibold px-2.5 py-0.5 sm:py-1 rounded-full border border-forest-200">✓ In Stock ({p.totalStock})</span>
+                : <span className="text-[11px] sm:text-xs bg-red-50 text-red-600 font-semibold px-2.5 py-0.5 sm:py-1 rounded-full border border-red-200">Out of Stock</span>
               }
             </div>
 
             {/* Price */}
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <span className="text-3xl sm:text-4xl font-bold text-forest">₹{price}</span>
+            <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
+              <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-forest">₹{price}</span>
               {p.salePrice > 0 && (
                 <>
-                  <span className="text-xl line-through text-muted-foreground">₹{p.price}</span>
+                  <span className="text-base sm:text-xl line-through text-muted-foreground">₹{p.price}</span>
                   {discount > 0 && (
-                    <span className="text-sm font-bold text-red-600 bg-red-50 px-3 py-1 rounded-xl border border-red-100">
+                    <span className="text-xs sm:text-sm font-bold text-red-600 bg-red-50 px-2.5 py-0.5 sm:py-1 rounded-xl border border-red-100">
                       {discount}% OFF — Save ₹{savings}
                     </span>
                   )}
@@ -371,71 +372,71 @@ export default function ProductDetailPage() {
             </div>
 
             {flashActive && timeLeft && (
-              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5">
-                <span className="text-red-500 text-sm font-bold animate-pulse">⏱</span>
-                <span className="text-sm font-semibold text-red-700">Flash Sale ends in <span className="font-mono">{timeLeft}</span></span>
+              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2 text-xs sm:text-sm">
+                <span className="text-red-500 font-bold animate-pulse">⏱</span>
+                <span className="font-semibold text-red-700">Flash Sale ends in <span className="font-mono font-bold">{timeLeft}</span></span>
               </div>
             )}
 
             {/* Short description */}
-            <p className="text-muted-foreground text-sm leading-relaxed">{p.description}</p>
+            <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{p.description}</p>
 
             {/* Product badges */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {productBadges.map((badge) => (
-                <span key={badge.label} className="flex items-center gap-1.5 bg-leaf px-3 py-1.5 rounded-full text-xs font-semibold text-forest border border-forest/10">
-                  <Truck className="w-3.5 h-3.5" /> {badge.label}
+                <span key={badge.label} className="flex items-center gap-1 bg-leaf px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold text-forest border border-forest/10">
+                  <Truck className="w-3 h-3" /> {badge.label}
                 </span>
               ))}
             </div>
 
             {/* Qty + CTA */}
             {p.totalStock > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-3 pt-1">
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-700">Quantity:</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-700">Quantity:</span>
                   <div className="flex items-center border border-forest/20 rounded-xl overflow-hidden">
                     <button
                       onClick={() => setQty((q) => Math.max(1, q - 1))}
-                      className="w-10 h-10 flex items-center justify-center text-forest hover:bg-leaf transition text-lg font-bold"
+                      className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-forest hover:bg-leaf transition text-base font-bold"
                     >−</button>
-                    <span className="w-10 text-center font-bold text-forest">{qty}</span>
+                    <span className="w-9 text-center font-bold text-forest text-sm">{qty}</span>
                     <button
                       onClick={() => setQty((q) => Math.min(p.totalStock, q + 1))}
-                      className="w-10 h-10 flex items-center justify-center text-forest hover:bg-leaf transition text-lg font-bold"
+                      className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-forest hover:bg-leaf transition text-base font-bold"
                     >+</button>
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
                   <Button
                     onClick={() => handleAddToCart(p._id, p.totalStock, qty)}
                     variant="outline"
-                    className="w-full sm:flex-1 h-12 sm:h-13 rounded-2xl font-bold text-sm py-4 btn-dynamic-secondary"
+                    className="w-full sm:flex-1 h-11 sm:h-13 rounded-2xl font-bold text-xs sm:text-sm py-3 sm:py-4 btn-dynamic-secondary"
                   >
-                    <ShoppingBag className="w-4 h-4 mr-2 shrink-0" />
+                    <ShoppingBag className="w-4 h-4 mr-1.5 shrink-0" />
                     <span className="truncate">Add to Cart — ₹{price * qty}</span>
                   </Button>
                   <Button
                     onClick={handleBuyNow}
                     variant="buynow"
-                    className="w-full sm:flex-1 h-12 sm:h-13 rounded-2xl font-bold text-sm py-4 shadow-lg btn-dynamic-buynow"
+                    className="w-full sm:flex-1 h-11 sm:h-13 rounded-2xl font-bold text-xs sm:text-sm py-3 sm:py-4 shadow-lg btn-dynamic-buynow"
                   >
-                    <Zap className="w-4 h-4 mr-2 shrink-0" />
+                    <Zap className="w-4 h-4 mr-1.5 shrink-0" />
                     Buy Now
                   </Button>
                 </div>
               </div>
             ) : (
-              <Button disabled className="w-full h-12 rounded-2xl opacity-60">Out of Stock</Button>
+              <Button disabled className="w-full h-11 sm:h-12 rounded-2xl opacity-60">Out of Stock</Button>
             )}
 
             {/* Dosage callout */}
             {p.dosage && (
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex gap-3 items-start">
-                <span className="text-xl">💊</span>
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 sm:p-4 flex gap-2.5 sm:gap-3 items-start">
+                <span className="text-lg sm:text-xl">💊</span>
                 <div>
-                  <p className="text-xs font-bold text-amber-800 uppercase tracking-wide mb-0.5">Recommended Dosage</p>
-                  <p className="text-sm text-amber-700">{p.dosage}</p>
+                  <p className="text-[10px] sm:text-xs font-bold text-amber-800 uppercase tracking-wide mb-0.5">Recommended Dosage</p>
+                  <p className="text-xs sm:text-sm text-amber-700">{p.dosage}</p>
                 </div>
               </div>
             )}
@@ -443,30 +444,32 @@ export default function ProductDetailPage() {
         </div>
 
         {/* ══ Tabs: Benefits, Ingredients, How to Use, Reviews ══ */}
-        <div className="mt-12">
-          <Tabs defaultValue="benefits">
-            <TabsList className="flex flex-nowrap h-auto gap-1 bg-leaf/40 p-1 rounded-2xl mb-6 overflow-x-auto scrollbar-hide">
-              {[
-                { value: "benefits", label: "Benefits" },
-                { value: "ingredients", label: "Ingredients" },
-                { value: "usage", label: "How to Use" },
-                { value: "reviews", label: `Reviews (${reviews?.length || 0})` },
-              ].map((t) => (
-                <TabsTrigger key={t.value} value={t.value}
-                  className="shrink-0 rounded-xl text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-sm px-4">
-                  {t.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+        <div className="mt-10 sm:mt-14 w-full min-w-0 max-w-full">
+          <Tabs defaultValue="benefits" className="w-full min-w-0 max-w-full">
+            <div className="w-full overflow-x-auto scrollbar-hide pb-2">
+              <TabsList className="inline-flex h-auto gap-1 bg-leaf/40 p-1 rounded-2xl">
+                {[
+                  { value: "benefits", label: "Benefits" },
+                  { value: "ingredients", label: "Ingredients" },
+                  { value: "usage", label: "How to Use" },
+                  { value: "reviews", label: `Reviews (${reviews?.length || 0})` },
+                ].map((t) => (
+                  <TabsTrigger key={t.value} value={t.value}
+                    className="shrink-0 rounded-xl text-xs sm:text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-sm px-3 sm:px-4 py-2">
+                    {t.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
 
             <TabsContent value="benefits">
-              <div className="bg-leaf/20 rounded-3xl p-6 border border-forest/10">
-                <h3 className="font-display font-bold text-forest text-lg mb-4">Key Benefits</h3>
-                <div className="grid sm:grid-cols-2 gap-3">
+              <div className="bg-leaf/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-forest/10 w-full min-w-0">
+                <h3 className="font-display font-bold text-forest text-base sm:text-lg mb-3 sm:mb-4">Key Benefits</h3>
+                <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-3">
                   {(p.benefits || "Natural Ayurvedic wellness support for daily health.").split(/[,\n]/).filter(Boolean).map((b, i) => (
-                    <div key={i} className="flex items-start gap-3 bg-white rounded-xl p-3 shadow-sm border border-forest/5">
-                      <span className="text-forest mt-0.5">✓</span>
-                      <span className="text-sm text-forest/90">{b.trim()}</span>
+                    <div key={i} className="flex items-start gap-2.5 bg-white rounded-xl p-3 shadow-sm border border-forest/5">
+                      <span className="text-forest mt-0.5 text-xs">✓</span>
+                      <span className="text-xs sm:text-sm text-forest/90 leading-relaxed">{b.trim()}</span>
                     </div>
                   ))}
                 </div>
@@ -474,11 +477,11 @@ export default function ProductDetailPage() {
             </TabsContent>
 
             <TabsContent value="ingredients">
-              <div className="bg-leaf/20 rounded-3xl p-6 border border-forest/10">
-                <h3 className="font-display font-bold text-forest text-lg mb-4">Active Ingredients</h3>
+              <div className="bg-leaf/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-forest/10 w-full min-w-0">
+                <h3 className="font-display font-bold text-forest text-base sm:text-lg mb-3 sm:mb-4">Active Ingredients</h3>
                 <div className="flex flex-wrap gap-2">
                   {(p.ingredients || "100% natural Ayurvedic herbs").split(/[,\n]/).filter(Boolean).map((ing, i) => (
-                    <span key={i} className="bg-white border border-forest/15 text-forest text-sm font-medium px-4 py-2 rounded-full shadow-sm">
+                    <span key={i} className="bg-white border border-forest/15 text-forest text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-sm">
                       🌿 {ing.trim()}
                     </span>
                   ))}
@@ -487,17 +490,17 @@ export default function ProductDetailPage() {
             </TabsContent>
 
             <TabsContent value="usage">
-              <div className="bg-leaf/20 rounded-3xl p-6 border border-forest/10 space-y-5">
-                <h3 className="font-display font-bold text-forest text-lg">How to Use</h3>
+              <div className="bg-leaf/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-forest/10 space-y-3.5 sm:space-y-5 w-full min-w-0">
+                <h3 className="font-display font-bold text-forest text-base sm:text-lg">How to Use</h3>
                 {[
                   { icon: "📋", title: "Instructions", text: p.howToUse || "Take with warm water twice daily." },
                   { icon: "💊", title: "Dosage",       text: p.dosage || "As directed by your Ayurvedic physician." },
                 ].map((item) => (
-                  <div key={item.title} className="flex gap-4 bg-white rounded-2xl p-4 shadow-sm border border-forest/5">
-                    <span className="text-2xl">{item.icon}</span>
+                  <div key={item.title} className="flex gap-3 sm:gap-4 bg-white rounded-xl sm:rounded-2xl p-3.5 sm:p-4 shadow-sm border border-forest/5">
+                    <span className="text-xl sm:text-2xl">{item.icon}</span>
                     <div>
-                      <p className="font-bold text-forest text-sm mb-1">{item.title}</p>
-                      <p className="text-sm text-muted-foreground">{item.text}</p>
+                      <p className="font-bold text-forest text-xs sm:text-sm mb-0.5 sm:mb-1">{item.title}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{item.text}</p>
                     </div>
                   </div>
                 ))}
@@ -505,11 +508,11 @@ export default function ProductDetailPage() {
             </TabsContent>
 
             <TabsContent value="reviews">
-              <div className="bg-leaf/20 rounded-3xl p-6 border border-forest/10 space-y-6">
+              <div className="bg-leaf/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-forest/10 space-y-4 sm:space-y-6 w-full min-w-0">
                 {/* Rating summary */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-forest/5">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-sm border border-forest/5">
                   <div className="text-center shrink-0">
-                    <p className="text-4xl sm:text-5xl font-bold text-forest">{averageReview.toFixed(1)}</p>
+                    <p className="text-3xl sm:text-5xl font-bold text-forest">{averageReview.toFixed(1)}</p>
                     <StarRatingComponent rating={averageReview} />
                     <p className="text-xs text-muted-foreground mt-1">{reviews?.length || 0} reviews</p>
                   </div>
@@ -532,42 +535,43 @@ export default function ProductDetailPage() {
                 </div>
 
                 {/* Review list */}
-                <div className="space-y-4 max-h-72 overflow-y-auto pr-1">
+                <div className="space-y-3 sm:space-y-4 max-h-72 overflow-y-auto pr-1">
                   {reviews?.length > 0 ? reviews.map((r) => (
-                    <div key={r._id} className="flex gap-3 bg-white rounded-2xl p-4 shadow-sm border border-forest/5">
-                      <Avatar className="w-9 h-9 shrink-0">
-                        <AvatarFallback className="bg-forest text-white text-sm font-bold">
+                    <div key={r._id} className="flex gap-2.5 sm:gap-3 bg-white rounded-xl sm:rounded-2xl p-3.5 sm:p-4 shadow-sm border border-forest/5">
+                      <Avatar className="w-8 h-8 sm:w-9 sm:h-9 shrink-0">
+                        <AvatarFallback className="bg-forest text-white text-xs sm:text-sm font-bold">
                           {r.userName?.[0]?.toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <p className="font-bold text-forest text-sm">{r.userName}</p>
-                          <BadgeCheck className="w-3.5 h-3.5 text-forest" />
+                          <p className="font-bold text-forest text-xs sm:text-sm truncate">{r.userName}</p>
+                          <BadgeCheck className="w-3.5 h-3.5 text-forest shrink-0" />
                           <StarRatingComponent rating={r.reviewValue} />
                         </div>
-                        <p className="text-sm text-muted-foreground">{r.reviewMessage}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed break-words">{r.reviewMessage}</p>
                       </div>
                     </div>
                   )) : (
-                    <p className="text-center text-muted-foreground text-sm py-4">No reviews yet. Be the first!</p>
+                    <p className="text-center text-muted-foreground text-xs sm:text-sm py-4">No reviews yet. Be the first!</p>
                   )}
                 </div>
 
                 {/* Write review */}
                 {user?.id && (
-                  <div className="bg-white rounded-2xl p-5 shadow-sm border border-forest/10 space-y-3">
+                  <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-sm border border-forest/10 space-y-3">
                     <p className="font-bold text-forest text-sm">Write a Review</p>
                     <StarRatingComponent rating={rating} handleRatingChange={setRating} />
                     <Input
                       value={reviewMsg}
                       onChange={(e) => setReviewMsg(e.target.value)}
                       placeholder="Share your experience with this product..."
+                      className="text-xs sm:text-sm"
                     />
                     <Button
                       onClick={handleAddReview}
                       disabled={!reviewMsg.trim() || !rating}
-                      className="w-full bg-forest hover:bg-forest/90"
+                      className="w-full bg-forest hover:bg-forest/90 h-10 text-xs sm:text-sm"
                     >
                       Submit Review
                     </Button>
@@ -580,14 +584,14 @@ export default function ProductDetailPage() {
 
         {/* ══ Related Products ══ */}
         {related.length > 0 && (
-          <div className="mt-14">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-display text-xl font-bold text-forest">More from {categoryName}</h2>
-              <Link to={`/shop/listing?category=${p.category}`} className="text-sm text-gold font-semibold hover:underline flex items-center gap-1">
-                View all <ChevronRight className="w-4 h-4" />
+          <div className="mt-10 sm:mt-14 w-full min-w-0 max-w-full">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="font-display text-lg sm:text-xl font-bold text-forest">More from {categoryName}</h2>
+              <Link to={`/shop/listing?category=${p.category}`} className="text-xs sm:text-sm text-gold font-semibold hover:underline flex items-center gap-1">
+                View all <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 w-full max-w-full">
               {related.map((rel) => (
                 <ShoppingProductTile
                   key={rel._id}
@@ -603,22 +607,22 @@ export default function ProductDetailPage() {
 
       {/* Mobile Sticky Action Bar */}
       {p && p.totalStock > 0 && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-forest/15 px-4 py-2.5 shadow-2xl flex items-center justify-between gap-3 safe-area-bottom">
-          <div className="flex flex-col min-w-0">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-forest/15 px-3.5 py-2.5 shadow-2xl flex items-center justify-between gap-2 safe-area-bottom w-full">
+          <div className="flex flex-col min-w-0 shrink-0">
             <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Price</span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-lg font-bold text-forest">₹{price}</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-base sm:text-lg font-bold text-forest">₹{price}</span>
               {p.salePrice > 0 && (
                 <span className="text-xs line-through text-muted-foreground">₹{p.price}</span>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-1 max-w-[240px] justify-end">
+          <div className="flex items-center gap-1.5 flex-1 max-w-[240px] justify-end">
             <Button
               onClick={() => handleAddToCart(p._id, p.totalStock, 1)}
               variant="outline"
               size="sm"
-              className="rounded-xl font-bold text-xs h-9 px-3 border-forest/20 text-forest btn-dynamic-secondary"
+              className="rounded-xl font-bold text-xs h-9 px-2.5 sm:px-3 border-forest/25 text-forest btn-dynamic-secondary"
             >
               <ShoppingBag className="w-3.5 h-3.5 mr-1 shrink-0" />
               Add
@@ -627,7 +631,7 @@ export default function ProductDetailPage() {
               onClick={handleBuyNow}
               variant="buynow"
               size="sm"
-              className="rounded-xl font-bold text-xs h-9 px-3.5 flex-1 shadow-md btn-dynamic-buynow"
+              className="rounded-xl font-bold text-xs h-9 px-3 sm:px-3.5 flex-1 shadow-md btn-dynamic-buynow"
             >
               <Zap className="w-3.5 h-3.5 mr-1 shrink-0" />
               Buy Now
