@@ -15,6 +15,7 @@ import {
   DOCTORS,
   FAQ_ITEMS,
   FOOTER_LINKS,
+  DEFAULT_POLICIES,
   TRUST_BADGES,
   PAYMENT_METHODS,
   DELIVERY_PARTNERS,
@@ -181,13 +182,32 @@ export function useSiteSettings() {
       newsletter:     data?.newsletter             || DEFAULT_NEWSLETTER,
 
       // Footer
-      footerLinks:      data?.footerLinks            || FOOTER_LINKS,
+      footerLinks: (() => {
+        const raw = data?.footerLinks || FOOTER_LINKS;
+        const rawLegal = Array.isArray(raw.legal) ? raw.legal : [];
+        // If DB has fewer than 4 legal policies or lacks refund/shipping, ensure full 5 policies are available
+        const legal = rawLegal.length >= 4 ? rawLegal : FOOTER_LINKS.legal;
+        return {
+          ...FOOTER_LINKS,
+          ...raw,
+          legal,
+        };
+      })(),
       trustBadges:      data?.trustBadges?.length      ? data.trustBadges      : TRUST_BADGES,
       paymentMethods:   data?.paymentMethods?.length   ? data.paymentMethods   : PAYMENT_METHODS,
       deliveryPartners: data?.deliveryPartners?.length ? data.deliveryPartners : DELIVERY_PARTNERS,
       productBadges:    data?.productBadges          || DEFAULT_PRODUCT_BADGES,
       howItWorks:       data?.howItWorks?.length     ? data.howItWorks       : DEFAULT_HOW_IT_WORKS,
       herbs:            data?.herbs?.length          ? data.herbs            : DEFAULT_HERBS,
+
+      // Policies & Legal
+      policies: data?.policies ? {
+        privacy: { ...DEFAULT_POLICIES.privacy, ...data.policies.privacy },
+        terms: { ...DEFAULT_POLICIES.terms, ...data.policies.terms },
+        shipping: { ...DEFAULT_POLICIES.shipping, ...data.policies.shipping },
+        refund: { ...DEFAULT_POLICIES.refund, ...data.policies.refund },
+        disclaimer: { ...DEFAULT_POLICIES.disclaimer, ...data.policies.disclaimer },
+      } : DEFAULT_POLICIES,
     };
   }, [data, isLoading]);
 }

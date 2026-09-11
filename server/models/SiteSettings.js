@@ -40,6 +40,9 @@ const SiteSettingsSchema = new mongoose.Schema(
     paymentMethods: [String],
     deliveryPartners: [String],
     productBadges: mongoose.Schema.Types.Mixed,
+
+    // ── Policies & Legal ──
+    policies: mongoose.Schema.Types.Mixed,
   },
   { timestamps: true, strict: false }
 );

@@ -421,29 +421,146 @@ module.exports = {
   brands: [{ id: "mother-tatwa", label: "Mother Tatwa" }],
   footerLinks: {
     company: [
-      { label: "About Us", href: "#" },
-      { label: "Our Story", href: "#" },
-      { label: "Mission", href: "#" },
-      { label: "Careers", href: "#" },
+      { label: "About Us", href: "/about-us" },
+      { label: "Our Story", href: "/about-us" },
+      { label: "Mission", href: "/about-us" },
+      { label: "Careers", href: "/careers" },
     ],
     shop: [
       { label: "All Products", href: "/shop/listing" },
-      { label: "Best Sellers", href: "/shop/listing" },
+      { label: "Best Sellers", href: "/shop/best-sellers" },
+      { label: "Offer Zone", href: "/shop/offer-zone" },
       { label: "New Arrivals", href: "/shop/listing" },
     ],
     support: [
-      { label: "Contact Us", href: "#" },
-      { label: "FAQ", href: "#faq" },
+      { label: "Contact Us", href: "/contact-us" },
+      { label: "FAQ", href: "/faq" },
+      { label: "Shipping Policy", href: "/shipping-policy" },
+      { label: "Return Policy", href: "/refund-policy" },
       { label: "Track Order", href: "/shop/account" },
     ],
     legal: [
-      { label: "Privacy Policy", href: "#" },
-      { label: "Terms & Conditions", href: "#" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms & Conditions", href: "/terms-conditions" },
+      { label: "Shipping Policy", href: "/shipping-policy" },
+      { label: "Return & Refund Policy", href: "/refund-policy" },
+      { label: "Disclaimer", href: "/disclaimer" },
     ],
     learn: [
-      { label: "Health Blog", href: "#" },
-      { label: "Ayurveda Guide", href: "#" },
+      { label: "Health Blog", href: "/blogs" },
+      { label: "Ayurveda Guide", href: "/ayurveda-guide" },
+      { label: "Dosha Balancing", href: "/ayurveda-guide" },
     ],
+  },
+  policies: {
+    privacy: {
+      title: "Privacy Policy",
+      lastUpdated: "August 2026 | Wellmaats",
+      sections: [
+        {
+          heading: "1. Information Collection",
+          content: "We collect essential information to process your orders, including your name, shipping address, email address, and phone number. We strictly do not store raw credit/debit card numbers or netbanking passwords on our servers.",
+        },
+        {
+          heading: "2. How We Use Your Data",
+          content: "Your data is used exclusively for fulfilling and delivering your Ayurvedic product shipments, sending tracking updates and delivery SMS/Email alerts, and providing customer support assistance for dosage and formulation inquiries.",
+        },
+        {
+          heading: "3. 256-Bit SSL Security",
+          content: "All online transactions and customer communications are encrypted using industry-standard 256-bit SSL encryption. We do not sell or rent your personal information to any third parties.",
+        },
+        {
+          heading: "4. Grievance Redressal",
+          content: "For any privacy concerns, data inquiries, or grievance redressal, you can contact our dedicated support team directly via email or our helpline number.",
+        },
+      ],
+    },
+    terms: {
+      title: "Terms & Conditions",
+      lastUpdated: "User Agreement & Sales Terms | Wellmaats",
+      sections: [
+        {
+          heading: "1. Acceptance of Terms",
+          content: "By browsing or placing an order on Wellmaats, you agree to comply with and be bound by these terms, our privacy policy, and applicable laws in India.",
+        },
+        {
+          heading: "2. Product Descriptions & Pricing",
+          content: "Prices listed on the website are in Indian Rupees (INR) and include GST. While we strive for absolute accuracy, we reserve the right to correct pricing or typographical errors before order dispatch.",
+        },
+        {
+          heading: "3. Order Fulfillment",
+          content: "Orders are processed upon verification. In the rare event an item is out of stock, our team will notify you immediately for a replacement or complete refund.",
+        },
+        {
+          heading: "4. Jurisdiction",
+          content: "Any legal proceedings or disputes related to orders placed on this platform shall be subject to the exclusive jurisdiction of the competent courts in Noida, Uttar Pradesh.",
+        },
+      ],
+    },
+    shipping: {
+      title: "Shipping & Delivery Policy",
+      lastUpdated: "Pan-India Express Dispatch from Haridwar Hub",
+      dispatchText: "24hr Dispatch",
+      dispatchSubtext: "Orders shipped on priority",
+      freeShippingText: "Free Shipping",
+      freeShippingSubtext: "On all orders above ₹499",
+      trackingText: "Live Tracking",
+      trackingSubtext: "SMS & Email updates",
+      sections: [
+        {
+          heading: "1. Delivery Timelines",
+          content: "• Metro Cities (Delhi NCR, Mumbai, Bengaluru, Hyderabad, Kolkata): 2–3 Business Days.\n• Rest of India (Tier 2 & Tier 3 Cities): 3–5 Business Days.\n• Remote / North-East: 4–7 Business Days.",
+        },
+        {
+          heading: "2. Courier Partners",
+          content: "We ship via trusted logistics partners including Delhivery, Blue Dart, DTDC, Xpressbees, and India Post.",
+        },
+        {
+          heading: "3. Order Tracking",
+          content: "You will receive real-time tracking links via SMS, WhatsApp, and Email as soon as your parcel is dispatched from our facility.",
+        },
+      ],
+    },
+    refund: {
+      title: "Return & Refund Policy",
+      lastUpdated: "7-Day Easy Replacement & Money-Back Guarantee",
+      sections: [
+        {
+          heading: "1. 7-Day Return Eligibility",
+          content: "If your item is damaged in transit, defective, or incorrect, you are eligible for an instant free replacement or 100% refund within 7 days of delivery.",
+        },
+        {
+          heading: "2. How to Claim",
+          content: "Send photos of the damaged outer box and product to our support email or WhatsApp our customer helpline with your Order ID.",
+        },
+        {
+          heading: "3. Refund Timeline",
+          content: "Refunds for prepaid orders are credited back to your original payment method in 3–5 business days. For COD orders, refund is transferred directly to your UPI/Bank Account within 24–48 hours.",
+        },
+        {
+          heading: "4. Cancellation Policy",
+          content: "Orders can be cancelled before dispatch without any cancellation fee. Once dispatched, the order will follow standard return procedures.",
+        },
+      ],
+    },
+    disclaimer: {
+      title: "Medical & Product Disclaimer",
+      lastUpdated: "Ayurvedic Dietary Supplements Guidelines",
+      sections: [
+        {
+          heading: "1. Dietary Supplement Notice",
+          content: "The Ayurvedic drops, tonics, and herbal extracts provided by Wellmaats are traditional Ayurvedic dietary supplements manufactured under Ayush guidelines. They are formulated to promote holistic balance and vitality and are not intended to diagnose, cure, mitigate, or treat any chronic medical condition.",
+        },
+        {
+          heading: "2. Physician Consultation",
+          content: "Always consult your licensed physician or Ayurvedic practitioner prior to starting any herbal regimen, particularly if you are pregnant, nursing, taking prescription allopathic medications, or suffering from a severe pre-existing condition.",
+        },
+        {
+          heading: "3. Individual Results",
+          content: "Herbal formulations work harmoniously with natural body physiology. Results may vary depending on individual body constitution (Prakriti/Dosha) and adherence to healthy lifestyle habits.",
+        },
+      ],
+    },
   },
   trustBadges: [
     "GMP Certified", "ISO Certified", "FSSAI", "Made in India",

@@ -14,6 +14,7 @@ import {
   Leaf, ShieldCheck, FlaskConical, Ban, Heart, Flag,
   Truck, Star, Clock, Zap, Award, CheckCircle,
   ChevronDown, ChevronRight, GripVertical, Sparkles,
+  ExternalLink, RotateCcw, FileText, Lock, Shield, AlertCircle,
 } from "lucide-react";
 import IconPicker from "@/components/common/icon-picker";
 import DynamicIcon, { DYNAMIC_ICONS_MAP } from "@/components/common/dynamic-icon";
@@ -23,6 +24,7 @@ const ICON_OPTIONS = Object.keys(ICON_MAP);
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "@/lib/axiosInstance";
+import { DEFAULT_POLICIES, FOOTER_LINKS } from "@/config/brand";
 
 function Field({ label, children }) {
   return (
@@ -191,13 +193,18 @@ function AdminSettings() {
   const { data } = useSelector((state) => state.siteSettings);
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [activePolicyKey, setActivePolicyKey] = useState("privacy");
 
   useEffect(() => {
     dispatch(fetchSiteSettings());
   }, [dispatch]);
 
   useEffect(() => {
-    if (data) setForm(JSON.parse(JSON.stringify(data)));
+    if (data) {
+      const cloned = JSON.parse(JSON.stringify(data));
+      if (!cloned.policies) cloned.policies = DEFAULT_POLICIES;
+      setForm(cloned);
+    }
   }, [data]);
 
   function update(path, value) {
@@ -249,6 +256,99 @@ function AdminSettings() {
     update(key, text.split(",").map((s) => s.trim()).filter(Boolean));
   }
 
+  function updatePolicy(policyKey, field, value) {
+    setForm((prev) => {
+      const policies = { ...(prev?.policies || DEFAULT_POLICIES) };
+      if (!field) {
+        policies[policyKey] = value;
+        return { ...prev, policies };
+      }
+      const current = { ...(policies[policyKey] || DEFAULT_POLICIES[policyKey] || {}) };
+      current[field] = value;
+      policies[policyKey] = current;
+      return { ...prev, policies };
+    });
+  }
+
+  function updatePolicySection(policyKey, secIndex, field, value) {
+    setForm((prev) => {
+      const policies = { ...(prev?.policies || DEFAULT_POLICIES) };
+      const current = { ...(policies[policyKey] || DEFAULT_POLICIES[policyKey] || {}) };
+      const sections = [...(current.sections || [])];
+      if (sections[secIndex]) {
+        sections[secIndex] = { ...sections[secIndex], [field]: value };
+      }
+      current.sections = sections;
+      policies[policyKey] = current;
+      return { ...prev, policies };
+    });
+  }
+
+  function addPolicySection(policyKey) {
+    setForm((prev) => {
+      const policies = { ...(prev?.policies || DEFAULT_POLICIES) };
+      const current = { ...(policies[policyKey] || DEFAULT_POLICIES[policyKey] || {}) };
+      const sections = [...(current.sections || [])];
+      sections.push({ heading: `${sections.length + 1}. New Clause`, content: "" });
+      current.sections = sections;
+      policies[policyKey] = current;
+      return { ...prev, policies };
+    });
+    toast({ title: "New clause added to policy" });
+  }
+
+  function removePolicySection(policyKey, secIndex) {
+    setForm((prev) => {
+      const policies = { ...(prev?.policies || DEFAULT_POLICIES) };
+      const current = { ...(policies[policyKey] || DEFAULT_POLICIES[policyKey] || {}) };
+      const sections = (current.sections || []).filter((_, idx) => idx !== secIndex);
+      current.sections = sections;
+      policies[policyKey] = current;
+      return { ...prev, policies };
+    });
+    toast({ title: "Section clause removed" });
+  }
+
+  function resetSinglePolicy(policyKey) {
+    if (!DEFAULT_POLICIES[policyKey]) return;
+    setForm((prev) => {
+      const policies = { ...(prev?.policies || DEFAULT_POLICIES) };
+      policies[policyKey] = JSON.parse(JSON.stringify(DEFAULT_POLICIES[policyKey]));
+      return { ...prev, policies };
+    });
+    toast({ title: `Reset ${policyKey} policy to default template. Click Save All Changes.` });
+  }
+
+  function restoreAllLegalFooterLinks() {
+    setForm((prev) => {
+      const fl = { ...(prev?.footerLinks || {}) };
+      fl.legal = [
+        { label: "Privacy Policy", href: "/privacy-policy" },
+        { label: "Terms & Conditions", href: "/terms-conditions" },
+        { label: "Shipping Policy", href: "/shipping-policy" },
+        { label: "Return & Refund Policy", href: "/refund-policy" },
+        { label: "Disclaimer", href: "/disclaimer" },
+      ];
+      return { ...prev, footerLinks: fl };
+    });
+    toast({ title: "Filled all 5 legal policies in Footer! Click Save to apply." });
+  }
+
+  function restoreAllSupportFooterLinks() {
+    setForm((prev) => {
+      const fl = { ...(prev?.footerLinks || {}) };
+      fl.support = [
+        { label: "Contact Us", href: "/contact-us" },
+        { label: "FAQ", href: "/faq" },
+        { label: "Shipping Policy", href: "/shipping-policy" },
+        { label: "Return Policy", href: "/refund-policy" },
+        { label: "Track Order", href: "/shop/account" },
+      ];
+      return { ...prev, footerLinks: fl };
+    });
+    toast({ title: "Updated support links in Footer! Click Save to apply." });
+  }
+
   async function handleSave() {
     if (!form) return;
     setSaving(true);
@@ -293,19 +393,22 @@ function AdminSettings() {
       </div>
 
       <Tabs defaultValue="brand" className="w-full">
-        <TabsList className="flex flex-wrap h-auto gap-1">
-          <TabsTrigger value="brand">Brand</TabsTrigger>
-          <TabsTrigger value="buttoncolors">🎨 Button Colors</TabsTrigger>
-          <TabsTrigger value="contact">Contact</TabsTrigger>
-          <TabsTrigger value="header">Header</TabsTrigger>
-          <TabsTrigger value="heroslides">Hero Slides</TabsTrigger>
-          <TabsTrigger value="categories">Categories</TabsTrigger>
-          <TabsTrigger value="promobanners">Promo Banners</TabsTrigger>
-          <TabsTrigger value="megamenu">Mega Menu</TabsTrigger>
-          <TabsTrigger value="herbs">Herbs</TabsTrigger>
-          <TabsTrigger value="homepage">Homepage</TabsTrigger>
-          <TabsTrigger value="footer">Footer</TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto pb-1.5 scrollbar-none">
+          <TabsList className="inline-flex flex-nowrap items-center gap-1.5 p-1.5 bg-[#f0f4f1] rounded-2xl border border-forest/10 h-auto">
+            <TabsTrigger value="brand" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Brand</TabsTrigger>
+            <TabsTrigger value="buttoncolors" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">🎨 Colors</TabsTrigger>
+            <TabsTrigger value="contact" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Contact</TabsTrigger>
+            <TabsTrigger value="header" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Header</TabsTrigger>
+            <TabsTrigger value="heroslides" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Hero Slides</TabsTrigger>
+            <TabsTrigger value="categories" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Categories</TabsTrigger>
+            <TabsTrigger value="promobanners" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Promo Banners</TabsTrigger>
+            <TabsTrigger value="megamenu" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Mega Menu</TabsTrigger>
+            <TabsTrigger value="herbs" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Herbs</TabsTrigger>
+            <TabsTrigger value="homepage" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Homepage</TabsTrigger>
+            <TabsTrigger value="footer" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Footer</TabsTrigger>
+            <TabsTrigger value="policies" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">📜 Policies</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* ══ BUTTON COLORS TAB ══ */}
         <TabsContent value="buttoncolors" className="space-y-6 mt-6">
@@ -1509,39 +1612,498 @@ function AdminSettings() {
           </section>
         </TabsContent>
 
-        <TabsContent value="footer" className="space-y-4 mt-6 max-w-3xl">
-          <Field label="Trust Badges (comma separated)">
-            <Textarea
-              value={(form.trustBadges || []).join(", ")}
-              onChange={(e) => updateCommaList("trustBadges", e.target.value)}
-            />
-          </Field>
-          <Field label="Payment Methods (comma separated)">
-            <Textarea
-              value={(form.paymentMethods || []).join(", ")}
-              onChange={(e) => updateCommaList("paymentMethods", e.target.value)}
-            />
-          </Field>
-          <Field label="Delivery Partners (comma separated)">
-            <Textarea
-              value={(form.deliveryPartners || []).join(", ")}
-              onChange={(e) => updateCommaList("deliveryPartners", e.target.value)}
-            />
-          </Field>
-          <Field label="Footer Links (JSON)">
-            <Textarea
-              className="font-mono text-xs min-h-[200px]"
-              value={JSON.stringify(form.footerLinks || {}, null, 2)}
-              onChange={(e) => {
-                try {
-                  update("footerLinks", JSON.parse(e.target.value));
-                } catch {
-                  /* ignore invalid json while typing */
-                }
-              }}
-            />
-            <p className="text-xs text-muted-foreground">Edit company, shop, support, legal, learn link arrays.</p>
-          </Field>
+        <TabsContent value="footer" className="space-y-6 mt-6 max-w-4xl">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+            <h3 className="font-bold text-forest text-base flex items-center gap-2">
+              🛡️ Badges &amp; Partners
+            </h3>
+            <Field label="Trust Badges (comma separated)">
+              <Textarea
+                value={(form.trustBadges || []).join(", ")}
+                onChange={(e) => updateCommaList("trustBadges", e.target.value)}
+              />
+            </Field>
+            <Field label="Payment Methods (comma separated)">
+              <Textarea
+                value={(form.paymentMethods || []).join(", ")}
+                onChange={(e) => updateCommaList("paymentMethods", e.target.value)}
+              />
+            </Field>
+            <Field label="Delivery Partners (comma separated)">
+              <Textarea
+                value={(form.deliveryPartners || []).join(", ")}
+                onChange={(e) => updateCommaList("deliveryPartners", e.target.value)}
+              />
+            </Field>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="font-bold text-forest text-base">
+                  🔗 Footer Navigation Columns
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Manage the links displayed in the website footer.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={restoreAllLegalFooterLinks}
+                  className="text-xs text-forest border-forest/20 hover:bg-forest/5"
+                >
+                  ✨ Populate All 5 Legal Policies
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={restoreAllSupportFooterLinks}
+                  className="text-xs text-forest border-forest/20 hover:bg-forest/5"
+                >
+                  ✨ Standard Support Links
+                </Button>
+              </div>
+            </div>
+
+            {["legal", "support", "company", "shop", "learn"].map((colKey) => {
+              const colLinks = form.footerLinks?.[colKey] || [];
+              const colTitle = colKey.charAt(0).toUpperCase() + colKey.slice(1);
+              return (
+                <div key={colKey} className="border border-forest/10 rounded-xl p-4 bg-[#fafcfa] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-sm text-forest uppercase tracking-wide">
+                      {colTitle} Column ({colLinks.length} links)
+                    </h4>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs text-forest hover:bg-forest/10"
+                      onClick={() => {
+                        setForm((prev) => {
+                          const fl = { ...(prev?.footerLinks || {}) };
+                          const curr = [...(fl[colKey] || [])];
+                          curr.push({ label: "New Link", href: "/" });
+                          fl[colKey] = curr;
+                          return { ...prev, footerLinks: fl };
+                        });
+                      }}
+                    >
+                      <Plus className="w-3.5 h-3.5 mr-1" /> Add Link
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2">
+                    {colLinks.map((lnk, idx) => (
+                      <div key={idx} className="flex items-center gap-2 bg-white p-2 rounded-lg border border-forest/10">
+                        <Input
+                          placeholder="Label (e.g. Privacy Policy)"
+                          className="h-8 text-xs flex-1"
+                          value={lnk.label || ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setForm((prev) => {
+                              const fl = { ...(prev?.footerLinks || {}) };
+                              const curr = [...(fl[colKey] || [])];
+                              if (curr[idx]) curr[idx] = { ...curr[idx], label: val };
+                              fl[colKey] = curr;
+                              return { ...prev, footerLinks: fl };
+                            });
+                          }}
+                        />
+                        <Input
+                          placeholder="Path (e.g. /privacy-policy)"
+                          className="h-8 text-xs flex-1 font-mono"
+                          value={lnk.href || ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setForm((prev) => {
+                              const fl = { ...(prev?.footerLinks || {}) };
+                              const curr = [...(fl[colKey] || [])];
+                              if (curr[idx]) curr[idx] = { ...curr[idx], href: val };
+                              fl[colKey] = curr;
+                              return { ...prev, footerLinks: fl };
+                            });
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => {
+                            setForm((prev) => {
+                              const fl = { ...(prev?.footerLinks || {}) };
+                              const curr = (fl[colKey] || []).filter((_, i) => i !== idx);
+                              fl[colKey] = curr;
+                              return { ...prev, footerLinks: fl };
+                            });
+                          }}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+
+            <Field label="Advanced: Raw JSON Editor">
+              <Textarea
+                className="font-mono text-xs min-h-[120px]"
+                value={JSON.stringify(form.footerLinks || {}, null, 2)}
+                onChange={(e) => {
+                  try {
+                    update("footerLinks", JSON.parse(e.target.value));
+                  } catch {
+                    /* ignore invalid json while typing */
+                  }
+                }}
+              />
+              <p className="text-xs text-muted-foreground">Directly modify the JSON representation if needed.</p>
+            </Field>
+          </div>
+        </TabsContent>
+
+        {/* ══ POLICIES & LEGAL TAB ══ */}
+        <TabsContent value="policies" className="space-y-6 mt-6 max-w-4xl">
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-5">
+              <div>
+                <h3 className="font-bold text-forest text-xl flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-forest" /> Legal Policies &amp; Compliance Hub
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Customize content, clauses, and guarantees across all 5 legal policies. Changes take effect on the live website immediately upon saving.
+                </p>
+              </div>
+              <a
+                href={activePolicyKey === "terms" ? "/terms-conditions" :
+                      activePolicyKey === "shipping" ? "/shipping-policy" :
+                      activePolicyKey === "refund" ? "/refund-policy" :
+                      activePolicyKey === "disclaimer" ? "/disclaimer" : "/privacy-policy"}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold bg-forest/10 text-forest px-3 py-1.5 rounded-xl hover:bg-forest/15 transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5" /> View Live Page
+              </a>
+            </div>
+
+            {/* Segmented policy selector */}
+            <div className="p-1.5 bg-[#f3f5f3] rounded-2xl border border-gray-200/80">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1">
+                {[
+                  { key: "privacy", label: "Privacy Policy", icon: Lock },
+                  { key: "terms", label: "Terms & Cond.", icon: FileText },
+                  { key: "shipping", label: "Shipping", icon: Truck },
+                  { key: "refund", label: "Return & Refund", icon: RotateCcw },
+                  { key: "disclaimer", label: "Disclaimer", icon: AlertCircle },
+                  { key: "hub", label: "Top Banner", icon: Sparkles },
+                ].map((p) => {
+                  const Icon = p.icon;
+                  const isActive = activePolicyKey === p.key;
+                  return (
+                    <button
+                      key={p.key}
+                      type="button"
+                      onClick={() => setActivePolicyKey(p.key)}
+                      className={`px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                        isActive
+                          ? "bg-white text-forest shadow-sm border border-forest/20 font-bold"
+                          : "text-gray-600 hover:text-forest hover:bg-white/50"
+                      }`}
+                    >
+                      <Icon className={`w-3.5 h-3.5 ${isActive ? "text-forest" : "text-gray-400"}`} />
+                      <span className="truncate">{p.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* If Top Hub Banner Selected */}
+            {activePolicyKey === "hub" ? (
+              <div className="space-y-6 pt-2">
+                <div className="bg-[#fafcfa] p-5 rounded-2xl border border-forest/15 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-bold text-sm text-forest flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-gold" /> Trust &amp; Compliance Header Banner
+                      </h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        This title and subtitle appear above the tabs on the /privacy-policy and legal pages.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label className="text-xs font-semibold text-gray-700">Badge Tagline</Label>
+                      <Input
+                        className="text-xs mt-1.5 bg-white"
+                        placeholder="Policies & Legal Center"
+                        value={form.policies?.hubBadge || ""}
+                        onChange={(e) => updatePolicy("hubBadge", "", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs font-semibold text-gray-700">Main Banner Title</Label>
+                      <Input
+                        className="text-xs mt-1.5 bg-white font-semibold text-forest"
+                        placeholder="Trust & Compliance"
+                        value={form.policies?.hubTitle || ""}
+                        onChange={(e) => updatePolicy("hubTitle", "", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs font-semibold text-gray-700">Subtitle Description</Label>
+                      <Input
+                        className="text-xs mt-1.5 bg-white"
+                        placeholder="Read about our transparent policies..."
+                        value={form.policies?.hubSubtitle || ""}
+                        onChange={(e) => updatePolicy("hubSubtitle", "", e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Live Banner Preview Box */}
+                  <div className="mt-4 pt-4 border-t border-forest/10">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-forest/70 mb-2">Live Banner Preview</p>
+                    <div className="bg-white p-6 rounded-xl border border-forest/10 text-center space-y-2 shadow-xs">
+                      <span className="inline-flex items-center gap-1.5 bg-forest/10 text-forest text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                        <ShieldCheck className="w-3 h-3" /> {form.policies?.hubBadge || "Policies & Legal Center"}
+                      </span>
+                      <h2 className="text-2xl font-bold text-forest">
+                        {form.policies?.hubTitle || "Trust & Compliance"}
+                      </h2>
+                      <p className="text-xs text-muted-foreground max-w-lg mx-auto">
+                        {form.policies?.hubSubtitle || "Read about our transparent policies on privacy, terms, shipping, and returns."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Active Policy Editor */
+              (() => {
+                const currentPolicy = (form.policies && form.policies[activePolicyKey]) || DEFAULT_POLICIES[activePolicyKey] || {};
+                const sections = currentPolicy.sections || [];
+                const policyNameMap = {
+                  privacy: "Privacy Policy",
+                  terms: "Terms & Conditions",
+                  shipping: "Shipping & Delivery Policy",
+                  refund: "Return & Refund Policy",
+                  disclaimer: "Medical & Product Disclaimer",
+                };
+                const routeMap = {
+                  privacy: "/privacy-policy",
+                  terms: "/terms-conditions",
+                  shipping: "/shipping-policy",
+                  refund: "/refund-policy",
+                  disclaimer: "/disclaimer",
+                };
+
+                return (
+                  <div className="space-y-6 pt-2">
+                    {/* Header Bar */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 bg-[#f8faf8] p-4 rounded-xl border border-forest/15">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-forest/10 flex items-center justify-center text-forest">
+                          {activePolicyKey === "privacy" && <Lock className="w-4 h-4" />}
+                          {activePolicyKey === "terms" && <FileText className="w-4 h-4" />}
+                          {activePolicyKey === "shipping" && <Truck className="w-4 h-4" />}
+                          {activePolicyKey === "refund" && <RotateCcw className="w-4 h-4" />}
+                          {activePolicyKey === "disclaimer" && <AlertCircle className="w-4 h-4" />}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-forest text-sm">
+                            {currentPolicy.title || policyNameMap[activePolicyKey]}
+                          </h4>
+                          <span className="text-xs text-muted-foreground">
+                            Route: <code className="text-forest font-mono text-[11px] bg-white px-1.5 py-0.5 rounded border border-forest/10">{routeMap[activePolicyKey]}</code>
+                          </span>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="text-xs text-amber-700 border-amber-300 hover:bg-amber-50 h-8"
+                        onClick={() => resetSinglePolicy(activePolicyKey)}
+                      >
+                        <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Reset Template
+                      </Button>
+                    </div>
+
+                    {/* Policy Page Title & Subtitle */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-5 rounded-xl border border-gray-200/80 shadow-xs">
+                      <div>
+                        <Label className="text-xs font-semibold text-gray-700">Policy Page Heading</Label>
+                        <Input
+                          value={currentPolicy.title || ""}
+                          onChange={(e) => updatePolicy(activePolicyKey, "title", e.target.value)}
+                          placeholder="Policy Title"
+                          className="mt-1.5 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-semibold text-gray-700">Subtitle / Last Updated Tagline</Label>
+                        <Input
+                          value={currentPolicy.lastUpdated || ""}
+                          onChange={(e) => updatePolicy(activePolicyKey, "lastUpdated", e.target.value)}
+                          placeholder="e.g. Last Updated: August 2026 | Wellmaats"
+                          className="mt-1.5 text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Shipping Top Highlight Badges */}
+                    {activePolicyKey === "shipping" && (
+                      <div className="border border-forest/15 rounded-xl p-5 bg-[#fafcfa] space-y-3 shadow-xs">
+                        <h5 className="font-bold text-xs text-forest uppercase tracking-wider flex items-center gap-1.5">
+                          <Truck className="w-3.5 h-3.5 text-gold" /> Shipping Top Highlight Badges
+                        </h5>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="p-3 bg-white rounded-xl border border-forest/10 space-y-2">
+                            <Label className="text-[11px] font-bold text-forest uppercase">Badge 1 (24hr Dispatch)</Label>
+                            <Input
+                              value={currentPolicy.dispatchText || ""}
+                              onChange={(e) => updatePolicy("shipping", "dispatchText", e.target.value)}
+                              placeholder="24hr Dispatch"
+                              className="text-xs h-8"
+                            />
+                            <Input
+                              value={currentPolicy.dispatchSubtext || ""}
+                              onChange={(e) => updatePolicy("shipping", "dispatchSubtext", e.target.value)}
+                              placeholder="Orders shipped on priority"
+                              className="text-xs h-8 text-muted-foreground"
+                            />
+                          </div>
+                          <div className="p-3 bg-white rounded-xl border border-forest/10 space-y-2">
+                            <Label className="text-[11px] font-bold text-forest uppercase">Badge 2 (Free Shipping)</Label>
+                            <Input
+                              value={currentPolicy.freeShippingText || ""}
+                              onChange={(e) => updatePolicy("shipping", "freeShippingText", e.target.value)}
+                              placeholder="Free Shipping"
+                              className="text-xs h-8"
+                            />
+                            <Input
+                              value={currentPolicy.freeShippingSubtext || ""}
+                              onChange={(e) => updatePolicy("shipping", "freeShippingSubtext", e.target.value)}
+                              placeholder="On all orders above ₹499"
+                              className="text-xs h-8 text-muted-foreground"
+                            />
+                          </div>
+                          <div className="p-3 bg-white rounded-xl border border-forest/10 space-y-2">
+                            <Label className="text-[11px] font-bold text-forest uppercase">Badge 3 (Live Tracking)</Label>
+                            <Input
+                              value={currentPolicy.trackingText || ""}
+                              onChange={(e) => updatePolicy("shipping", "trackingText", e.target.value)}
+                              placeholder="Live Tracking"
+                              className="text-xs h-8"
+                            />
+                            <Input
+                              value={currentPolicy.trackingSubtext || ""}
+                              onChange={(e) => updatePolicy("shipping", "trackingSubtext", e.target.value)}
+                              placeholder="SMS & Email updates"
+                              className="text-xs h-8 text-muted-foreground"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Clauses list */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <h5 className="font-bold text-sm text-forest uppercase tracking-wider">
+                            Policy Clauses &amp; Sections
+                          </h5>
+                          <span className="text-xs font-semibold bg-forest/10 text-forest px-2 py-0.5 rounded-full">
+                            {sections.length} clauses
+                          </span>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="text-xs text-forest border-forest/20 hover:bg-forest/5 h-8"
+                          onClick={() => addPolicySection(activePolicyKey)}
+                        >
+                          <Plus className="w-3.5 h-3.5 mr-1" /> Add New Clause
+                        </Button>
+                      </div>
+
+                      <div className="space-y-3">
+                        {sections.map((sec, secIdx) => (
+                          <div
+                            key={secIdx}
+                            className="bg-white p-4 sm:p-5 rounded-xl border border-gray-200 hover:border-forest/25 shadow-xs transition-colors space-y-3"
+                          >
+                            <div className="flex items-center justify-between gap-2 border-b border-gray-100 pb-2.5">
+                              <span className="text-xs font-bold bg-forest/10 text-forest px-2.5 py-1 rounded-md">
+                                Clause #{secIdx + 1}
+                              </span>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50 text-xs h-7 px-2"
+                                onClick={() => removePolicySection(activePolicyKey, secIdx)}
+                              >
+                                <Trash2 className="w-3.5 h-3.5 mr-1" /> Delete Clause
+                              </Button>
+                            </div>
+                            <div>
+                              <Label className="text-xs font-semibold text-gray-700">Clause Heading</Label>
+                              <Input
+                                value={sec.heading || ""}
+                                onChange={(e) =>
+                                  updatePolicySection(activePolicyKey, secIdx, "heading", e.target.value)
+                                }
+                                placeholder="e.g. 1. Information Collection"
+                                className="text-xs mt-1"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs font-semibold text-gray-700">Clause Content &amp; Points</Label>
+                              <Textarea
+                                value={sec.content || ""}
+                                onChange={(e) =>
+                                  updatePolicySection(activePolicyKey, secIdx, "content", e.target.value)
+                                }
+                                placeholder="Write clause details, policies, bullet points, or instructions..."
+                                rows={3}
+                                className="text-xs leading-relaxed mt-1"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="pt-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full text-xs font-semibold text-forest border-dashed border-forest/30 hover:bg-forest/5 py-3 rounded-xl"
+                          onClick={() => addPolicySection(activePolicyKey)}
+                        >
+                          <Plus className="w-4 h-4 mr-1.5" /> Add Another Clause
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
