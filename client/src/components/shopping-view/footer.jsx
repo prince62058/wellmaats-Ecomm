@@ -100,8 +100,8 @@ function ShoppingFooter() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12 grid grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-        <div className="col-span-1 min-[420px]:col-span-2 md:col-span-3 lg:col-span-1">
+      <div className="container mx-auto px-4 py-10 sm:py-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8">
+        <div className="col-span-2 sm:col-span-3 lg:col-span-1">
           <Link
             to="/shop/home"
             className="inline-flex items-center bg-white rounded-2xl px-4 py-3 shadow-sm hover:shadow-md transition-shadow"

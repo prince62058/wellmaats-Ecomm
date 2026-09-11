@@ -31,10 +31,10 @@ function FlashSaleSection({ products, handleGetProductDetails, handleAddtoCart }
             </Button>
           </Link>
         </ScrollReveal>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
           {flashProducts.slice(0, 4).map((product, i) => (
             <ScrollReveal key={product._id} delay={i * 60}>
-              <div className="rounded-2xl ring-2 ring-white/30 overflow-hidden">
+              <div className="rounded-2xl ring-2 ring-white/30 overflow-hidden h-full">
                 <ShoppingProductTile
                   product={product}
                   handleGetProductDetails={handleGetProductDetails}

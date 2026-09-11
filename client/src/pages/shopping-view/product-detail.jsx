@@ -203,7 +203,7 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6 sm:py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8 pb-24 lg:pb-8">
         {/* ── Back button ── */}
         <button
           onClick={() => navigate(-1)}
@@ -600,6 +600,41 @@ export default function ProductDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Mobile Sticky Action Bar */}
+      {p && p.totalStock > 0 && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-forest/15 px-4 py-2.5 shadow-2xl flex items-center justify-between gap-3 safe-area-bottom">
+          <div className="flex flex-col min-w-0">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Price</span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-lg font-bold text-forest">₹{price}</span>
+              {p.salePrice > 0 && (
+                <span className="text-xs line-through text-muted-foreground">₹{p.price}</span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-1 max-w-[240px] justify-end">
+            <Button
+              onClick={() => handleAddToCart(p._id, p.totalStock, 1)}
+              variant="outline"
+              size="sm"
+              className="rounded-xl font-bold text-xs h-9 px-3 border-forest/20 text-forest btn-dynamic-secondary"
+            >
+              <ShoppingBag className="w-3.5 h-3.5 mr-1 shrink-0" />
+              Add
+            </Button>
+            <Button
+              onClick={handleBuyNow}
+              variant="buynow"
+              size="sm"
+              className="rounded-xl font-bold text-xs h-9 px-3.5 flex-1 shadow-md btn-dynamic-buynow"
+            >
+              <Zap className="w-3.5 h-3.5 mr-1 shrink-0" />
+              Buy Now
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

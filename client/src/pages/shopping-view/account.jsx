@@ -339,18 +339,19 @@ function ShoppingAccount() {
           {/* Tab bar */}
           <TabsList className="flex h-auto bg-white border border-forest/10 shadow-sm rounded-2xl p-1.5 gap-1 mb-7 overflow-x-auto scrollbar-hide flex-nowrap">
             {[
-              { value: "profile",   label: "My Profile",  icon: <User className="w-4 h-4" /> },
-              { value: "orders",    label: "Orders",       icon: <Package className="w-4 h-4" /> },
-              { value: "addresses", label: "Addresses",    icon: <MapPin className="w-4 h-4" /> },
-              { value: "wishlist",  label: "Wishlist",     icon: <Heart className="w-4 h-4" /> },
-              { value: "referral",  label: "Refer & Earn", icon: <Gift className="w-4 h-4" /> },
+              { value: "profile",   label: "My Profile",  shortLabel: "Profile",   icon: <User className="w-4 h-4" /> },
+              { value: "orders",    label: "Orders",       shortLabel: "Orders",    icon: <Package className="w-4 h-4" /> },
+              { value: "addresses", label: "Addresses",    shortLabel: "Addresses", icon: <MapPin className="w-4 h-4" /> },
+              { value: "wishlist",  label: "Wishlist",     shortLabel: "Wishlist",  icon: <Heart className="w-4 h-4" /> },
+              { value: "referral",  label: "Refer & Earn", shortLabel: "Refer",     icon: <Gift className="w-4 h-4" /> },
             ].map((t) => (
               <TabsTrigger key={t.value} value={t.value}
                 className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm rounded-xl shrink-0
                   data-[state=active]:bg-forest data-[state=active]:text-white data-[state=active]:shadow-md
                   px-2.5 sm:px-4 py-2.5 justify-center font-medium text-gray-500 hover:text-forest transition">
                 {t.icon}
-                <span className="max-[360px]:hidden">{t.label.split(" ")[0]}</span>
+                <span className="hidden sm:inline">{t.label}</span>
+                <span className="sm:hidden max-[360px]:hidden">{t.shortLabel}</span>
               </TabsTrigger>
             ))}
           </TabsList>

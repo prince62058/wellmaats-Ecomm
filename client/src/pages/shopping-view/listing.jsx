@@ -192,8 +192,8 @@ function ShoppingListing() {
               <div className="flex flex-wrap items-center gap-2 min-w-0">
                 <Sheet open={filterOpen} onOpenChange={setFilterOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="outline" size="sm" className="lg:hidden rounded-full border-forest/20 text-forest gap-2">
-                      <SlidersHorizontal className="w-4 h-4" /> Filters
+                    <Button variant="outline" size="sm" className="lg:hidden rounded-full border-forest/20 text-forest gap-1.5 h-8 text-xs">
+                      <SlidersHorizontal className="w-3.5 h-3.5" /> Filters
                     </Button>
                   </SheetTrigger>
                   <SheetContent side="left" className="w-full max-w-sm p-0">
@@ -207,7 +207,7 @@ function ShoppingListing() {
                   </SheetContent>
                 </Sheet>
 
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Showing <span className="font-semibold text-forest">{count}</span> product{count !== 1 ? "s" : ""}
                 </p>
 
@@ -216,7 +216,7 @@ function ShoppingListing() {
                     key={catId}
                     type="button"
                     onClick={() => handleFilter("category", catId)}
-                    className="inline-flex items-center gap-1 text-xs bg-forest text-white px-3 py-1 rounded-full"
+                    className="inline-flex items-center gap-1 text-[11px] bg-forest text-white px-2.5 py-0.5 rounded-full"
                   >
                     {categoryOptionsMap[catId]}
                     <X className="w-3 h-3" />
@@ -228,7 +228,7 @@ function ShoppingListing() {
                     key={subId}
                     type="button"
                     onClick={() => handleFilter("subCategory", subId)}
-                    className="inline-flex items-center gap-1 text-xs bg-gold text-forest font-bold px-3 py-1 rounded-full shadow-sm"
+                    className="inline-flex items-center gap-1 text-[11px] bg-gold text-forest font-bold px-2.5 py-0.5 rounded-full shadow-sm"
                   >
                     ↳ {subCategoryOptionsMap[subId] || subId}
                     <X className="w-3 h-3" />
@@ -238,8 +238,8 @@ function ShoppingListing() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="rounded-full border-forest/20 text-forest gap-2">
-                    <ArrowUpDown className="w-4 h-4" />
+                  <Button variant="outline" size="sm" className="self-end sm:self-auto rounded-full border-forest/20 text-forest gap-1.5 h-8 text-xs">
+                    <ArrowUpDown className="w-3.5 h-3.5" />
                     Sort
                   </Button>
                 </DropdownMenuTrigger>
@@ -261,7 +261,7 @@ function ShoppingListing() {
                 <p className="text-muted-foreground text-sm">Loading products...</p>
               </div>
             ) : count > 0 ? (
-              <div className="grid grid-cols-1 min-[420px]:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                 {productList.map((product) => (
                   <ShoppingProductTile
                     key={product._id}

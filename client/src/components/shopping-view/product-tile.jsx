@@ -88,12 +88,12 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
           </div>
 
           {/* Offer badges */}
-          <ProductOfferBadges product={product} className="absolute top-3 left-3 z-10" />
+          <ProductOfferBadges product={product} className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10" />
 
           {/* Video badge if available */}
           {product?.video && (
-            <span className="absolute bottom-3 left-3 z-10 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
-              <Video className="w-3 h-3 text-blue-400" /> Video
+            <span className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 z-10 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full">
+              <Video className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-400" /> Video
             </span>
           )}
 
@@ -101,41 +101,41 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
           <button
             type="button"
             onClick={handleWishlist}
-            className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all ${
+            className={`absolute top-2 right-2 sm:top-3 sm:right-3 z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-md transition-all ${
               isWishlisted
                 ? "bg-red-50 text-red-500 border border-red-200"
                 : "bg-white/90 text-forest/40 border border-forest/10 hover:text-red-400 hover:bg-red-50"
             }`}
             aria-label="Toggle wishlist"
           >
-            <Heart className={`w-4 h-4 ${isWishlisted ? "fill-red-500" : ""}`} />
+            <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isWishlisted ? "fill-red-500" : ""}`} />
           </button>
         </div>
 
-        <CardContent className="p-4 pb-2 flex-1">
-          <p className="text-[10px] text-gold font-bold uppercase tracking-widest mb-1">
+        <CardContent className="p-2.5 sm:p-4 pb-1.5 sm:pb-2 flex-1">
+          <p className="text-[9px] sm:text-[10px] text-gold font-bold uppercase tracking-wider sm:tracking-widest mb-0.5 sm:mb-1 truncate">
             {categoryName}
           </p>
-          <h2 className="font-display text-sm font-bold text-forest mb-1.5 line-clamp-2 leading-snug min-h-[2.5rem]">
+          <h2 className="font-display text-xs sm:text-sm font-bold text-forest mb-1 line-clamp-2 leading-tight sm:leading-snug min-h-[2.1rem] sm:min-h-[2.5rem]">
             {product?.title}
           </h2>
-          <div className="flex items-center gap-1 mb-2">
+          <div className="flex items-center gap-1 mb-1.5 sm:mb-2">
             <div className="flex">
               {[1,2,3,4,5].map((s) => (
-                <Star key={s} className={`w-3 h-3 ${s <= Math.round(product?.averageReview || 4.5) ? "fill-gold text-gold" : "fill-forest/10 text-forest/10"}`} />
+                <Star key={s} className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${s <= Math.round(product?.averageReview || 4.5) ? "fill-gold text-gold" : "fill-forest/10 text-forest/10"}`} />
               ))}
             </div>
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-[10px] sm:text-[11px] text-muted-foreground">
               ({product?.averageReview?.toFixed(1) || "4.5"})
             </span>
           </div>
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="text-lg font-bold text-forest">₹{price}</span>
+          <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
+            <span className="text-sm sm:text-lg font-bold text-forest">₹{price}</span>
             {product?.salePrice > 0 && (
               <>
-                <span className="text-xs text-muted-foreground line-through">₹{product?.price}</span>
+                <span className="text-[11px] sm:text-xs text-muted-foreground line-through">₹{product?.price}</span>
                 {discount > 0 && (
-                  <span className="text-[10px] font-bold text-forest-700 bg-forest-50 px-1.5 py-0.5 rounded">
+                  <span className="text-[9px] sm:text-[10px] font-bold text-forest-700 bg-forest-50 px-1 sm:px-1.5 py-0.5 rounded">
                     {discount}% off
                   </span>
                 )}
@@ -143,16 +143,16 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
             )}
           </div>
           {savings > 0 && (
-            <p className="text-[10px] text-forest-600 font-semibold mt-0.5">
+            <p className="text-[9px] sm:text-[10px] text-forest-600 font-semibold mt-0.5">
               You save ₹{savings}
             </p>
           )}
         </CardContent>
       </div>
 
-      <CardFooter className="p-2.5 sm:p-3 pt-2 mt-auto flex flex-col gap-1.5">
+      <CardFooter className="p-2 sm:p-3 pt-1 sm:pt-2 mt-auto flex flex-col gap-1 sm:gap-1.5">
         {product?.totalStock === 0 ? (
-          <Button disabled className="w-full rounded-full opacity-50 h-9 text-xs">
+          <Button disabled className="w-full rounded-xl sm:rounded-full opacity-50 h-8 sm:h-9 text-[11px] sm:text-xs">
             Out of Stock
           </Button>
         ) : (
@@ -160,17 +160,17 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
             <Button
               onClick={() => handleAddtoCart(product?._id, product?.totalStock)}
               variant="outline"
-              className="w-full rounded-full h-9 font-semibold text-xs btn-dynamic-secondary"
+              className="w-full rounded-xl sm:rounded-full h-8 sm:h-9 font-semibold text-[11px] sm:text-xs btn-dynamic-secondary px-2"
             >
-              <ShoppingBag className="w-3.5 h-3.5 mr-1 shrink-0" />
+              <ShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 shrink-0" />
               <span className="truncate">Add to Cart</span>
             </Button>
             <Button
               onClick={handleBuyNow}
               variant="buynow"
-              className="w-full rounded-full h-9 font-semibold text-xs btn-dynamic-buynow"
+              className="w-full rounded-xl sm:rounded-full h-8 sm:h-9 font-semibold text-[11px] sm:text-xs btn-dynamic-buynow px-2"
             >
-              <Zap className="w-3.5 h-3.5 mr-1 shrink-0" />
+              <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 shrink-0" />
               <span className="truncate">Buy Now</span>
             </Button>
           </>

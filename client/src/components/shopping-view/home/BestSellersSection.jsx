@@ -39,7 +39,7 @@ function BestSellersSection({ products = [], handleGetProductDetails, handleAddt
           className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
         >
           {bestSellers.map((product, i) => (
-            <div key={product._id} className="shrink-0 w-[200px] sm:w-[220px]">
+            <div key={product._id} className="shrink-0 w-[165px] sm:w-[200px] md:w-[220px]">
               <ScrollReveal delay={i * 50}>
                 <ShoppingProductTile
                   product={product}

@@ -20,23 +20,23 @@ function ProductOfferBadges({ product, className = "" }) {
   }
 
   return (
-    <div className={`flex flex-col gap-1.5 items-start ${className}`}>
+    <div className={`flex flex-col gap-1 items-start ${className}`}>
       {flash && (
-        <Badge className="bg-red-600 text-white border-0 shadow font-bold gap-1 w-fit animate-pulse">
-          <Zap className="w-3 h-3 fill-white" />
+        <Badge className="bg-red-600 text-white border-0 shadow font-bold gap-1 w-fit animate-pulse text-[10px] sm:text-xs px-1.5 sm:px-2.5 py-0.5">
+          <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-white" />
           {product?.offerLabel || "Flash Sale"}
         </Badge>
       )}
       {discount > 0 && (
-        <Badge className={`border-0 shadow font-bold w-fit ${flash ? "bg-orange-500 text-white" : "bg-gold text-white"}`}>
+        <Badge className={`border-0 shadow font-bold w-fit text-[10px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 ${flash ? "bg-orange-500 text-white" : "bg-gold text-white"}`}>
           {discount}% OFF
         </Badge>
       )}
       {product?.isFeatured && !flash && (
-        <Badge className="bg-forest/90 text-white border-0 shadow w-fit">Featured</Badge>
+        <Badge className="bg-forest/90 text-white border-0 shadow w-fit text-[10px] sm:text-xs px-1.5 sm:px-2.5 py-0.5">Featured</Badge>
       )}
       {timeLeft && (
-        <span className="text-[10px] font-semibold bg-black/60 text-white px-2 py-0.5 rounded-full">
+        <span className="text-[9px] sm:text-[10px] font-semibold bg-black/60 text-white px-1.5 sm:px-2 py-0.5 rounded-full">
           ⏱ {timeLeft}
         </span>
       )}

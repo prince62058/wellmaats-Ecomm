@@ -80,24 +80,24 @@ function SearchProducts() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto mb-10">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
+        <div className="max-w-2xl mx-auto mb-8 sm:mb-10">
           <div className="relative">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-forest/50" />
+            <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-forest/50" />
             <Input
               value={keyword}
               name="keyword"
               onChange={(e) => setKeyword(e.target.value)}
-              className="pl-14 py-7 rounded-full border-forest/15 bg-white text-base shadow-lg shadow-forest/5 focus-visible:ring-forest"
+              className="pl-11 sm:pl-14 py-5 sm:py-7 rounded-full border-forest/15 bg-white text-sm sm:text-base shadow-lg shadow-forest/5 focus-visible:ring-forest"
               placeholder="Search immunity, liver, gut health, hair..."
               autoFocus
             />
             {isLoading && (
-              <Loader2 className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-forest animate-spin" />
+              <Loader2 className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-forest animate-spin" />
             )}
           </div>
           {hasSearched && !isLoading && (
-            <p className="text-center text-sm text-muted-foreground mt-4">
+            <p className="text-center text-xs sm:text-sm text-muted-foreground mt-3 sm:mt-4">
               <span className="font-semibold text-forest">{searchResults.length}</span> result
               {searchResults.length !== 1 ? "s" : ""} for &ldquo;{trimmed}&rdquo;
             </p>
@@ -105,21 +105,21 @@ function SearchProducts() {
         </div>
 
         {!hasSearched ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-forest/10 max-w-lg mx-auto">
+          <div className="text-center py-16 bg-white rounded-2xl border border-forest/10 max-w-lg mx-auto px-4">
             <Search className="w-10 h-10 text-forest/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">Type at least 2 characters to search Ayurvedic drops</p>
+            <p className="text-muted-foreground text-sm">Type at least 2 characters to search Ayurvedic drops</p>
             <p className="text-xs text-gold mt-2">Try: immunity · liver · hair · stress</p>
           </div>
         ) : isLoading ? (
-          <p className="text-center text-muted-foreground py-12">Searching...</p>
+          <p className="text-center text-muted-foreground py-12 text-sm">Searching...</p>
         ) : !searchResults.length ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-forest/10">
+          <div className="text-center py-16 bg-white rounded-2xl border border-forest/10 px-4">
             <Leaf className="w-12 h-12 text-forest/20 mx-auto mb-4" />
-            <p className="font-display text-2xl font-bold text-forest mb-2">No results found</p>
+            <p className="font-display text-xl sm:text-2xl font-bold text-forest mb-2">No results found</p>
             <p className="text-muted-foreground text-sm">Try &ldquo;immunity&rdquo;, &ldquo;liver&rdquo;, or &ldquo;hair&rdquo;</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {searchResults.map((item) => (
               <ShoppingProductTile
                 key={item._id}
