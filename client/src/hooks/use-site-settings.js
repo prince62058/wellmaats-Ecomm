@@ -187,9 +187,15 @@ export function useSiteSettings() {
         const rawLegal = Array.isArray(raw.legal) ? raw.legal : [];
         // If DB has fewer than 4 legal policies or lacks refund/shipping, ensure full 5 policies are available
         const legal = rawLegal.length >= 4 ? rawLegal : FOOTER_LINKS.legal;
+        const rawSupport = Array.isArray(raw.support) ? raw.support : FOOTER_LINKS.support;
+        const support = rawSupport.filter((link) => {
+          const l = (link.label || "").toLowerCase().trim();
+          return !l.includes("shipping") && !l.includes("return") && !l.includes("refund");
+        });
         return {
           ...FOOTER_LINKS,
           ...raw,
+          support,
           legal,
         };
       })(),

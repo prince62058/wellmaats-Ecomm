@@ -435,8 +435,6 @@ module.exports = {
     support: [
       { label: "Contact Us", href: "/contact-us" },
       { label: "FAQ", href: "/faq" },
-      { label: "Shipping Policy", href: "/shipping-policy" },
-      { label: "Return Policy", href: "/refund-policy" },
       { label: "Track Order", href: "/shop/account" },
     ],
     legal: [
