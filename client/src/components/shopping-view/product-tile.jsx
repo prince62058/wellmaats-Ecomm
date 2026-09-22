@@ -57,15 +57,15 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
         onClick={() => navigate(`/shop/product/${product?._id}`)}
         className="cursor-pointer relative"
       >
-        <div className="relative overflow-hidden bg-leaf/30 aspect-[4/5]">
+        <div className="relative overflow-hidden bg-gradient-to-b from-gray-50/80 to-leaf/15 aspect-square flex items-center justify-center p-2 sm:p-2.5">
           {/* Primary image */}
           <img
             src={imgSrc}
             alt={product?.title}
             loading="lazy"
             onError={() => { if (imgSrc !== FALLBACK_IMG) setImgSrc(FALLBACK_IMG); }}
-            className={`w-full h-full object-cover transition-all duration-700 ${
-              secondaryImg ? "group-hover:opacity-0 group-hover:scale-105" : "group-hover:scale-110"
+            className={`w-full h-full object-contain object-center transition-all duration-500 ${
+              secondaryImg ? "group-hover:opacity-0 group-hover:scale-105" : "group-hover:scale-105"
             }`}
           />
 
@@ -75,25 +75,25 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
               src={secondaryImg}
               alt={`${product?.title} alternate`}
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 pointer-events-none"
+              className="absolute inset-0 w-full h-full object-contain object-center p-2 sm:p-2.5 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 pointer-events-none"
               onError={(e) => { e.target.style.display = "none"; }}
             />
           )}
 
           {/* Hover overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-forest/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-            <span className="flex items-center gap-1.5 text-white text-xs font-medium bg-forest/80 backdrop-blur px-4 py-2 rounded-full">
+          <div className="absolute inset-0 bg-gradient-to-t from-forest/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3">
+            <span className="flex items-center gap-1.5 text-white text-xs font-semibold bg-forest/85 backdrop-blur-sm px-3.5 py-1.5 rounded-full shadow-md">
               <Eye className="w-3.5 h-3.5" /> Quick View
             </span>
           </div>
 
-          {/* Offer badges */}
-          <ProductOfferBadges product={product} className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10" />
+          {/* Offer badges - sleek single chip */}
+          <ProductOfferBadges product={product} className="absolute top-2 left-2 z-10" />
 
           {/* Video badge if available */}
           {product?.video && (
-            <span className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 z-10 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full">
-              <Video className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-400" /> Video
+            <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
+              <Video className="w-2.5 h-2.5 text-blue-400" /> Video
             </span>
           )}
 
@@ -101,14 +101,14 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
           <button
             type="button"
             onClick={handleWishlist}
-            className={`absolute top-2 right-2 sm:top-3 sm:right-3 z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-md transition-all ${
+            className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center shadow-sm backdrop-blur-xs transition-all ${
               isWishlisted
                 ? "bg-red-50 text-red-500 border border-red-200"
-                : "bg-white/90 text-forest/40 border border-forest/10 hover:text-red-400 hover:bg-red-50"
+                : "bg-white/85 text-forest/40 border border-forest/10 hover:text-red-400 hover:bg-white"
             }`}
             aria-label="Toggle wishlist"
           >
-            <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isWishlisted ? "fill-red-500" : ""}`} />
+            <Heart className={`w-3.5 h-3.5 ${isWishlisted ? "fill-red-500" : ""}`} />
           </button>
         </div>
 
