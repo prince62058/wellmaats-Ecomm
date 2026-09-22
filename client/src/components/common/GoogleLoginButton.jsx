@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 
 const GOOGLE_CLIENT_ID = "443465664046-u5mck44g396j6861ghdgh7nr244a37vv.apps.googleusercontent.com";
 
-export default function GoogleLoginButton({ text = "Continue with Google", className = "" }) {
+export default function GoogleLoginButton({ text = "Continue with Google", className = "", onSuccess }) {
   const [loading, setLoading] = useState(false);
   const hiddenGsiRef = useRef(null);
   const tokenClientRef = useRef(null);
@@ -21,7 +21,9 @@ export default function GoogleLoginButton({ text = "Continue with Google", class
       const result = await dispatch(googleLoginUser(payload));
       if (result?.payload?.success) {
         toast({ title: "Welcome! Logged in with Google 🎉" });
-        if (result.payload.user?.role === "admin") {
+        if (onSuccess) {
+          onSuccess(result.payload.user);
+        } else if (result.payload.user?.role === "admin") {
           window.location.assign("/admin/dashboard");
         } else {
           navigate("/shop/home", { replace: true });

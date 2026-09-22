@@ -9,6 +9,7 @@ import {
   Phone, Mail, Eye, EyeOff, Lock, ArrowRight,
   UserPlus, RefreshCw, CheckCircle2, Loader2, X,
 } from "lucide-react";
+import GoogleLoginButton from "@/components/common/GoogleLoginButton";
 
 /* ── 6-box OTP ── */
 function OtpInput({ value, onChange, onComplete }) {
@@ -279,14 +280,35 @@ export default function LoginModal() {
             </form>
           )}
 
-          {/* Sign up link */}
+          {/* Google Sign-in & Sign up link */}
           {step === "input" && (
-            <p className="text-center text-xs text-gray-500">
-              No account?{" "}
-              <button type="button"
-                onClick={() => { handleClose(); navigate("/auth/register"); }}
-                className="text-forest font-bold hover:underline">Sign Up</button>
-            </p>
+            <div className="space-y-3 pt-1">
+              <div className="flex items-center gap-3">
+                <hr className="flex-1 border-gray-200" />
+                <span className="text-gray-400 text-xs font-medium">OR</span>
+                <hr className="flex-1 border-gray-200" />
+              </div>
+
+              <GoogleLoginButton
+                text="Continue with Google"
+                onSuccess={() => handleClose()}
+                className="w-full"
+              />
+
+              <p className="text-center text-xs text-gray-500 pt-1">
+                No account?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleClose();
+                    navigate("/auth/register");
+                  }}
+                  className="text-forest font-bold hover:underline"
+                >
+                  Sign Up
+                </button>
+              </p>
+            </div>
           )}
         </div>
       </div>
