@@ -255,21 +255,42 @@ const loginUser = async (req, res) => {
 
 // ── Google OAuth Login ──────────────────────────────────────────
 const googleLogin = async (req, res) => {
-  const { credential } = req.body; // Google ID token from frontend
-  if (!credential) return res.status(400).json({ success: false, message: "Google credential missing" });
+  const { credential, access_token } = req.body;
+  if (!credential && !access_token) {
+    return res.status(400).json({ success: false, message: "Google credential missing" });
+  }
 
   const GOOGLE_CLIENT_ID =
     process.env.GOOGLE_CLIENT_ID ||
     "443465664046-u5mck44g396j6861ghdgh7nr244a37vv.apps.googleusercontent.com";
 
   try {
-    const client = new OAuth2Client(GOOGLE_CLIENT_ID);
-    const ticket = await client.verifyIdToken({
-      idToken: credential,
-      audience: GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    const { email, name, picture, sub: googleId } = payload;
+    let email = null;
+    let name = "";
+    let picture = "";
+    let googleId = "";
+
+    if (credential) {
+      const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      email = payload.email;
+      name = payload.name;
+      picture = payload.picture;
+      googleId = payload.sub;
+    } else if (access_token) {
+      const gRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+      const gData = await gRes.json();
+      email = gData.email;
+      name = gData.name;
+      picture = gData.picture;
+      googleId = gData.sub;
+    }
 
     if (!email) return res.status(400).json({ success: false, message: "Google account has no email" });
 

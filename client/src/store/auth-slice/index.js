@@ -44,8 +44,9 @@ export const verifyOTPLogin = createAsyncThunk("/auth/verifyOTP", async ({ ident
   return response.data;
 });
 
-export const googleLoginUser = createAsyncThunk("/auth/googleLogin", async (credential) => {
-  const response = await axiosInstance.post(`/api/auth/google`, { credential }, { withCredentials: true });
+export const googleLoginUser = createAsyncThunk("/auth/googleLogin", async (payload) => {
+  const data = typeof payload === "string" ? { credential: payload } : payload;
+  const response = await axiosInstance.post(`/api/auth/google`, data, { withCredentials: true });
   return response.data;
 });
 

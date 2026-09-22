@@ -1,9 +1,10 @@
 import { useToast } from "@/components/ui/use-toast";
-import { registerUser, googleLoginUser } from "@/store/auth-slice";
-import { useState, useEffect, useRef } from "react";
+import { registerUser } from "@/store/auth-slice";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, Lock, User, Mail, Phone, CheckCircle2 } from "lucide-react";
+import GoogleLoginButton from "@/components/common/GoogleLoginButton";
 
 function AuthRegister() {
   const [searchParams] = useSearchParams();
@@ -23,39 +24,6 @@ function AuthRegister() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const googleBtnRef = useRef(null);
-
-  // Load Google Identity Services
-  useEffect(() => {
-    const GOOGLE_CLIENT_ID = "443465664046-u5mck44g396j6861ghdgh7nr244a37vv.apps.googleusercontent.com";
-    if (!GOOGLE_CLIENT_ID || !googleBtnRef.current) return;
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      if (!window.google) return;
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: async ({ credential }) => {
-          const result = await dispatch(googleLoginUser(credential));
-          if (result?.payload?.success) {
-            toast({ title: "Signed in with Google! 🎉" });
-            if (result.payload.user?.role === "admin") window.location.assign("/admin/dashboard");
-            else navigate("/shop/home", { replace: true });
-          } else {
-            toast({ title: result?.payload?.message || "Google sign-in failed", variant: "destructive" });
-          }
-        },
-      });
-      window.google.accounts.id.renderButton(googleBtnRef.current, {
-        type: "standard", shape: "pill", theme: "outline",
-        size: "large", text: "signup_with", width: 240,
-      });
-    };
-    document.head.appendChild(script);
-    return () => { document.head.removeChild(script); };
-  }, []);
 
   function handleChange(e) {
     setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
@@ -171,9 +139,7 @@ function AuthRegister() {
         <hr className="flex-1 border-gray-200" />
       </div>
 
-      <div className="flex justify-center my-1">
-        <div ref={googleBtnRef} className="min-h-[44px]" />
-      </div>
+      <GoogleLoginButton text="Sign up with Google" />
 
       <p className="text-center text-sm text-gray-500 mt-5">
         Already have an account?{" "}

@@ -8,6 +8,7 @@ import {
   UserPlus, RefreshCw, CheckCircle2, Loader2,
 } from "lucide-react";
 import axiosInstance from "@/lib/axiosInstance";
+import GoogleLoginButton from "@/components/common/GoogleLoginButton";
 
 /* ── 6-box OTP input ── */
 function OtpInput({ value, onChange, onComplete }) {
@@ -77,39 +78,6 @@ export default function AuthLogin() {
   const dispatch  = useDispatch();
   const navigate  = useNavigate();
   const { toast } = useToast();
-  const googleBtnRef = useRef(null);
-
-  // Load Google Identity Services
-  useEffect(() => {
-    const GOOGLE_CLIENT_ID = "443465664046-u5mck44g396j6861ghdgh7nr244a37vv.apps.googleusercontent.com";
-    if (!GOOGLE_CLIENT_ID || !googleBtnRef.current) return;
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      if (!window.google) return;
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: async ({ credential }) => {
-          const result = await dispatch(googleLoginUser(credential));
-          if (result?.payload?.success) {
-            toast({ title: "Logged in with Google! 🎉" });
-            if (result.payload.user?.role === "admin") window.location.assign("/admin/dashboard");
-            else navigate("/shop/home", { replace: true });
-          } else {
-            toast({ title: result?.payload?.message || "Google login failed", variant: "destructive" });
-          }
-        },
-      });
-      window.google.accounts.id.renderButton(googleBtnRef.current, {
-        type: "standard", shape: "pill", theme: "outline",
-        size: "large", text: "signin_with", width: 240,
-      });
-    };
-    document.head.appendChild(script);
-    return () => { document.head.removeChild(script); };
-  }, []);
 
   function switchMode(m) {
     setMode(m); setStep("input"); setId(""); setPass(""); setOtp(""); setDevOtp(""); setNotFound(false);
@@ -326,9 +294,9 @@ export default function AuthLogin() {
           <div className="flex items-center gap-3 my-5">
             <hr className="flex-1 border-gray-200" /><span className="text-gray-400 text-xs font-medium">OR</span><hr className="flex-1 border-gray-200" />
           </div>
-          <div className="flex flex-col items-center gap-4">
-            {/* Google Sign-in (rendered by GSI SDK if VITE_GOOGLE_CLIENT_ID is set) */}
-            <div ref={googleBtnRef} id="google-signin-btn" />
+          <div className="flex flex-col items-center gap-3">
+            {/* Google Sign-in */}
+            <GoogleLoginButton text="Continue with Google" />
             {/* Fallback icon buttons for other providers */}
             <div className="flex items-center gap-3">
               {[
