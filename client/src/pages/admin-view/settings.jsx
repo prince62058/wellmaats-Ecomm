@@ -875,44 +875,89 @@ function AdminSettings() {
                       />
                     </div>
 
-                    {/* Text fields — labeled */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Badge Text</label>
-                        <Input value={s.badge||""} placeholder="🏆 Best Seller" className="h-9 rounded-xl border-gray-200 text-sm"
-                          onChange={(e) => upd("badge", e.target.value)} />
+                    {/* Media Options */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50/50 border border-emerald-100">
+                        <div>
+                          <p className="text-xs font-bold text-forest">Show Text &amp; Buttons</p>
+                          <p className="text-[10px] text-muted-foreground">Turn OFF if graphic image already has text designed in it</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                          <input
+                            type="checkbox"
+                            checked={s.showTextOverlay !== false}
+                            onChange={(e) => upd("showTextOverlay", e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-10 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-forest"></div>
+                        </label>
                       </div>
+
                       <div className="space-y-1">
-                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">CTA Button Text</label>
-                        <Input value={s.cta||""} placeholder="Shop Now" className="h-9 rounded-xl border-gray-200 text-sm"
-                          onChange={(e) => upd("cta", e.target.value)} />
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Banner Fit Mode</label>
+                        <select
+                          value={s.fit || "cover"}
+                          onChange={(e) => upd("fit", e.target.value)}
+                          className="h-9 w-full rounded-xl border border-gray-200 bg-white px-3 text-xs font-medium text-gray-700 cursor-pointer"
+                        >
+                          <option value="cover">Cover (Default 1920×800 Full Width)</option>
+                          <option value="contain">Contain (Fit Entire Image - No Crop)</option>
+                        </select>
                       </div>
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Headline / Title *</label>
-                      <Input value={s.title||""} placeholder="e.g. Immunity & Wellness Drops" className="h-9 rounded-xl border-gray-200 text-sm"
-                        onChange={(e) => upd("title", e.target.value)} />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Subtitle / Tagline</label>
-                      <Input value={s.subtitle||""} placeholder="Short supporting line" className="h-9 rounded-xl border-gray-200 text-sm"
-                        onChange={(e) => upd("subtitle", e.target.value)} />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Button Link (URL)</label>
-                        <Input value={s.link||""} placeholder="/shop/listing?category=..." className="h-9 rounded-xl border-gray-200 text-sm"
-                          onChange={(e) => upd("link", e.target.value)} />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Accent Color (badge & CTA)</label>
-                        <div className="flex items-center gap-2 h-9 px-3 border border-gray-200 rounded-xl bg-gray-50">
-                          <input type="color" value={s.accent||"#C8A54A"} onChange={(e) => upd("accent", e.target.value)}
-                            className="w-7 h-7 rounded-lg border border-gray-200 cursor-pointer p-0.5 shrink-0" />
-                          <span className="text-xs text-muted-foreground font-mono">{s.accent||"#C8A54A"}</span>
+
+                    {/* Text fields — shown if showTextOverlay is true */}
+                    {s.showTextOverlay !== false && (
+                      <div className="space-y-3 pt-2 border-t border-gray-100">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Badge Text</label>
+                            <Input value={s.badge||""} placeholder="🏆 Best Seller" className="h-9 rounded-xl border-gray-200 text-sm"
+                              onChange={(e) => upd("badge", e.target.value)} />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">CTA Button Text</label>
+                            <Input value={s.cta||""} placeholder="Shop Now" className="h-9 rounded-xl border-gray-200 text-sm"
+                              onChange={(e) => upd("cta", e.target.value)} />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Headline / Title</label>
+                          <Input value={s.title||""} placeholder="e.g. Immunity & Wellness Drops" className="h-9 rounded-xl border-gray-200 text-sm"
+                            onChange={(e) => upd("title", e.target.value)} />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Subtitle / Tagline</label>
+                          <Input value={s.subtitle||""} placeholder="Short supporting line" className="h-9 rounded-xl border-gray-200 text-sm"
+                            onChange={(e) => upd("subtitle", e.target.value)} />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Button Link (URL)</label>
+                            <Input value={s.link||""} placeholder="/shop/listing?category=..." className="h-9 rounded-xl border-gray-200 text-sm"
+                              onChange={(e) => upd("link", e.target.value)} />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Accent Color (badge & CTA)</label>
+                            <div className="flex items-center gap-2 h-9 px-3 border border-gray-200 rounded-xl bg-gray-50">
+                              <input type="color" value={s.accent||"#C8A54A"} onChange={(e) => upd("accent", e.target.value)}
+                                className="w-7 h-7 rounded-lg border border-gray-200 cursor-pointer p-0.5 shrink-0" />
+                              <span className="text-xs text-muted-foreground font-mono">{s.accent||"#C8A54A"}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
+
+                    {/* If text overlay is OFF, only show Click Link */}
+                    {s.showTextOverlay === false && (
+                      <div className="space-y-1 pt-2 border-t border-gray-100">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Click Link (URL when banner is clicked)</label>
+                        <Input value={s.link||""} placeholder="/shop/listing" className="h-9 rounded-xl border-gray-200 text-sm"
+                          onChange={(e) => upd("link", e.target.value)} />
+                        <p className="text-[10px] text-muted-foreground">Clicking anywhere on this banner will take the user to this link.</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
