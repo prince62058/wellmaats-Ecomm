@@ -27,9 +27,7 @@ function AuthRegister() {
 
   // Load Google Identity Services
   useEffect(() => {
-    const GOOGLE_CLIENT_ID =
-      import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-      "443465664046-u5mck44g396j6861ghdgh7nr244a37vv.apps.googleusercontent.com";
+    const GOOGLE_CLIENT_ID = "443465664046-u5mck44g396j6861ghdgh7nr244a37vv.apps.googleusercontent.com";
     if (!GOOGLE_CLIENT_ID || !googleBtnRef.current) return;
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
