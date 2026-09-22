@@ -258,8 +258,9 @@ const googleLogin = async (req, res) => {
   const { credential } = req.body; // Google ID token from frontend
   if (!credential) return res.status(400).json({ success: false, message: "Google credential missing" });
 
-  const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-  if (!GOOGLE_CLIENT_ID) return res.status(500).json({ success: false, message: "Google OAuth not configured" });
+  const GOOGLE_CLIENT_ID =
+    process.env.GOOGLE_CLIENT_ID ||
+    "443465664046-u5mck44g396j6861ghdgh7nr244a37vv.apps.googleusercontent.com";
 
   try {
     const client = new OAuth2Client(GOOGLE_CLIENT_ID);
