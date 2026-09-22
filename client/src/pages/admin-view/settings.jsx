@@ -127,14 +127,16 @@ function LogoUpload({ value, onChange }) {
           <Button type="button" size="sm" variant="ghost" className="text-red-500 text-xs"
             onClick={() => onChange("")}>Remove</Button>
         )}
-        <p className="text-xs text-muted-foreground">PNG or SVG recommended · transparent bg</p>
+        <p className="text-xs text-muted-foreground">
+          <strong>Recommended:</strong> 300 × 80 px · Transparent PNG or SVG (&lt; 200 KB)
+        </p>
       </div>
     </div>
   );
 }
 
 // ── Slide media uploader (image or video) ─────────────────
-function SlideMediaUpload({ label, icon: Icon, accept, field, slideIdx, value, onChange }) {
+function SlideMediaUpload({ label, icon: Icon, accept, field, slideIdx, value, onChange, hint }) {
   const [uploading, setUploading] = useState(false);
   const ref = useRef();
 
@@ -157,19 +159,29 @@ function SlideMediaUpload({ label, icon: Icon, accept, field, slideIdx, value, o
 
   return (
     <div className="space-y-1.5">
-      <label className="text-xs font-medium text-gray-600 flex items-center gap-1"><Icon className="w-3.5 h-3.5" />{label}</label>
+      <div className="flex items-center justify-between flex-wrap gap-1">
+        <label className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+          <Icon className="w-3.5 h-3.5 text-forest" />
+          {label}
+        </label>
+        {hint && (
+          <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2 py-0.5 rounded-md">
+            {hint}
+          </span>
+        )}
+      </div>
       <div className="flex gap-2">
         <Input
           placeholder={`Paste URL or upload ↑`}
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
-          className="text-xs"
+          className="text-xs rounded-xl"
         />
         <button
           type="button"
           onClick={() => ref.current?.click()}
           disabled={uploading}
-          className="shrink-0 flex items-center gap-1.5 bg-forest text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-forest/90 disabled:opacity-60 transition"
+          className="shrink-0 flex items-center gap-1.5 bg-forest text-white text-xs font-semibold px-3 py-2 rounded-xl hover:bg-forest/90 disabled:opacity-60 transition"
         >
           {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
           {uploading ? "Uploading…" : "Upload"}
@@ -178,10 +190,16 @@ function SlideMediaUpload({ label, icon: Icon, accept, field, slideIdx, value, o
       </div>
       {/* Preview */}
       {value && field === "image" && (
-        <img src={value} alt="" className="h-16 w-32 object-cover rounded-lg border border-forest/15 mt-1" onError={(e) => e.target.style.display = "none"} />
+        <div className="flex items-center gap-2 mt-1">
+          <img src={value} alt="" className="h-16 w-32 object-cover rounded-xl border border-forest/15 shadow-2xs" onError={(e) => e.target.style.display = "none"} />
+          <button type="button" onClick={() => onChange("")} className="text-[11px] text-red-500 hover:underline">Remove</button>
+        </div>
       )}
       {value && field === "video" && (
-        <video src={value} className="h-16 w-32 rounded-lg border border-forest/15 mt-1 object-cover" muted playsInline />
+        <div className="flex items-center gap-2 mt-1">
+          <video src={value} className="h-16 w-32 rounded-xl border border-forest/15 object-cover shadow-2xs" muted playsInline />
+          <button type="button" onClick={() => onChange("")} className="text-[11px] text-red-500 hover:underline">Remove</button>
+        </div>
       )}
     </div>
   );
@@ -765,6 +783,45 @@ function AdminSettings() {
             }><Plus className="w-4 h-4" /> Add Slide</Button>
           </div>
 
+          {/* ── Recommended Sizes Guidelines Banner ── */}
+          <div className="rounded-2xl border border-emerald-200/80 bg-gradient-to-r from-emerald-50/90 via-teal-50/60 to-emerald-50/90 p-4 shadow-2xs">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-forest/10 flex items-center justify-center text-forest shrink-0 mt-0.5">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div className="space-y-2.5 text-xs flex-1">
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <p className="font-bold text-forest text-sm">Recommended Media Sizes &amp; Guidelines for Best Look</p>
+                  <span className="text-[11px] font-semibold text-emerald-800 bg-white/80 px-2 py-0.5 rounded-full border border-emerald-200/60">
+                    High Quality &amp; Fast Loading
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-emerald-950">
+                  <div className="bg-white/90 rounded-xl p-3 border border-emerald-100/90 space-y-1.5 shadow-2xs">
+                    <p className="font-bold text-emerald-950 flex items-center gap-1.5 text-xs">
+                      <Image className="w-4 h-4 text-forest" /> 🖼️ Banner Image Size:
+                    </p>
+                    <ul className="text-[11px] text-gray-700 space-y-1 list-disc list-inside">
+                      <li><strong>Resolution:</strong> 1920 × 800 px (or 1920 × 700 px, Aspect Ratio ~16:9 / 21:9)</li>
+                      <li><strong>Formats:</strong> WebP, JPG, PNG (Under <strong>500 KB – 1 MB</strong>)</li>
+                      <li><strong>Design Tip:</strong> Keep main visual/product on the <em>right side</em>; headline text appears on the <em>left side</em>.</li>
+                    </ul>
+                  </div>
+                  <div className="bg-white/90 rounded-xl p-3 border border-emerald-100/90 space-y-1.5 shadow-2xs">
+                    <p className="font-bold text-emerald-950 flex items-center gap-1.5 text-xs">
+                      <Film className="w-4 h-4 text-forest" /> 🎬 Background Video Size:
+                    </p>
+                    <ul className="text-[11px] text-gray-700 space-y-1 list-disc list-inside">
+                      <li><strong>Resolution:</strong> 1920 × 1080 px (1080p FHD) or 1280 × 720 px (720p HD)</li>
+                      <li><strong>Formats:</strong> MP4 (H.264) or WebM (Under <strong>10 MB</strong> max, ideally <strong>3–5 MB</strong>)</li>
+                      <li><strong>Length:</strong> 8–15 seconds short loop, without loud audio (plays muted in background).</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {(!form.heroSlides || form.heroSlides.length === 0) && (
             <div className="border-2 border-dashed border-forest/15 rounded-2xl py-16 text-center">
               <div className="w-16 h-16 rounded-2xl bg-leaf flex items-center justify-center mx-auto mb-4">
@@ -798,10 +855,24 @@ function AdminSettings() {
                   <div className="p-5 space-y-4">
                     {/* Media */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <SlideMediaUpload label="Background Image" icon={Image} accept="image/*" field="image"
-                        value={s.image} onChange={(v) => upd("image", v)} />
-                      <SlideMediaUpload label="Background Video (overrides image)" icon={Film} accept="video/*" field="video"
-                        value={s.video} onChange={(v) => upd("video", v)} />
+                      <SlideMediaUpload
+                        label="Background Image"
+                        hint="Best: 1920×800 px (< 1MB)"
+                        icon={Image}
+                        accept="image/*"
+                        field="image"
+                        value={s.image}
+                        onChange={(v) => upd("image", v)}
+                      />
+                      <SlideMediaUpload
+                        label="Background Video (overrides image)"
+                        hint="Best: 1080p MP4 (< 10MB, 16:9)"
+                        icon={Film}
+                        accept="video/*"
+                        field="video"
+                        value={s.video}
+                        onChange={(v) => upd("video", v)}
+                      />
                     </div>
 
                     {/* Text fields — labeled */}
@@ -1158,7 +1229,7 @@ function AdminSettings() {
             <div>
               <h3 className="font-bold text-forest text-base">Promotional Banners</h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Full-width banners shown on the home page. First 3 are displayed.
+                Full-width promo cards shown on the home page. First 3 are displayed.
               </p>
             </div>
             <Button size="sm" className="bg-forest hover:bg-forest/90 gap-1.5 rounded-xl" onClick={() =>
@@ -1174,6 +1245,18 @@ function AdminSettings() {
             }>
               <Plus className="w-4 h-4" /> Add Banner
             </Button>
+          </div>
+
+          {/* Guidelines */}
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-3 flex items-start gap-2.5 text-xs text-emerald-950">
+            <Sparkles className="w-4 h-4 text-forest shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold">Recommended Promo Banner Sizes:</p>
+              <p className="text-[11px] text-gray-700 mt-0.5">
+                • <strong>Product Cutout Image:</strong> 400 × 400 px transparent PNG / WebP (shown on right side of card)<br />
+                • <strong>Full Custom Banner:</strong> 1200 × 400 px or 600 × 600 px (under 300 KB)
+              </p>
+            </div>
           </div>
 
           {(form.promoBanners || []).length === 0 && (
