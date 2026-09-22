@@ -3,15 +3,36 @@ import { Badge } from "../ui/badge";
 import { DialogContent } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
+import { Button } from "../ui/button";
+import { FileText } from "lucide-react";
+import { printInvoice } from "@/components/common/InvoiceTemplate";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 function ShoppingOrderDetailsView({ orderDetails }) {
   const { user } = useSelector((state) => state.auth);
+  const { brandName } = useSiteSettings();
 
   return (
     <DialogContent className="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto rounded-2xl p-4 sm:p-6">
       <div className="grid gap-5">
+        {/* Header row with Invoice button */}
+        <div className="flex items-center justify-between mt-4">
+          <p className="font-display font-bold text-forest text-lg">Order Details</p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex items-center gap-1.5 border-forest/30 text-forest hover:bg-forest/5 text-xs"
+            onClick={() => printInvoice(
+              { ...orderDetails, customerInfo: { userName: user?.userName, email: user?.email } },
+              brandName || "Wellmaats"
+            )}
+          >
+            <FileText className="w-3.5 h-3.5" /> Download Invoice
+          </Button>
+        </div>
+
         <div className="grid gap-2.5">
-          <div className="flex mt-4 items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2">
             <p className="font-medium text-sm text-forest">Order ID</p>
             <Label className="break-all font-mono text-xs sm:text-sm text-right text-muted-foreground">{orderDetails?._id}</Label>
           </div>
@@ -48,9 +69,11 @@ function ShoppingOrderDetailsView({ orderDetails }) {
             </Label>
           </div>
         </div>
+
         <Separator className="border-forest/10" />
+
         <div className="grid gap-3">
-          <div className="font-display font-bold text-forest text-base">Order Details</div>
+          <div className="font-display font-bold text-forest text-base">Items Ordered</div>
           <ul className="grid gap-2.5">
             {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
               ? orderDetails?.cartItems.map((item, idx) => (
@@ -65,7 +88,9 @@ function ShoppingOrderDetailsView({ orderDetails }) {
               : null}
           </ul>
         </div>
+
         <Separator className="border-forest/10" />
+
         <div className="grid gap-3">
           <div className="font-display font-bold text-forest text-base">Shipping Info</div>
           <div className="p-3 rounded-xl bg-leaf/20 border border-forest/10 text-xs sm:text-sm text-forest/80 space-y-1">

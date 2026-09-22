@@ -44,6 +44,11 @@ export const verifyOTPLogin = createAsyncThunk("/auth/verifyOTP", async ({ ident
   return response.data;
 });
 
+export const googleLoginUser = createAsyncThunk("/auth/googleLogin", async (credential) => {
+  const response = await axiosInstance.post(`/api/auth/google`, { credential }, { withCredentials: true });
+  return response.data;
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -85,7 +90,15 @@ const authSlice = createSlice({
         state.user = action.payload.success ? action.payload.user : null;
         state.isAuthenticated = action.payload.success;
       })
-      .addCase(verifyOTPLogin.rejected, (state) => { state.isLoading = false; });
+      .addCase(verifyOTPLogin.rejected, (state) => { state.isLoading = false; })
+
+      .addCase(googleLoginUser.pending, (state) => { state.isLoading = true; })
+      .addCase(googleLoginUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.success ? action.payload.user : null;
+        state.isAuthenticated = action.payload.success;
+      })
+      .addCase(googleLoginUser.rejected, (state) => { state.isLoading = false; });
   },
 });
 

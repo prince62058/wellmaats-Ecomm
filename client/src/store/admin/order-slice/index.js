@@ -4,6 +4,8 @@ import axiosInstance from "@/lib/axiosInstance";
 const initialState = {
   orderList: [],
   orderDetails: null,
+  transactionStats: null,
+  isLoading: false,
 };
 
 export const getAllOrdersForAdmin = createAsyncThunk(
@@ -26,6 +28,17 @@ export const getOrderDetailsForAdmin = createAsyncThunk(
       { withCredentials: true }
     );
 
+    return response.data;
+  }
+);
+
+export const fetchTransactionStats = createAsyncThunk(
+  "/order/fetchTransactionStats",
+  async (period = "week") => {
+    const response = await axiosInstance.get(
+      `/api/admin/orders/stats?period=${period}`,
+      { withCredentials: true }
+    );
     return response.data;
   }
 );
@@ -83,10 +96,19 @@ const adminOrderSlice = createSlice({
           const idx = state.orderList.findIndex((o) => o._id === action.payload.data._id);
           if (idx !== -1) state.orderList[idx] = action.payload.data;
         }
+      })
+      .addCase(fetchTransactionStats.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchTransactionStats.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.transactionStats = action.payload.data || null;
+      })
+      .addCase(fetchTransactionStats.rejected, (state) => {
+        state.isLoading = false;
       });
   },
 });
 
 export const { resetOrderDetails } = adminOrderSlice.actions;
-
 export default adminOrderSlice.reducer;

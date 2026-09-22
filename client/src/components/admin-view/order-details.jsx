@@ -24,12 +24,16 @@ import {
   Package,
   Phone,
   User,
+  FileText,
 } from "lucide-react";
+import { printInvoice } from "@/components/common/InvoiceTemplate";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 function AdminOrderDetailsView({ orderDetails, onUpdated }) {
   const [updating, setUpdating] = useState(false);
   const dispatch = useDispatch();
   const { toast } = useToast();
+  const { brandName } = useSiteSettings();
 
   const statusMeta = getStatusMeta(orderDetails?.orderStatus);
   const itemCount = orderDetails?.cartItems?.reduce((n, i) => n + (i.quantity || 0), 0) || 0;
@@ -56,6 +60,13 @@ function AdminOrderDetailsView({ orderDetails, onUpdated }) {
         <DialogTitle className="font-display text-forest flex items-center gap-2">
           <Package className="w-5 h-5" />
           Order {shortOrderId(orderDetails?._id)}
+          <button
+            type="button"
+            onClick={() => printInvoice(orderDetails, brandName || "Wellmaats")}
+            className="ml-auto flex items-center gap-1.5 text-xs font-semibold border border-forest/30 text-forest px-3 py-1.5 rounded-lg hover:bg-forest/5 transition-colors"
+          >
+            <FileText className="w-3.5 h-3.5" /> Download Invoice
+          </button>
         </DialogTitle>
       </DialogHeader>
 

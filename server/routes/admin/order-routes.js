@@ -5,6 +5,7 @@ const {
   getAllOrdersOfAllUsers,
   getOrderDetailsForAdmin,
   updateOrderStatus,
+  getTransactionStats,
 } = require("../../controllers/admin/order-controller");
 
 const router = express.Router();
@@ -12,6 +13,7 @@ const router = express.Router();
 router.use(adminMiddleware);
 
 router.get("/get", getAllOrdersOfAllUsers);
+router.get("/stats", getTransactionStats);
 router.get("/details/:id", getOrderDetailsForAdmin);
 router.put("/update/:id", updateOrderStatus);
 

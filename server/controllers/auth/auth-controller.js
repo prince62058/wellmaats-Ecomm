@@ -2,6 +2,7 @@ const bcrypt   = require("bcryptjs");
 const jwt      = require("jsonwebtoken");
 const User     = require("../../models/User");
 const Referral = require("../../models/Referral");
+const { OAuth2Client } = require("google-auth-library");
 
 const isProduction = process.env.NODE_ENV === "production";
 const cookieOptions = {
@@ -252,4 +253,54 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, sendOTP, verifyOTP, logoutUser, updateProfile, authMiddleware, checkAuth };
+// ── Google OAuth Login ──────────────────────────────────────────
+const googleLogin = async (req, res) => {
+  const { credential } = req.body; // Google ID token from frontend
+  if (!credential) return res.status(400).json({ success: false, message: "Google credential missing" });
+
+  const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+  if (!GOOGLE_CLIENT_ID) return res.status(500).json({ success: false, message: "Google OAuth not configured" });
+
+  try {
+    const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { email, name, picture, sub: googleId } = payload;
+
+    if (!email) return res.status(400).json({ success: false, message: "Google account has no email" });
+
+    // Find or create user
+    let user = await User.findOne({ email });
+    if (!user) {
+      const referralCode = await genReferralCode(new Date().getTime());
+      user = await User.create({
+        email,
+        userName: name || email.split("@")[0],
+        password: await bcrypt.hash(googleId + Date.now(), 12), // random secure password
+        avatar: picture || "",
+        role: "user",
+        referralCode,
+        googleId,
+      });
+    } else if (!user.googleId) {
+      // Link Google to existing account
+      user.googleId = googleId;
+      if (!user.avatar && picture) user.avatar = picture;
+      if (!user.referralCode) user.referralCode = await genReferralCode(user._id);
+      await user.save();
+    }
+
+    const token = signToken(user);
+    res
+      .cookie("token", token, cookieOptions)
+      .json({ success: true, message: "Logged in with Google!", user: userPayload(user) });
+  } catch (e) {
+    console.error("Google login error:", e);
+    res.status(401).json({ success: false, message: "Google login failed. Please try again." });
+  }
+};
+
+module.exports = { registerUser, loginUser, sendOTP, verifyOTP, logoutUser, updateProfile, authMiddleware, checkAuth, googleLogin };

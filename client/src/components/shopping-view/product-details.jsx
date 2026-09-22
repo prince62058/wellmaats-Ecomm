@@ -239,7 +239,19 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             {flashActive && timeLeft && (
               <p className="text-sm text-red-600 font-semibold mt-2">⏱ Flash sale ends in {timeLeft}</p>
             )}
-            <p className="text-muted-foreground mt-3">{productDetails?.description}</p>
+            {/* Description — rendered as HTML for rich text support */}
+            {productDetails?.description ? (
+              <div
+                className="text-muted-foreground mt-3 text-sm prose prose-sm max-w-none
+                  [&_table]:w-full [&_table]:border-collapse [&_table]:my-2
+                  [&_td]:border [&_td]:border-forest/20 [&_td]:px-2 [&_td]:py-1.5 [&_td]:text-xs
+                  [&_th]:border [&_th]:border-forest/20 [&_th]:px-2 [&_th]:py-1.5 [&_th]:bg-leaf/40 [&_th]:font-semibold [&_th]:text-xs
+                  [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4
+                  [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-forest
+                  [&_h3]:text-xs [&_h3]:font-semibold [&_h3]:text-forest/80"
+                dangerouslySetInnerHTML={{ __html: productDetails.description }}
+              />
+            ) : null}
 
             <div className="flex flex-wrap gap-3 mt-4 text-xs">
               {productBadges.map((badge) => {
@@ -271,13 +283,43 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
               </TabsList>
               <TabsContent value="benefits" className="mt-4 text-sm text-muted-foreground">
-                {productDetails?.benefits || "Natural Ayurvedic wellness support for daily health."}
+                {productDetails?.benefits ? (
+                  <div
+                    className="prose prose-sm max-w-none
+                      [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4
+                      [&_table]:w-full [&_table]:border-collapse
+                      [&_td]:border [&_td]:border-forest/20 [&_td]:px-2 [&_td]:py-1
+                      [&_th]:border [&_th]:border-forest/20 [&_th]:px-2 [&_th]:py-1 [&_th]:bg-leaf/40"
+                    dangerouslySetInnerHTML={{ __html: productDetails.benefits }}
+                  />
+                ) : (
+                  <p>Natural Ayurvedic wellness support for daily health.</p>
+                )}
               </TabsContent>
               <TabsContent value="ingredients" className="mt-4 text-sm text-muted-foreground">
-                {productDetails?.ingredients || "100% natural Ayurvedic herbs."}
+                {productDetails?.ingredients ? (
+                  <div
+                    className="prose prose-sm max-w-none
+                      [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4
+                      [&_table]:w-full [&_table]:border-collapse
+                      [&_td]:border [&_td]:border-forest/20 [&_td]:px-2 [&_td]:py-1
+                      [&_th]:border [&_th]:border-forest/20 [&_th]:px-2 [&_th]:py-1 [&_th]:bg-leaf/40"
+                    dangerouslySetInnerHTML={{ __html: productDetails.ingredients }}
+                  />
+                ) : (
+                  <p>100% natural Ayurvedic herbs.</p>
+                )}
               </TabsContent>
               <TabsContent value="usage" className="mt-4 text-sm space-y-2">
-                <p><strong>How to use:</strong> {productDetails?.howToUse || "Take with warm water."}</p>
+                {productDetails?.howToUse ? (
+                  <div
+                    className="prose prose-sm max-w-none
+                      [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4"
+                    dangerouslySetInnerHTML={{ __html: `<strong>How to use:</strong> ${productDetails.howToUse}` }}
+                  />
+                ) : (
+                  <p><strong>How to use:</strong> Take with warm water.</p>
+                )}
                 <p><strong>Dosage:</strong> {productDetails?.dosage || "As directed by physician."}</p>
               </TabsContent>
               <TabsContent value="reviews" className="mt-4 max-h-48 overflow-auto">

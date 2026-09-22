@@ -1,7 +1,6 @@
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
 import {
   Select,
   SelectContent,
@@ -14,6 +13,7 @@ import { getDiscountPercent, toDatetimeLocalValue } from "@/lib/product-offers";
 import { useState, useRef } from "react";
 import { Plus, Check, X } from "lucide-react";
 import DynamicIcon from "@/components/common/dynamic-icon";
+import RichTextEditor from "@/components/common/RichTextEditor";
 
 /* ── Inline "Add New" select ───────────────────────────────────── */
 function QuickAddSelect({ value, onValueChange, options = [], placeholder, onAddNew, addLabel }) {
@@ -205,11 +205,12 @@ function AdminProductForm({
         </div>
         <div className="space-y-2">
           <Label>Short Description *</Label>
-          <Textarea
-            rows={3}
+          <p className="text-xs text-muted-foreground">Supports <strong>bold</strong>, <em>italic</em>, bullet lists, highlight, and tables</p>
+          <RichTextEditor
             value={formData.description}
-            onChange={(e) => setField("description", e.target.value)}
+            onChange={(html) => setField("description", html)}
             placeholder="Brief product description for listing & modal"
+            minHeight={100}
           />
         </div>
 
@@ -412,15 +413,30 @@ function AdminProductForm({
         </h3>
         <div className="space-y-2">
           <Label>Ingredients</Label>
-          <Textarea rows={2} value={formData.ingredients} onChange={(e) => setField("ingredients", e.target.value)} placeholder="Tulsi, Ashwagandha, Giloy, Amla..." />
+          <RichTextEditor
+            value={formData.ingredients}
+            onChange={(html) => setField("ingredients", html)}
+            placeholder="Tulsi, Ashwagandha, Giloy, Amla..."
+            minHeight={80}
+          />
         </div>
         <div className="space-y-2">
           <Label>Benefits</Label>
-          <Textarea rows={2} value={formData.benefits} onChange={(e) => setField("benefits", e.target.value)} placeholder="Boosts immunity, improves energy..." />
+          <RichTextEditor
+            value={formData.benefits}
+            onChange={(html) => setField("benefits", html)}
+            placeholder="• Boosts immunity&#10;• Improves energy...&#10;(use bullet toolbar above)"
+            minHeight={80}
+          />
         </div>
         <div className="space-y-2">
           <Label>How to Use</Label>
-          <Textarea rows={2} value={formData.howToUse} onChange={(e) => setField("howToUse", e.target.value)} placeholder="Take 10-15 drops in warm water..." />
+          <RichTextEditor
+            value={formData.howToUse}
+            onChange={(html) => setField("howToUse", html)}
+            placeholder="Take 10-15 drops in warm water..."
+            minHeight={80}
+          />
         </div>
         <div className="space-y-2">
           <Label>Dosage</Label>

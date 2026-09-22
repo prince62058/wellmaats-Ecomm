@@ -23,6 +23,9 @@ const UserSchema = new mongoose.Schema({
   // Wallet
   walletBalance:      { type: Number, default: 0 },
   walletTransactions: [WalletTxSchema],
+
+  // OAuth
+  googleId:           { type: String, default: "", sparse: true },
 });
 
 module.exports = mongoose.model("User", UserSchema);

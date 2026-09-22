@@ -8,6 +8,7 @@ const {
   updateProfile,
   authMiddleware,
   checkAuth,
+  googleLogin,
 } = require("../../controllers/auth/auth-controller");
 const { upload, imageUploadUtil } = require("../../helpers/cloudinary");
 
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.post("/register",       registerUser);
 router.post("/login",          loginUser);
+router.post("/google",         googleLogin);
 router.post("/send-otp",       sendOTP);
 router.post("/verify-otp",     verifyOTP);
 router.post("/logout",         logoutUser);
