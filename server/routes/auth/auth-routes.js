@@ -10,7 +10,7 @@ const {
   checkAuth,
   googleLogin,
 } = require("../../controllers/auth/auth-controller");
-const { upload, imageUploadUtil } = require("../../helpers/cloudinary");
+const { upload, imageUploadUtil } = require("../../helpers/spaces");
 
 const router = express.Router();
 

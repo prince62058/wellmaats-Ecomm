@@ -10,7 +10,7 @@ const {
   deleteProduct,
 } = require("../../controllers/admin/products-controller");
 
-const { upload } = require("../../helpers/cloudinary");
+const { upload } = require("../../helpers/spaces");
 
 const router = express.Router();
 

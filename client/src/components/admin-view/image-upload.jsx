@@ -457,7 +457,7 @@ function ProductImageUpload({
               <Input
                 value={customVideoUrl}
                 onChange={(e) => setCustomVideoUrl(e.target.value)}
-                placeholder="https://res.cloudinary.com/... or https://example.com/video.mp4"
+                placeholder="https://sgp1.digitaloceanspaces.com/... or https://example.com/video.mp4"
                 className="h-9 rounded-xl border-gray-200 text-xs flex-1"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {

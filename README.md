@@ -25,12 +25,22 @@ NODE_ENV=production
 MONGODB_URI=mongodb+srv://USER:PASS@CLUSTER/mern-ecommerce?retryWrites=true&w=majority
 CLIENT_URL=https://wellmaats.in
 JWT_SECRET=use_a_long_random_secret
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
 RAZORPAY_KEY_ID=
 RAZORPAY_KEY_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Media storage — DigitalOcean Spaces (replaces Cloudinary for new uploads)
+DO_SPACES_KEY=
+DO_SPACES_SECRET=
+DO_SPACES_ENDPOINT=https://sgp1.digitaloceanspaces.com
+DO_SPACES_REGION=sgp1
+DO_SPACES_BUCKET=
+DO_SPACES_FOLDER=Wellmaats
+DO_SPACES_CDN_URL=https://sgp1.digitaloceanspaces.com/YOUR_BUCKET_NAME
 ```
+
+Old Cloudinary vars (`CLOUDINARY_CLOUD_NAME`/`CLOUDINARY_API_KEY`/`CLOUDINARY_API_SECRET`) are no longer required — uploads now go to DigitalOcean Spaces.
 
 Leave `VITE_API_URL` unset so the frontend calls `/api` on the same domain.
 
