@@ -460,14 +460,19 @@ function AdminProductForm({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs font-semibold text-forest">HSN Code (Tax Category)</Label>
+            <Label className="text-xs font-semibold text-forest flex items-center justify-between">
+              <span>HSN Code (Tax Category)</span>
+              <span className="text-[10px] text-muted-foreground bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full font-normal">
+                📄 Invoice only (hidden from website)
+              </span>
+            </Label>
             <Input
               value={formData.hsnCode || "3004"}
               onChange={(e) => setField("hsnCode", e.target.value)}
               placeholder="e.g. 3004"
               className="bg-white rounded-xl font-mono text-xs font-bold"
             />
-            <p className="text-[11px] text-muted-foreground">HSN 3004: Medicaments / Ayurvedic extracts.</p>
+            <p className="text-[11px] text-muted-foreground">HSN 3004: Medicaments / Ayurvedic extracts. Used exclusively on customer tax invoices.</p>
           </div>
         </div>
 
