@@ -1,22 +1,27 @@
 import { useState, useEffect } from "react";
 import { X, Truck, RotateCcw, ShieldCheck, Star } from "lucide-react";
+import { useSelector } from "react-redux";
 import { useSiteSettings } from "@/hooks/use-site-settings";
-
-const DEFAULT_MSGS = [
-  { icon: Truck, text: "🚚 Free Shipping on orders above ₹499" },
-  { icon: RotateCcw, text: "↩️ 14-Day Easy Returns — No Questions Asked" },
-  { icon: ShieldCheck, text: "✅ 100% Authentic Ayurvedic Products" },
-  { icon: Star, text: "⭐ 4.8 Rating from 50,000+ Happy Customers" },
-];
 
 function AnnouncementBar() {
   const { announcementBar } = useSiteSettings();
+  const siteSettingsData = useSelector((state) => state.siteSettings?.data);
   const [current, setCurrent] = useState(0);
   const [dismissed, setDismissed] = useState(false);
 
+  const threshold = siteSettingsData?.shippingSettings?.freeDeliveryThreshold || 2499;
+  const deliveryNotice = siteSettingsData?.shippingSettings?.deliveryNotice || `🚚 Free Shipping on all orders above ₹${threshold.toLocaleString("en-IN")}`;
+
+  const defaultMessages = [
+    { text: deliveryNotice },
+    { text: "↩️ 14-Day Easy Returns — No Questions Asked" },
+    { text: "✅ 100% Authentic Ayurvedic Formulations" },
+    { text: "⭐ 4.8 Rating from 50,000+ Happy Customers" },
+  ];
+
   const msgs = announcementBar?.messages?.length
     ? announcementBar.messages.map((text) => ({ text }))
-    : DEFAULT_MSGS;
+    : defaultMessages;
 
   const enabled = announcementBar?.enabled !== false;
 

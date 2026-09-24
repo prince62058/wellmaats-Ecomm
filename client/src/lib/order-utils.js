@@ -3,6 +3,7 @@ export const ORDER_STATUSES = [
   { id: "confirmed", label: "Confirmed", color: "bg-forest-500" },
   { id: "inProcess", label: "Processing", color: "bg-blue-500" },
   { id: "inShipping", label: "Shipped", color: "bg-violet-500" },
+  { id: "onTheWay", label: "On The Way", color: "bg-cyan-600" },
   { id: "delivered", label: "Delivered", color: "bg-forest" },
   { id: "rejected", label: "Rejected", color: "bg-red-600" },
 ];

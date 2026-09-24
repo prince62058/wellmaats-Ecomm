@@ -10,7 +10,8 @@ const createOrder = async (req, res) => {
   try {
     const {
       userId, cartItems, addressInfo, orderStatus, paymentMethod,
-      paymentStatus, totalAmount, orderDate, orderUpdateDate, cartId,
+      paymentStatus, totalAmount, subTotal, deliveryCharges, totalWeightGrams,
+      orderDate, orderUpdateDate, cartId,
       walletCreditsUsed,
     } = req.body;
 
@@ -26,9 +27,20 @@ const createOrder = async (req, res) => {
       receipt:  `receipt_${Date.now()}`,
     });
 
+    const effectiveSubTotal = Number(subTotal || totalAmount || 0);
+    const effectiveGstRate = Number(req.body.gstRate || 5);
+    const calculatedTaxable = Number(req.body.taxableAmount) || Number((effectiveSubTotal / (1 + effectiveGstRate / 100)).toFixed(2));
+    const calculatedGst = Number(req.body.gstAmount) || Number((effectiveSubTotal - calculatedTaxable).toFixed(2));
+
     const newlyCreatedOrder = new Order({
       userId, cartId, cartItems, addressInfo, orderStatus,
       paymentMethod, paymentStatus,
+      subTotal:          effectiveSubTotal,
+      deliveryCharges:   Number(deliveryCharges || 0),
+      totalWeightGrams:  Number(totalWeightGrams || 0),
+      taxableAmount:     calculatedTaxable,
+      gstAmount:         calculatedGst,
+      gstRate:           effectiveGstRate,
       totalAmount:       Number(totalAmount),
       walletCreditsUsed: Number(walletCreditsUsed || 0),
       orderDate, orderUpdateDate,

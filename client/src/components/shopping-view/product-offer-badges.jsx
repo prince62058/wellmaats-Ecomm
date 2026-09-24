@@ -11,7 +11,7 @@ function ProductOfferBadges({ product, className = "" }) {
   if (product?.totalStock === 0) {
     return (
       <div className={className}>
-        <span className="inline-flex items-center text-[10px] font-bold bg-gray-900/90 text-white px-2 py-0.5 rounded-full shadow-xs">
+        <span className="inline-flex items-center text-[10px] font-bold bg-gray-900/90 text-white px-2.5 py-0.5 rounded-full shadow-xs whitespace-nowrap select-none">
           Sold Out
         </span>
       </div>
@@ -22,8 +22,8 @@ function ProductOfferBadges({ product, className = "" }) {
   if (flash) {
     return (
       <div className={className}>
-        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-white px-2 py-0.5 rounded-full shadow-xs tracking-tight">
-          <Zap className="w-2.5 h-2.5 fill-white" />
+        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-white px-2.5 py-0.5 rounded-full shadow-sm tracking-tight whitespace-nowrap select-none">
+          <Zap className="w-2.5 h-2.5 fill-white shrink-0" />
           {discount > 0 ? `${discount}% OFF` : product?.offerLabel || "Flash Sale"}
         </span>
       </div>
@@ -33,7 +33,7 @@ function ProductOfferBadges({ product, className = "" }) {
   if (discount > 0) {
     return (
       <div className={className}>
-        <span className="inline-flex items-center text-[10px] font-bold bg-emerald-700 text-white px-2 py-0.5 rounded-full shadow-xs">
+        <span className="inline-flex items-center text-[10px] font-bold bg-emerald-700 text-white px-2.5 py-0.5 rounded-full shadow-sm whitespace-nowrap select-none">
           {discount}% OFF
         </span>
       </div>
@@ -43,8 +43,8 @@ function ProductOfferBadges({ product, className = "" }) {
   if (product?.isFeatured) {
     return (
       <div className={className}>
-        <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-forest/90 text-white px-2 py-0.5 rounded-full shadow-xs">
-          <Sparkles className="w-2.5 h-2.5 text-gold" />
+        <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-forest/90 text-white px-2.5 py-0.5 rounded-full shadow-sm whitespace-nowrap select-none">
+          <Sparkles className="w-2.5 h-2.5 text-gold shrink-0" />
           Featured
         </span>
       </div>

@@ -13,9 +13,13 @@ import { Badge } from "../ui/badge";
 import { shortOrderId, formatOrderDate } from "@/lib/order-utils";
 
 function statusBadgeClass(status) {
-  if (status === "confirmed") return "bg-forest-500";
-  if (status === "rejected") return "bg-red-600";
-  return "bg-forest";
+  if (status === "onTheWay") return "bg-cyan-600 text-white font-bold";
+  if (status === "confirmed") return "bg-forest-500 text-white";
+  if (status === "inShipping" || status === "shipped") return "bg-violet-600 text-white";
+  if (status === "inProcess" || status === "processing") return "bg-blue-600 text-white";
+  if (status === "delivered") return "bg-forest text-white";
+  if (status === "rejected") return "bg-red-600 text-white";
+  return "bg-amber-500 text-white";
 }
 
 function ShoppingOrders() {
@@ -61,7 +65,7 @@ function ShoppingOrders() {
                     </p>
                   </div>
                   <Badge className={`py-1 px-3 capitalize shrink-0 ${statusBadgeClass(orderItem.orderStatus)}`}>
-                    {orderItem.orderStatus}
+                    {orderItem.orderStatus === "onTheWay" ? "🚚 On The Way" : orderItem.orderStatus}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between gap-3">

@@ -151,6 +151,65 @@ function AdminOrderDetailsView({ orderDetails, onUpdated }) {
           </ul>
         </div>
 
+        {/* Financial & Delivery Breakdown */}
+        <div className="rounded-xl border border-forest/10 bg-leaf/20 p-4 space-y-2 text-xs sm:text-sm">
+          {(() => {
+            const sub = Number(orderDetails?.subTotal || orderDetails?.totalAmount || 0);
+            const rate = orderDetails?.gstRate != null ? orderDetails.gstRate : 5;
+            const taxable = orderDetails?.taxableAmount || Number((sub / (1 + rate / 100)).toFixed(2));
+            const gst = orderDetails?.gstAmount || Number((sub - taxable).toFixed(2));
+
+            return (
+              <>
+                <div className="flex justify-between text-muted-foreground">
+                  <div>
+                    <span>Items Subtotal</span>
+                    <span className="text-[10px] text-muted-foreground block">
+                      (Includes ₹{gst} GST @ {rate}%)
+                    </span>
+                  </div>
+                  <span className="font-semibold text-forest">₹{sub}</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground text-xs pl-2">
+                  <span>Taxable Base (Excl. Tax)</span>
+                  <span className="font-medium">₹{taxable}</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground text-xs pl-2">
+                  <span>CGST ({(rate / 2).toFixed(1)}%) + SGST ({(rate / 2).toFixed(1)}%)</span>
+                  <span className="font-medium">₹{(gst / 2).toFixed(2)} + ₹{(gst - gst / 2).toFixed(2)}</span>
+                </div>
+              </>
+            );
+          })()}
+          <div className="flex justify-between text-muted-foreground">
+            <span>Delivery Fee</span>
+            <span className="font-semibold text-forest">
+              {Number(orderDetails?.deliveryCharges) > 0 ? `₹${orderDetails.deliveryCharges}` : "FREE (Unlocked)"}
+            </span>
+          </div>
+          {orderDetails?.totalWeightGrams > 0 && (
+            <div className="flex justify-between text-muted-foreground text-xs">
+              <span>Shipment Package Weight</span>
+              <span className="font-medium text-gray-700">
+                {orderDetails.totalWeightGrams >= 1000
+                  ? `${(orderDetails.totalWeightGrams / 1000).toFixed(2)} kg`
+                  : `${orderDetails.totalWeightGrams} g`}
+              </span>
+            </div>
+          )}
+          {orderDetails?.walletCreditsUsed > 0 && (
+            <div className="flex justify-between text-emerald-700 text-xs">
+              <span>Wallet Discount Applied</span>
+              <span>-₹{orderDetails.walletCreditsUsed}</span>
+            </div>
+          )}
+          <Separator className="my-1 border-forest/10" />
+          <div className="flex justify-between text-base font-bold text-forest">
+            <span>Total Amount</span>
+            <span>₹{orderDetails?.totalAmount}</span>
+          </div>
+        </div>
+
         <Separator />
 
         {/* Customer & shipping */}

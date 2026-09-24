@@ -251,7 +251,7 @@ function AdminOrdersView() {
     const list    = orderList || [];
     const revenue = list.reduce((s, o) => s + (o.totalAmount || 0), 0);
     const pending = list.filter((o) => o.orderStatus === "pending").length;
-    const ship    = list.filter((o) => ["inShipping","shipped","processing"].includes(o.orderStatus)).length;
+    const ship    = list.filter((o) => ["inShipping","shipped","processing","onTheWay"].includes(o.orderStatus)).length;
     return [
       { label: "Total Orders", value: list.length,                                  icon: ShoppingBag,  bg: "bg-blue-50",   color: "text-blue-600"   },
       { label: "Pending",      value: pending,                                       icon: Clock,        bg: "bg-amber-50",  color: "text-amber-600"  },

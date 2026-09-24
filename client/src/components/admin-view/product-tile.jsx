@@ -43,6 +43,21 @@ function AdminProductTile({
       isFlashSale:   product?.isFlashSale ? "true" : "false",
       flashSaleEndsAt: product?.flashSaleEndsAt || "",
       offerLabel:    product?.offerLabel || "Flash Sale",
+      productType:   product.productType || "Capsule",
+      sizeValue:     product.sizeValue || "",
+      sizeUnit:      product.sizeUnit || "Capsules",
+      netWeight:     product.netWeight != null ? String(product.netWeight) : "",
+      weightUnit:    product.weightUnit || "gm",
+      grossWeightInGrams: product.grossWeightInGrams != null ? String(product.grossWeightInGrams) : "250",
+      gstRate: product.gstRate != null ? String(product.gstRate) : "5",
+      hsnCode: product.hsnCode || "3004",
+      manufacturedBy: product.manufacturingDetails?.manufacturedBy || product.manufacturedBy || "",
+      manufacturerAddress: product.manufacturingDetails?.manufacturerAddress || product.manufacturerAddress || "",
+      mfgLicenseNumber: product.manufacturingDetails?.mfgLicenseNumber || product.mfgLicenseNumber || "",
+      soldBy: product.manufacturingDetails?.soldBy || product.soldBy || "Wellmaats Healthcare",
+      sellerAddress: product.manufacturingDetails?.sellerAddress || product.sellerAddress || "",
+      customerCareContact: product.manufacturingDetails?.customerCareContact || product.customerCareContact || "",
+      countryOfOrigin: product.manufacturingDetails?.countryOfOrigin || product.countryOfOrigin || "India",
     });
     setOpenCreateProductsDialog(true);
   }
@@ -103,13 +118,35 @@ function AdminProductTile({
 
       {/* Body */}
       <div className="p-4">
-        <h2 className="font-bold text-forest text-sm leading-snug line-clamp-2 mb-2">{product?.title}</h2>
+        <h2 className="font-bold text-forest text-sm leading-snug line-clamp-2 mb-1.5">{product?.title}</h2>
 
-        <div className="flex items-center gap-2 mb-3">
+        {/* Product Type, Size & Weight info chip */}
+        {(product?.productType || product?.sizeValue || product?.grossWeightInGrams) && (
+          <div className="flex items-center gap-1.5 flex-wrap text-[10px] text-muted-foreground mb-2">
+            <span className="bg-leaf/80 text-forest px-1.5 py-0.5 rounded font-semibold border border-forest/15">
+              {product?.productType || "Capsule"}
+            </span>
+            {product?.sizeValue && (
+              <span className="font-medium text-gray-700">
+                {product.sizeValue} {product.sizeUnit || ""}
+              </span>
+            )}
+            {(product?.grossWeightInGrams || product?.netWeight) && (
+              <span className="text-gray-400">
+                • {product.grossWeightInGrams ? (product.grossWeightInGrams >= 1000 ? `${(product.grossWeightInGrams/1000).toFixed(2)}kg` : `${product.grossWeightInGrams}g`) : `${product.netWeight}g`}
+              </span>
+            )}
+          </div>
+        )}
+
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="text-lg font-bold text-forest">₹{price?.toLocaleString("en-IN")}</span>
           {product?.salePrice > 0 && product?.price > product?.salePrice && (
             <span className="text-xs line-through text-muted-foreground">₹{product.price}</span>
           )}
+          <span className="text-[10px] text-muted-foreground bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded">
+            Incl. {product?.gstRate ?? 5}% GST
+          </span>
         </div>
 
         <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-3">

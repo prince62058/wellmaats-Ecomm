@@ -41,6 +41,27 @@ const initialFormData = {
   isFlashSale: "false",
   flashSaleEndsAt: "",
   offerLabel: "Flash Sale",
+
+  // Product Type / Dosage Form (Capsule, Tablet, Syrup, Powder, Oil, Ointment, etc.)
+  productType: "Capsule",
+  // Size / Packaging
+  sizeValue: "",
+  sizeUnit: "Capsules",
+  // Measurable Weight (for shipping and specifications)
+  netWeight: "",
+  weightUnit: "gm",
+  grossWeightInGrams: "250",
+  // Tax & GST Compliance (Price is Inclusive)
+  gstRate: "5",
+  hsnCode: "3004",
+  // Manufacturing & Seller Compliance Details
+  manufacturedBy: "",
+  manufacturerAddress: "",
+  mfgLicenseNumber: "",
+  soldBy: "Wellmaats Healthcare",
+  sellerAddress: "",
+  customerCareContact: "",
+  countryOfOrigin: "India",
 };
 
 function AdminProducts() {
@@ -140,6 +161,34 @@ function AdminProducts() {
       price: Number(data.price),
       totalStock: Number(data.totalStock),
       averageReview: Number(data.averageReview) || 0,
+
+      // Type & Size
+      productType: data.productType || "Capsule",
+      sizeValue: data.sizeValue || "",
+      sizeUnit: data.sizeUnit || "",
+
+      // Weight
+      netWeight: data.netWeight !== "" && data.netWeight != null ? Number(data.netWeight) : 0,
+      weightUnit: data.weightUnit || "gm",
+      grossWeightInGrams: data.grossWeightInGrams !== "" && data.grossWeightInGrams != null
+        ? Number(data.grossWeightInGrams)
+        : (data.weightUnit === "kg" ? (Number(data.netWeight) || 0.25) * 1000 : (Number(data.netWeight) || 250)),
+
+      // Tax & GST Compliance
+      gstRate: data.gstRate !== "" && data.gstRate != null ? Number(data.gstRate) : 5,
+      hsnCode: data.hsnCode || "3004",
+      isTaxInclusive: true,
+
+      // Manufacturing & Seller Details
+      manufacturingDetails: {
+        manufacturedBy: data.manufacturedBy || "",
+        manufacturerAddress: data.manufacturerAddress || "",
+        mfgLicenseNumber: data.mfgLicenseNumber || "",
+        soldBy: data.soldBy || "Wellmaats Healthcare",
+        sellerAddress: data.sellerAddress || "",
+        customerCareContact: data.customerCareContact || "",
+        countryOfOrigin: data.countryOfOrigin || "India",
+      },
     };
   }
 

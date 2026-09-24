@@ -43,6 +43,37 @@ const SiteSettingsSchema = new mongoose.Schema(
 
     // ── Policies & Legal ──
     policies: mongoose.Schema.Types.Mixed,
+
+    // ── Dynamic Shipping & Delivery Settings ──
+    shippingSettings: {
+      freeDeliveryThreshold: { type: Number, default: 2499 }, // Orders >= ₹2499 get free delivery
+      enableWeightBasedShipping: { type: Boolean, default: true },
+      baseShippingCharge: { type: Number, default: 70 },       // Base delivery fee (e.g. ₹70)
+      baseWeightLimitGrams: { type: Number, default: 500 },    // Up to 500g
+      additionalChargePerKg: { type: Number, default: 40 },    // +₹40 per additional 1000g
+      flatFallbackDeliveryCharge: { type: Number, default: 70 },
+      deliveryNotice: { type: String, default: "Free delivery on all orders above ₹2,499!" },
+    },
+
+    // ── Dynamic Tax / GST Settings ──
+    taxSettings: {
+      defaultGstRate: { type: Number, default: 5 }, // Default GST % (e.g. 5%)
+      gstNumber: { type: String, default: "" }, // GSTIN
+      panNumber: { type: String, default: "" },
+      pricesIncludeGst: { type: Boolean, default: true }, // Prices displayed are GST inclusive
+      taxInvoicePrefix: { type: String, default: "INV-WM" },
+    },
+
+    // ── Default Brand Manufacturing & Selling Info ──
+    defaultManufacturingDetails: {
+      manufacturedBy: { type: String, default: "" },
+      manufacturerAddress: { type: String, default: "" },
+      mfgLicenseNumber: { type: String, default: "" },
+      soldBy: { type: String, default: "Wellmaats Healthcare" },
+      sellerAddress: { type: String, default: "" },
+      customerCareContact: { type: String, default: "" },
+      countryOfOrigin: { type: String, default: "India" },
+    },
   },
   { timestamps: true, strict: false }
 );

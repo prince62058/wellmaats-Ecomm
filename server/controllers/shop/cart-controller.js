@@ -64,7 +64,7 @@ const fetchCartItems = async (req, res) => {
 
     const cart = await Cart.findOne({ userId }).populate({
       path: "items.productId",
-      select: "image title price salePrice",
+      select: "image title price salePrice productType sizeValue sizeUnit netWeight weightUnit grossWeightInGrams totalStock gstRate hsnCode",
     });
 
     if (!cart) {
@@ -90,6 +90,15 @@ const fetchCartItems = async (req, res) => {
       price: item.productId.price,
       salePrice: item.productId.salePrice,
       quantity: item.quantity,
+      productType: item.productId.productType || "Capsule",
+      sizeValue: item.productId.sizeValue || "",
+      sizeUnit: item.productId.sizeUnit || "",
+      netWeight: item.productId.netWeight || 0,
+      weightUnit: item.productId.weightUnit || "gm",
+      grossWeightInGrams: item.productId.grossWeightInGrams || 250,
+      gstRate: item.productId.gstRate != null ? item.productId.gstRate : 5,
+      hsnCode: item.productId.hsnCode || "3004",
+      totalStock: item.productId.totalStock,
     }));
 
     res.status(200).json({

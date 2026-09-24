@@ -17,8 +17,9 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   ShoppingBag, Zap, Heart, ArrowLeft, BadgeCheck,
   Truck, Shield, Package, Star, ChevronRight, Share2,
-  ChevronLeft, Play,
+  ChevronLeft, Play, Receipt,
 } from "lucide-react";
+import { calculateTaxBreakdown } from "@/lib/tax-calculator";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import axiosInstance from "@/lib/axiosInstance";
 import { useLoginModal } from "@/context/LoginModalContext";
@@ -35,6 +36,7 @@ export default function ProductDetailPage() {
   const { cartItems } = useSelector((s) => s.shopCart);
   const { user } = useSelector((s) => s.auth);
   const { reviews } = useSelector((s) => s.shopReview);
+  const siteSettingsData = useSelector((s) => s.siteSettings?.data);
   const wishlistProducts = useSelector((s) => s.wishlist?.products || []);
   const { categoryOptionsMap, subCategoryOptionsMap, productBadges } = useSiteSettings();
   const { openLoginModal } = useLoginModal();
@@ -219,10 +221,10 @@ export default function ProductDetailPage() {
           {/* LEFT — Media Gallery */}
           <div className="space-y-3 sm:space-y-4 w-full min-w-0 max-w-full">
             <div className="relative w-full max-w-full bg-[#f8faf8] border border-forest/10 rounded-2xl sm:rounded-3xl overflow-hidden aspect-square flex items-center justify-center shadow-sm group">
-              <ProductOfferBadges product={p} className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-10 max-w-[70%]" />
+              {/* Wishlist button - top left */}
               <button
                 onClick={handleWishlist}
-                className={`absolute top-2.5 right-2.5 sm:top-4 sm:right-4 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-lg transition-all border ${
+                className={`absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-lg transition-all border ${
                   isWishlisted
                     ? "bg-red-50 text-red-500 border-red-200"
                     : "bg-white text-forest/40 border-forest/10 hover:text-red-400 hover:bg-red-50"
@@ -231,6 +233,9 @@ export default function ProductDetailPage() {
               >
                 <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isWishlisted ? "fill-red-500" : ""}`} />
               </button>
+
+              {/* Offer badge (20% OFF, 30% OFF, Flash Sale) - top right */}
+              <ProductOfferBadges product={p} className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 z-10 max-w-[70%]" />
 
               {activeMedia.type === "video" ? (
                 <video
@@ -359,6 +364,9 @@ export default function ProductDetailPage() {
             {/* Price */}
             <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
               <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-forest">₹{price}</span>
+              <span className="text-xs sm:text-sm text-muted-foreground font-medium">
+                (Incl. of all taxes / {p?.gstRate ?? 5}% GST)
+              </span>
               {p.salePrice > 0 && (
                 <>
                   <span className="text-base sm:text-xl line-through text-muted-foreground">₹{p.price}</span>
@@ -370,6 +378,21 @@ export default function ProductDetailPage() {
                 </>
               )}
             </div>
+
+            {/* Dynamic GST Breakdown Pill */}
+            {(() => {
+              const tb = calculateTaxBreakdown(price, p?.gstRate ?? 5);
+              return (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 mt-1 flex-wrap">
+                  <Receipt className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                  <span>Base Price: <strong>₹{tb.taxableAmount}</strong></span>
+                  <span className="text-emerald-300">•</span>
+                  <span>GST ({tb.gstRate}%): <strong>₹{tb.gstAmount}</strong> (CGST ₹{tb.cgstAmount} + SGST ₹{tb.sgstAmount})</span>
+                  <span className="text-emerald-300">•</span>
+                  <span className="text-emerald-700 font-medium">Delivery extra</span>
+                </div>
+              );
+            })()}
 
             {flashActive && timeLeft && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2 text-xs sm:text-sm">
@@ -388,6 +411,34 @@ export default function ProductDetailPage() {
                   <Truck className="w-3 h-3" /> {badge.label}
                 </span>
               ))}
+            </div>
+
+            {/* Product Measurables: Type, Size, Weight */}
+            <div className="flex flex-wrap items-center gap-2 p-3 rounded-2xl bg-leaf/30 border border-forest/15">
+              {p.productType && (
+                <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-white text-forest px-3 py-1.5 rounded-xl border border-forest/15 font-semibold shadow-xs">
+                  <span>💊 Form:</span>
+                  <strong>{p.productType}</strong>
+                </span>
+              )}
+              {p.sizeValue && (
+                <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-white text-forest px-3 py-1.5 rounded-xl border border-forest/15 font-semibold shadow-xs">
+                  <span>📦 Pack Size:</span>
+                  <strong>{p.sizeValue} {p.sizeUnit || ""}</strong>
+                </span>
+              )}
+              {(p.grossWeightInGrams || p.netWeight) && (
+                <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-white text-forest px-3 py-1.5 rounded-xl border border-forest/15 font-semibold shadow-xs">
+                  <span>⚖️ Net/Pkg Wt:</span>
+                  <strong>
+                    {p.grossWeightInGrams
+                      ? (p.grossWeightInGrams >= 1000
+                          ? `${(p.grossWeightInGrams / 1000).toFixed(2)} kg`
+                          : `${p.grossWeightInGrams} g`)
+                      : `${p.netWeight} ${p.weightUnit || "gm"}`}
+                  </strong>
+                </span>
+              )}
             </div>
 
             {/* Qty + CTA */}
@@ -452,6 +503,7 @@ export default function ProductDetailPage() {
                   { value: "benefits", label: "Benefits" },
                   { value: "ingredients", label: "Ingredients" },
                   { value: "usage", label: "How to Use" },
+                  { value: "compliance", label: "Manufactured & Sold By" },
                   { value: "reviews", label: `Reviews (${reviews?.length || 0})` },
                 ].map((t) => (
                   <TabsTrigger key={t.value} value={t.value}
@@ -504,6 +556,68 @@ export default function ProductDetailPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="compliance">
+              <div className="bg-leaf/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-forest/10 space-y-4 w-full min-w-0">
+                <h3 className="font-display font-bold text-forest text-base sm:text-lg">
+                  Manufacturing &amp; Seller Compliance
+                </h3>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Manufactured By */}
+                  <div className="bg-white rounded-xl sm:rounded-2xl p-4 shadow-sm border border-forest/10 space-y-1.5">
+                    <div className="flex items-center gap-2 text-forest font-bold text-sm">
+                      <span className="text-xl">🏭</span>
+                      <span>Manufactured By</span>
+                    </div>
+                    <p className="font-semibold text-gray-800 text-sm">
+                      {p.manufacturingDetails?.manufacturedBy || siteSettingsData?.defaultManufacturingDetails?.manufacturedBy || "Sanjeevani Ayurvedic Formulations Pvt. Ltd."}
+                    </p>
+                    {(p.manufacturingDetails?.manufacturerAddress || siteSettingsData?.defaultManufacturingDetails?.manufacturerAddress) && (
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {p.manufacturingDetails?.manufacturerAddress || siteSettingsData?.defaultManufacturingDetails?.manufacturerAddress}
+                      </p>
+                    )}
+                    {(p.manufacturingDetails?.mfgLicenseNumber || siteSettingsData?.defaultManufacturingDetails?.mfgLicenseNumber) && (
+                      <p className="text-xs text-forest font-bold pt-1">
+                        Ayush / Mfg Lic: {p.manufacturingDetails?.mfgLicenseNumber || siteSettingsData?.defaultManufacturingDetails?.mfgLicenseNumber}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Marketed & Sold By */}
+                  <div className="bg-white rounded-xl sm:rounded-2xl p-4 shadow-sm border border-forest/10 space-y-1.5">
+                    <div className="flex items-center gap-2 text-forest font-bold text-sm">
+                      <span className="text-xl">🏷️</span>
+                      <span>Marketed &amp; Sold By</span>
+                    </div>
+                    <p className="font-semibold text-gray-800 text-sm">
+                      {p.manufacturingDetails?.soldBy || siteSettingsData?.defaultManufacturingDetails?.soldBy || "Wellmaats Healthcare / Mother Tatwa"}
+                    </p>
+                    {(p.manufacturingDetails?.sellerAddress || siteSettingsData?.defaultManufacturingDetails?.sellerAddress) && (
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {p.manufacturingDetails?.sellerAddress || siteSettingsData?.defaultManufacturingDetails?.sellerAddress}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Country & Customer Care */}
+                  <div className="bg-white rounded-xl sm:rounded-2xl p-4 shadow-sm border border-forest/10 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs font-semibold text-forest uppercase tracking-wide">Country of Origin</p>
+                      <p className="text-sm font-medium text-gray-800 mt-0.5">
+                        {p.manufacturingDetails?.countryOfOrigin || "India (Bharath)"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-forest uppercase tracking-wide">Customer Care Support</p>
+                      <p className="text-sm font-medium text-gray-800 mt-0.5">
+                        {p.manufacturingDetails?.customerCareContact || siteSettingsData?.defaultManufacturingDetails?.customerCareContact || siteSettingsData?.contact?.email || "care@wellmaats.in"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </TabsContent>
 

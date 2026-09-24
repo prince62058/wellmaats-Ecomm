@@ -87,21 +87,11 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
             </span>
           </div>
 
-          {/* Offer badges - sleek single chip */}
-          <ProductOfferBadges product={product} className="absolute top-2 left-2 z-10" />
-
-          {/* Video badge if available */}
-          {product?.video && (
-            <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
-              <Video className="w-2.5 h-2.5 text-blue-400" /> Video
-            </span>
-          )}
-
-          {/* Wishlist heart */}
+          {/* Wishlist heart - top left */}
           <button
             type="button"
             onClick={handleWishlist}
-            className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center shadow-sm backdrop-blur-xs transition-all ${
+            className={`absolute top-2 left-2 z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-xs backdrop-blur-xs transition-all ${
               isWishlisted
                 ? "bg-red-50 text-red-500 border border-red-200"
                 : "bg-white/85 text-forest/40 border border-forest/10 hover:text-red-400 hover:bg-white"
@@ -110,6 +100,16 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
           >
             <Heart className={`w-3.5 h-3.5 ${isWishlisted ? "fill-red-500" : ""}`} />
           </button>
+
+          {/* Offer badges (20% OFF, 30% OFF, Flash Sale) - top right */}
+          <ProductOfferBadges product={product} className="absolute top-2 right-2 z-10 max-w-[70%]" />
+
+          {/* Video badge if available */}
+          {product?.video && (
+            <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
+              <Video className="w-2.5 h-2.5 text-blue-400" /> Video
+            </span>
+          )}
         </div>
 
         <CardContent className="p-2.5 sm:p-4 pb-1.5 sm:pb-2 flex-1">
@@ -119,6 +119,17 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
           <h2 className="font-display text-xs sm:text-sm font-bold text-forest mb-1 line-clamp-2 leading-tight sm:leading-snug min-h-[2.1rem] sm:min-h-[2.5rem]">
             {product?.title}
           </h2>
+          {/* Packaging / Type badge */}
+          {(product?.sizeValue || product?.productType) && (
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-medium mb-1">
+              <span className="bg-leaf/80 text-forest px-1.5 py-0.5 rounded border border-forest/15 font-semibold text-[9px]">
+                {product?.productType || "Capsule"}
+              </span>
+              {product?.sizeValue && (
+                <span className="text-gray-500 font-medium">· {product.sizeValue} {product.sizeUnit || ""}</span>
+              )}
+            </div>
+          )}
           <div className="flex items-center gap-1 mb-1.5 sm:mb-2">
             <div className="flex">
               {[1,2,3,4,5].map((s) => (
@@ -131,6 +142,9 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
           </div>
           <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
             <span className="text-sm sm:text-lg font-bold text-forest">₹{price}</span>
+            <span className="text-[9px] sm:text-[10px] text-muted-foreground font-normal">
+              (Incl. GST)
+            </span>
             {product?.salePrice > 0 && (
               <>
                 <span className="text-[11px] sm:text-xs text-muted-foreground line-through">₹{product?.price}</span>

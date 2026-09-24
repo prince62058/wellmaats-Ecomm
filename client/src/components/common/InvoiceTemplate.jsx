@@ -44,23 +44,57 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
   const subtotal = items.reduce((s, i) => s + (Number(i.price || 0) * (i.quantity || 1)), 0);
   const totalAmount = Number(orderDetails.totalAmount || subtotal);
   const walletUsed = Number(orderDetails.walletCreditsUsed || 0);
+  const defaultGstRate = Number(orderDetails.gstRate || 5);
 
-  // Build items rows
+  let totalTaxable = 0;
+  let totalGst = 0;
+  const hsnSummary = {};
+
+  // Build items rows with reverse GST breakdown
   const itemRows = items.map((item, idx) => {
     const qty = item.quantity || 1;
     const rate = Number(item.price || 0);
     const lineTotal = rate * qty;
+    const itemGstRate = item.gstRate != null ? Number(item.gstRate) : defaultGstRate;
+    const itemHsn = item.hsnCode || "3004";
+
+    const taxable = Number((lineTotal / (1 + itemGstRate / 100)).toFixed(2));
+    const gst = Number((lineTotal - taxable).toFixed(2));
+    totalTaxable += taxable;
+    totalGst += gst;
+
+    if (!hsnSummary[itemHsn]) {
+      hsnSummary[itemHsn] = { hsn: itemHsn, rate: itemGstRate, taxable: 0, gst: 0 };
+    }
+    hsnSummary[itemHsn].taxable += taxable;
+    hsnSummary[itemHsn].gst += gst;
+
     return `
       <tr>
         <td class="bc">${idx + 1}</td>
         <td class="bl">
           <strong>${item.title || "Product"}</strong><br/>
-          <span class="sub">MRP - ₹${rate.toLocaleString("en-IN")}</span>
+          <span class="sub">HSN: ${itemHsn} | ₹${rate.toLocaleString("en-IN")} (Incl. of ${itemGstRate}% GST)</span>
         </td>
         <td class="bc">${qty}</td>
         <td class="br">₹${rate.toLocaleString("en-IN")}</td>
         <td class="bc">Nos</td>
         <td class="br"><strong>₹${lineTotal.toLocaleString("en-IN")}</strong></td>
+      </tr>`;
+  }).join("");
+
+  const hsnRows = Object.values(hsnSummary).map((h) => {
+    const cgst = Number((h.gst / 2).toFixed(2));
+    const sgst = Number((h.gst - cgst).toFixed(2));
+    return `
+      <tr>
+        <td class="bc">${h.hsn}</td>
+        <td class="br">₹${h.taxable.toFixed(2)}</td>
+        <td class="bc">${(h.rate / 2).toFixed(1)}%</td>
+        <td class="br">₹${cgst.toFixed(2)}</td>
+        <td class="bc">${(h.rate / 2).toFixed(1)}%</td>
+        <td class="br">₹${sgst.toFixed(2)}</td>
+        <td class="br"><strong>₹${h.gst.toFixed(2)}</strong></td>
       </tr>`;
   }).join("");
 
@@ -203,6 +237,8 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
           New Delhi, India<br/>
           E-Mail: support@wellmaats.in<br/>
           www.wellmaats.in<br/>
+          ${orderDetails.gstNumber ? `<strong>GSTIN:</strong> ${orderDetails.gstNumber}<br/>` : "<strong>GSTIN:</strong> 07AABCW1234D1Z5<br/>"}
+          ${orderDetails.panNumber ? `<strong>PAN:</strong> ${orderDetails.panNumber}<br/>` : "<strong>PAN:</strong> AABCW1234D<br/>"}
           <br/>
           <span class="buyer-label">Buyer (Bill to)</span><br/>
           <div class="buyer-name">${orderDetails.customerInfo?.userName || orderDetails.addressInfo?.name || "Customer"}</div>
@@ -270,7 +306,17 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
         </tbody>
       </table>
 
-      <!-- ═══ EXTRA CHARGES ═══ -->
+      <!-- ═══ EXTRA CHARGES / DELIVERY / CREDITS ═══ -->
+      ${Number(orderDetails.deliveryCharges) > 0 ? `
+      <div class="extra-row">
+        <div class="extra-label">Delivery Charges ${orderDetails.totalWeightGrams ? `(${orderDetails.totalWeightGrams >= 1000 ? `${(orderDetails.totalWeightGrams/1000).toFixed(2)} kg` : `${orderDetails.totalWeightGrams} g`})` : ""}</div>
+        <div class="extra-value">+ ₹${Number(orderDetails.deliveryCharges).toFixed(2)}</div>
+      </div>` : `
+      <div class="extra-row">
+        <div class="extra-label">Delivery Charges</div>
+        <div class="extra-value" style="color:#108644;font-weight:600">FREE</div>
+      </div>`}
+
       ${walletUsed > 0 ? `
       <div class="extra-row">
         <div class="extra-label">Wallet Credits Used</div>
@@ -287,6 +333,45 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
       <div class="amount-words">
         Amount Chargeable (in words):<br/>
         <strong>${numberToWords(totalAmount)}</strong>
+      </div>
+
+      <!-- ═══ OFFICIAL GST SCHEDULE TABLE ═══ -->
+      <div class="tax-section">
+        <div style="font-size:10px;font-weight:700;margin-bottom:4px;text-transform:uppercase;color:#333;">
+          GST Tax Schedule (Reverse Calculation — Selling Prices are Inclusive of Tax)
+        </div>
+        <table class="tax-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width:70px">HSN/SAC</th>
+              <th rowspan="2">Taxable Value (₹)</th>
+              <th colspan="2">Central Tax (CGST)</th>
+              <th colspan="2">State Tax (SGST)</th>
+              <th rowspan="2">Total Tax (₹)</th>
+            </tr>
+            <tr>
+              <th style="width:45px">Rate</th>
+              <th style="width:75px">Amount (₹)</th>
+              <th style="width:45px">Rate</th>
+              <th style="width:75px">Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${hsnRows || `<tr><td class="bc">3004</td><td class="br">₹${totalTaxable.toFixed(2)}</td><td class="bc">2.5%</td><td class="br">₹${(totalGst/2).toFixed(2)}</td><td class="bc">2.5%</td><td class="br">₹${(totalGst/2).toFixed(2)}</td><td class="br">₹${totalGst.toFixed(2)}</td></tr>`}
+            <tr style="font-weight:700;background:#f9f9f9">
+              <td class="bc">Total</td>
+              <td class="br">₹${totalTaxable.toFixed(2)}</td>
+              <td class="bc">-</td>
+              <td class="br">₹${(totalGst / 2).toFixed(2)}</td>
+              <td class="bc">-</td>
+              <td class="br">₹${(totalGst - totalGst / 2).toFixed(2)}</td>
+              <td class="br">₹${totalGst.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="font-size:9.5px;color:#666;margin-top:4px;text-align:right">
+          <em>Tax Amount (in words): ${numberToWords(totalGst)}</em>
+        </div>
       </div>
 
       <!-- ═══ DECLARATION + SIGNATORY ═══ -->

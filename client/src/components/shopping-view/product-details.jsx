@@ -15,8 +15,9 @@ import { addReview, getReviews } from "@/store/shop/review-slice";
 import { useSiteSettings, resolveProductImage } from "@/hooks/use-site-settings";
 import { getDiscountPercent, isFlashSaleActive, getTimeLeft } from "@/lib/product-offers";
 import ProductOfferBadges from "./product-offer-badges";
-import { BadgeCheck, Truck, Shield, ArrowUpRight, ChevronLeft, ChevronRight, Play, Film } from "lucide-react";
+import { BadgeCheck, Truck, Shield, ArrowUpRight, ChevronLeft, ChevronRight, Play, Film, Receipt } from "lucide-react";
 import { Link } from "react-router-dom";
+import { calculateTaxBreakdown } from "@/lib/tax-calculator";
 
 const badgeIcons = { Truck, Shield };
 
@@ -28,6 +29,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const { reviews } = useSelector((state) => state.shopReview);
+  const siteSettingsData = useSelector((state) => state.siteSettings?.data);
   const { toast } = useToast();
   const { categoryOptionsMap, productBadges } = useSiteSettings();
 
@@ -123,7 +125,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         <div className="grid lg:grid-cols-2 gap-0">
           {/* Left Media Gallery */}
           <div className="relative bg-[#f8faf8] p-4 sm:p-6 flex flex-col items-center justify-between border-b lg:border-b-0 lg:border-r border-gray-100">
-            <ProductOfferBadges product={productDetails} className="absolute top-4 left-4 z-10" />
+            <ProductOfferBadges product={productDetails} className="absolute top-4 right-4 z-10" />
 
             {/* Main Media Preview */}
             <div className="relative w-full aspect-square max-h-[380px] sm:max-h-[420px] flex items-center justify-center rounded-2xl overflow-hidden bg-white shadow-sm border border-forest/10 group">
@@ -225,6 +227,9 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             </div>
             <div className="flex items-baseline gap-3 mt-4 flex-wrap">
               <span className="text-3xl font-bold text-forest">₹{price}</span>
+              <span className="text-xs text-muted-foreground font-medium">
+                (Incl. of all taxes / {productDetails?.gstRate ?? 5}% GST)
+              </span>
               {productDetails?.salePrice > 0 && (
                 <>
                   <span className="text-lg line-through text-muted-foreground">₹{productDetails?.price}</span>
@@ -236,6 +241,21 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 </>
               )}
             </div>
+
+            {/* Dynamic Tax Breakdown Pill */}
+            {(() => {
+              const tb = calculateTaxBreakdown(price, productDetails?.gstRate ?? 5);
+              return (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-200/70 text-[11px] text-emerald-900 mt-2">
+                  <Receipt className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                  <span>Base: <strong>₹{tb.taxableAmount}</strong></span>
+                  <span className="text-emerald-400">•</span>
+                  <span>GST ({tb.gstRate}%): <strong>₹{tb.gstAmount}</strong></span>
+                  <span className="text-emerald-400">•</span>
+                  <span className="text-emerald-700">Delivery extra</span>
+                </div>
+              );
+            })()}
             {flashActive && timeLeft && (
               <p className="text-sm text-red-600 font-semibold mt-2">⏱ Flash sale ends in {timeLeft}</p>
             )}
@@ -264,6 +284,34 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               })}
             </div>
 
+            {/* Product Measurables: Type, Size, Weight */}
+            <div className="flex flex-wrap items-center gap-2 mt-4 p-2.5 rounded-xl bg-leaf/30 border border-forest/10">
+              {productDetails?.productType && (
+                <span className="inline-flex items-center gap-1 text-xs bg-white text-forest px-2.5 py-1 rounded-lg border border-forest/15 font-semibold shadow-xs">
+                  <span>💊 Form:</span>
+                  <strong>{productDetails.productType}</strong>
+                </span>
+              )}
+              {productDetails?.sizeValue && (
+                <span className="inline-flex items-center gap-1 text-xs bg-white text-forest px-2.5 py-1 rounded-lg border border-forest/15 font-semibold shadow-xs">
+                  <span>📦 Size:</span>
+                  <strong>{productDetails.sizeValue} {productDetails.sizeUnit || ""}</strong>
+                </span>
+              )}
+              {(productDetails?.grossWeightInGrams || productDetails?.netWeight) && (
+                <span className="inline-flex items-center gap-1 text-xs bg-white text-forest px-2.5 py-1 rounded-lg border border-forest/15 font-semibold shadow-xs">
+                  <span>⚖️ Net/Pkg Wt:</span>
+                  <strong>
+                    {productDetails.grossWeightInGrams
+                      ? (productDetails.grossWeightInGrams >= 1000
+                          ? `${(productDetails.grossWeightInGrams / 1000).toFixed(2)} kg`
+                          : `${productDetails.grossWeightInGrams} g`)
+                      : `${productDetails.netWeight} ${productDetails.weightUnit || "gm"}`}
+                  </strong>
+                </span>
+              )}
+            </div>
+
             {productDetails?.totalStock === 0 ? (
               <Button disabled className="w-full mt-6">Out of Stock</Button>
             ) : (
@@ -280,6 +328,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 <TabsTrigger value="benefits">Benefits</TabsTrigger>
                 <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
                 <TabsTrigger value="usage">How to Use</TabsTrigger>
+                <TabsTrigger value="compliance">Manufactured &amp; Sold By</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
               </TabsList>
               <TabsContent value="benefits" className="mt-4 text-sm text-muted-foreground">
@@ -321,6 +370,55 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                   <p><strong>How to use:</strong> Take with warm water.</p>
                 )}
                 <p><strong>Dosage:</strong> {productDetails?.dosage || "As directed by physician."}</p>
+              </TabsContent>
+              <TabsContent value="compliance" className="mt-4 text-xs sm:text-sm space-y-3">
+                <div className="bg-leaf/25 border border-forest/15 rounded-2xl p-4 space-y-3.5">
+                  <div className="flex items-start gap-2.5 pb-2.5 border-b border-forest/10">
+                    <span className="text-lg">🏭</span>
+                    <div>
+                      <p className="font-bold text-forest text-xs uppercase tracking-wide">Manufactured By</p>
+                      <p className="text-gray-800 font-medium mt-0.5">
+                        {productDetails?.manufacturingDetails?.manufacturedBy || siteSettingsData?.defaultManufacturingDetails?.manufacturedBy || "Sanjeevani Ayurvedic Formulations Pvt. Ltd."}
+                      </p>
+                      {(productDetails?.manufacturingDetails?.manufacturerAddress || siteSettingsData?.defaultManufacturingDetails?.manufacturerAddress) && (
+                        <p className="text-muted-foreground text-xs mt-0.5">
+                          {productDetails?.manufacturingDetails?.manufacturerAddress || siteSettingsData?.defaultManufacturingDetails?.manufacturerAddress}
+                        </p>
+                      )}
+                      {(productDetails?.manufacturingDetails?.mfgLicenseNumber || siteSettingsData?.defaultManufacturingDetails?.mfgLicenseNumber) && (
+                        <p className="text-forest text-[11px] font-semibold mt-1">
+                          Ayush / Mfg Lic: {productDetails?.manufacturingDetails?.mfgLicenseNumber || siteSettingsData?.defaultManufacturingDetails?.mfgLicenseNumber}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2.5 pb-2.5 border-b border-forest/10">
+                    <span className="text-lg">🏷️</span>
+                    <div>
+                      <p className="font-bold text-forest text-xs uppercase tracking-wide">Marketed &amp; Sold By</p>
+                      <p className="text-gray-800 font-medium mt-0.5">
+                        {productDetails?.manufacturingDetails?.soldBy || siteSettingsData?.defaultManufacturingDetails?.soldBy || "Wellmaats Healthcare / Mother Tatwa"}
+                      </p>
+                      {(productDetails?.manufacturingDetails?.sellerAddress || siteSettingsData?.defaultManufacturingDetails?.sellerAddress) && (
+                        <p className="text-muted-foreground text-xs mt-0.5">
+                          {productDetails?.manufacturingDetails?.sellerAddress || siteSettingsData?.defaultManufacturingDetails?.sellerAddress}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-forest">Country of Origin:</span>
+                      <span className="text-gray-700">{productDetails?.manufacturingDetails?.countryOfOrigin || "India (Bharath)"}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-forest">Customer Care:</span>
+                      <span className="text-gray-700 truncate">{productDetails?.manufacturingDetails?.customerCareContact || siteSettingsData?.defaultManufacturingDetails?.customerCareContact || siteSettingsData?.contact?.email || "care@wellmaats.in"}</span>
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
               <TabsContent value="reviews" className="mt-4 max-h-48 overflow-auto">
                 {reviews?.length > 0 ? reviews.map((r) => (

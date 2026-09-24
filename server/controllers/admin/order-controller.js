@@ -99,11 +99,19 @@ const getOrderDetailsForAdmin = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { orderStatus } = req.body;
+    const { orderStatus, trackingInfo } = req.body;
+
+    const updateFields = {
+      orderStatus,
+      orderUpdateDate: new Date(),
+    };
+    if (trackingInfo) {
+      updateFields.trackingInfo = trackingInfo;
+    }
 
     const order = await Order.findByIdAndUpdate(
       id,
-      { orderStatus, orderUpdateDate: new Date() },
+      updateFields,
       { new: true }
     );
 

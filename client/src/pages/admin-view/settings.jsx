@@ -15,6 +15,7 @@ import {
   Truck, Star, Clock, Zap, Award, CheckCircle,
   ChevronDown, ChevronRight, GripVertical, Sparkles,
   ExternalLink, RotateCcw, FileText, Lock, Shield, AlertCircle,
+  Building2, Scale, Receipt, Percent,
 } from "lucide-react";
 import IconPicker from "@/components/common/icon-picker";
 import DynamicIcon, { DYNAMIC_ICONS_MAP } from "@/components/common/dynamic-icon";
@@ -422,6 +423,7 @@ function AdminSettings() {
             <TabsTrigger value="herbs" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Herbs</TabsTrigger>
             <TabsTrigger value="homepage" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Homepage</TabsTrigger>
             <TabsTrigger value="footer" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">Footer</TabsTrigger>
+            <TabsTrigger value="shipping" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">🚚 Shipping &amp; Delivery</TabsTrigger>
             <TabsTrigger value="policies" className="text-xs font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-forest data-[state=active]:shadow-xs">📜 Policies</TabsTrigger>
           </TabsList>
         </div>
@@ -2229,6 +2231,380 @@ function AdminSettings() {
                 );
               })()
             )}
+          </div>
+        </TabsContent>
+
+        {/* ══ DYNAMIC SHIPPING & DELIVERY RULES TAB ══ */}
+        <TabsContent value="shipping" className="space-y-6 mt-6">
+          {/* Card 1: Delivery Charges & Free Delivery Rules */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4">
+              <div>
+                <h3 className="font-bold text-forest text-lg flex items-center gap-2">
+                  <Truck className="w-5 h-5 text-forest" />
+                  Dynamic Delivery Charges &amp; Free Shipping Rules
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Configure minimum cart threshold for free shipping, base fees, and weight-based delivery rates. Changes take effect in the customer cart &amp; checkout instantly.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 bg-leaf/40 px-3.5 py-1.5 rounded-full border border-forest/15 text-xs font-semibold text-forest">
+                <span>Free Delivery at:</span>
+                <strong className="text-sm">₹{form?.shippingSettings?.freeDeliveryThreshold ?? 2499}</strong>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Minimum Order Value for Free Delivery */}
+              <div className="space-y-2 p-4 rounded-xl bg-[#f8faf8] border border-forest/10">
+                <Label className="text-xs font-semibold text-forest flex items-center justify-between">
+                  <span>Free Delivery Threshold (₹) *</span>
+                  <span className="text-[10px] bg-forest text-white px-2 py-0.5 rounded-full">Primary</span>
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-sm">₹</span>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={form?.shippingSettings?.freeDeliveryThreshold ?? 2499}
+                    onChange={(e) => update("shippingSettings.freeDeliveryThreshold", Number(e.target.value))}
+                    className="pl-7 bg-white rounded-xl text-base font-bold text-forest"
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Orders equal or above this amount automatically unlock <strong>FREE Delivery</strong>.
+                </p>
+              </div>
+
+              {/* Base Delivery Fee */}
+              <div className="space-y-2 p-4 rounded-xl bg-gray-50 border border-gray-200">
+                <Label className="text-xs font-semibold text-gray-700">Base Delivery Charge (₹) *</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-sm">₹</span>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={form?.shippingSettings?.baseShippingCharge ?? 70}
+                    onChange={(e) => update("shippingSettings.baseShippingCharge", Number(e.target.value))}
+                    className="pl-7 bg-white rounded-xl text-base font-bold"
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Charged on orders below the threshold (up to base weight limit).
+                </p>
+              </div>
+
+              {/* Base Weight Limit */}
+              <div className="space-y-2 p-4 rounded-xl bg-gray-50 border border-gray-200">
+                <Label className="text-xs font-semibold text-gray-700">Base Weight Covered *</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    min="0"
+                    step="50"
+                    value={form?.shippingSettings?.baseWeightLimitGrams ?? 500}
+                    onChange={(e) => update("shippingSettings.baseWeightLimitGrams", Number(e.target.value))}
+                    className="bg-white rounded-xl text-base font-bold flex-1"
+                  />
+                  <span className="text-xs font-bold text-gray-500 bg-white px-3 py-2.5 rounded-xl border border-gray-200">
+                    Grams
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Standard package weight covered under the base delivery charge (e.g. 500g).
+                </p>
+              </div>
+
+              {/* Additional Charge per kg */}
+              <div className="space-y-2 p-4 rounded-xl bg-gray-50 border border-gray-200">
+                <Label className="text-xs font-semibold text-gray-700">Additional Fee per kg (+₹)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-sm">+₹</span>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={form?.shippingSettings?.additionalChargePerKg ?? 40}
+                    onChange={(e) => update("shippingSettings.additionalChargePerKg", Number(e.target.value))}
+                    className="pl-8 bg-white rounded-xl text-base font-bold"
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Added for each additional 1000g exceeding the base weight limit.
+                </p>
+              </div>
+
+              {/* Flat Fallback Delivery Fee */}
+              <div className="space-y-2 p-4 rounded-xl bg-gray-50 border border-gray-200">
+                <Label className="text-xs font-semibold text-gray-700">Fallback Flat Fee (₹)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-400 font-bold text-sm">₹</span>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={form?.shippingSettings?.flatFallbackDeliveryCharge ?? 70}
+                    onChange={(e) => update("shippingSettings.flatFallbackDeliveryCharge", Number(e.target.value))}
+                    className="pl-7 bg-white rounded-xl text-base font-bold"
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Used if product weight is not specified.
+                </p>
+              </div>
+
+              {/* Delivery Announcement Notice */}
+              <div className="space-y-2 p-4 rounded-xl bg-gray-50 border border-gray-200">
+                <Label className="text-xs font-semibold text-gray-700">Delivery Promo Banner Text</Label>
+                <Input
+                  value={form?.shippingSettings?.deliveryNotice ?? "Free delivery on all orders above ₹2,499!"}
+                  onChange={(e) => update("shippingSettings.deliveryNotice", e.target.value)}
+                  className="bg-white rounded-xl text-xs"
+                  placeholder="e.g. Free delivery on orders above ₹2,499!"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Shown in the top announcement bar, cart drawer, and checkout banner.
+                </p>
+              </div>
+            </div>
+
+            {/* Live Calculation Preview Card */}
+            <div className="rounded-xl border border-forest/20 bg-leaf/25 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-forest text-white flex items-center justify-center shrink-0">
+                  <Scale className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-forest">Live Delivery Fee Preview</p>
+                  <p className="text-xs text-muted-foreground">
+                    Cart value ₹1,800 (below ₹{form?.shippingSettings?.freeDeliveryThreshold ?? 2499}) weighing 1.2 kg package:
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <div className="text-right">
+                  <span className="text-xs text-muted-foreground line-through mr-1">FREE</span>
+                  <span className="text-base font-bold text-forest">
+                    ₹{(form?.shippingSettings?.baseShippingCharge ?? 70) + (form?.shippingSettings?.additionalChargePerKg ?? 40)}
+                  </span>
+                  <p className="text-[10px] text-gray-500">Base ₹{form?.shippingSettings?.baseShippingCharge ?? 70} + Extra wt ₹{form?.shippingSettings?.additionalChargePerKg ?? 40}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Default Brand Manufacturing & Selling Details */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+            <div className="border-b pb-4">
+              <h3 className="font-bold text-forest text-lg flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-forest" />
+                Default Brand Manufacturing &amp; Seller Compliance Info
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                These details will be used as default fallback across all products in the "Manufactured By &amp; Sold By" section if not customized per product.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold">Default Manufactured By (Company)</Label>
+                <Input
+                  value={form?.defaultManufacturingDetails?.manufacturedBy || ""}
+                  onChange={(e) => update("defaultManufacturingDetails.manufacturedBy", e.target.value)}
+                  placeholder="e.g. Sanjeevani Ayurvedic Pharmacy Pvt. Ltd."
+                  className="bg-white rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold">Default Ayush / FSSAI / Mfg License</Label>
+                <Input
+                  value={form?.defaultManufacturingDetails?.mfgLicenseNumber || ""}
+                  onChange={(e) => update("defaultManufacturingDetails.mfgLicenseNumber", e.target.value)}
+                  placeholder="e.g. AYU-1284 / FSSAI 10020011000123"
+                  className="bg-white rounded-xl"
+                />
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label className="text-xs font-semibold">Default Manufacturing Plant Address</Label>
+                <Input
+                  value={form?.defaultManufacturingDetails?.manufacturerAddress || ""}
+                  onChange={(e) => update("defaultManufacturingDetails.manufacturerAddress", e.target.value)}
+                  placeholder="e.g. Industrial Area, Phase II, Haridwar, Uttarakhand - 249401"
+                  className="bg-white rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold">Default Marketed / Sold By</Label>
+                <Input
+                  value={form?.defaultManufacturingDetails?.soldBy || "Wellmaats Healthcare"}
+                  onChange={(e) => update("defaultManufacturingDetails.soldBy", e.target.value)}
+                  placeholder="Wellmaats Healthcare"
+                  className="bg-white rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold">Country of Origin</Label>
+                <Input
+                  value={form?.defaultManufacturingDetails?.countryOfOrigin || "India"}
+                  onChange={(e) => update("defaultManufacturingDetails.countryOfOrigin", e.target.value)}
+                  placeholder="India"
+                  className="bg-white rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold">Seller Office Address</Label>
+                <Input
+                  value={form?.defaultManufacturingDetails?.sellerAddress || ""}
+                  onChange={(e) => update("defaultManufacturingDetails.sellerAddress", e.target.value)}
+                  placeholder="Registered corporate address"
+                  className="bg-white rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold">Customer Care (Email &amp; Toll-Free/Phone)</Label>
+                <Input
+                  value={form?.defaultManufacturingDetails?.customerCareContact || ""}
+                  onChange={(e) => update("defaultManufacturingDetails.customerCareContact", e.target.value)}
+                  placeholder="care@wellmaats.in | +91 98765 43210"
+                  className="bg-white rounded-xl"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Dynamic GST & Tax Invoicing Rules */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4">
+              <div>
+                <h3 className="font-bold text-forest text-lg flex items-center gap-2">
+                  <Receipt className="w-5 h-5 text-forest" />
+                  Dynamic Tax &amp; GST Invoicing Rules
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Product catalog prices are <strong>inclusive of GST</strong> (e.g. ₹800 or ₹1,000 includes GST). Delivery charges are added separately unless order qualifies for free delivery.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200 text-xs font-semibold text-emerald-800">
+                <Percent className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Default GST: <strong>{form?.taxSettings?.defaultGstRate ?? 5}%</strong></span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Default GST Rate */}
+              <div className="space-y-2 p-4 rounded-xl bg-gray-50 border border-gray-200">
+                <Label className="text-xs font-semibold text-gray-700">Default Catalog GST Rate (%) *</Label>
+                <div className="relative">
+                  <Input
+                    type="number"
+                    min="0"
+                    max="28"
+                    step="0.5"
+                    value={form?.taxSettings?.defaultGstRate ?? 5}
+                    onChange={(e) => update("taxSettings.defaultGstRate", Number(e.target.value))}
+                    className="bg-white rounded-xl text-base font-bold"
+                  />
+                  <span className="absolute right-3 top-2.5 text-gray-400 font-bold text-xs">%</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">Standard 5% for Ayurvedic medicines/herbs.</p>
+              </div>
+
+              {/* Company GSTIN */}
+              <div className="space-y-2 p-4 rounded-xl bg-gray-50 border border-gray-200">
+                <Label className="text-xs font-semibold text-gray-700">Company GSTIN Number</Label>
+                <Input
+                  value={form?.taxSettings?.gstNumber || ""}
+                  onChange={(e) => update("taxSettings.gstNumber", e.target.value.toUpperCase())}
+                  placeholder="e.g. 07AAAAA0000A1Z5"
+                  className="bg-white rounded-xl uppercase font-mono text-xs font-bold"
+                />
+                <p className="text-[11px] text-muted-foreground">Printed on official customer GST invoices.</p>
+              </div>
+
+              {/* Company PAN */}
+              <div className="space-y-2 p-4 rounded-xl bg-gray-50 border border-gray-200">
+                <Label className="text-xs font-semibold text-gray-700">Company PAN Number</Label>
+                <Input
+                  value={form?.taxSettings?.panNumber || ""}
+                  onChange={(e) => update("taxSettings.panNumber", e.target.value.toUpperCase())}
+                  placeholder="e.g. ABCDE1234F"
+                  className="bg-white rounded-xl uppercase font-mono text-xs font-bold"
+                />
+                <p className="text-[11px] text-muted-foreground">Shown in tax declaration section.</p>
+              </div>
+
+              {/* Tax Invoice Prefix */}
+              <div className="space-y-2 p-4 rounded-xl bg-gray-50 border border-gray-200">
+                <Label className="text-xs font-semibold text-gray-700">Invoice Number Prefix</Label>
+                <Input
+                  value={form?.taxSettings?.taxInvoicePrefix || "INV-WM"}
+                  onChange={(e) => update("taxSettings.taxInvoicePrefix", e.target.value.toUpperCase())}
+                  placeholder="INV-WM"
+                  className="bg-white rounded-xl uppercase font-mono text-xs font-bold"
+                />
+                <p className="text-[11px] text-muted-foreground">e.g. INV-WM/2026/001</p>
+              </div>
+            </div>
+
+            {/* Live Reverse GST Math Breakdown Banner */}
+            {(() => {
+              const rate = Number(form?.taxSettings?.defaultGstRate ?? 5) || 5;
+              const sampleSalePrice = 800;
+              const taxable = Number((sampleSalePrice / (1 + rate / 100)).toFixed(2));
+              const gst = Number((sampleSalePrice - taxable).toFixed(2));
+              const cgst = Number((gst / 2).toFixed(2));
+              const sgst = Number((gst - cgst).toFixed(2));
+              const sampleDelivery = Number(form?.shippingSettings?.baseShippingCharge ?? 70);
+
+              return (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 space-y-3">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs">
+                        ₹
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-emerald-950 uppercase tracking-wide">
+                          Live Tax-Inclusive Pricing Breakdown Example (MRP ₹1,200 → Sale ₹{sampleSalePrice})
+                        </h4>
+                        <p className="text-[11px] text-emerald-800">
+                          Customer pays exactly <strong>₹{sampleSalePrice}</strong> for the product (GST already included), plus delivery fee if applicable:
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full border border-emerald-200">
+                      Standard Indian GST Reverse Math
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs pt-1">
+                    <div className="bg-white p-2.5 rounded-xl border border-emerald-100">
+                      <span className="text-[10px] text-muted-foreground block">Customer Selling Price</span>
+                      <strong className="text-sm text-gray-900">₹{sampleSalePrice}.00</strong>
+                      <span className="text-[9px] text-emerald-700 block">Incl. of GST</span>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-xl border border-emerald-100">
+                      <span className="text-[10px] text-muted-foreground block">Taxable Base Amount</span>
+                      <strong className="text-sm text-gray-900">₹{taxable}</strong>
+                      <span className="text-[9px] text-gray-500 block">Excl. Tax</span>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-xl border border-emerald-100">
+                      <span className="text-[10px] text-muted-foreground block">CGST ({rate / 2}%)</span>
+                      <strong className="text-sm text-gray-900">₹{cgst}</strong>
+                      <span className="text-[9px] text-gray-500 block">Central Tax</span>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-xl border border-emerald-100">
+                      <span className="text-[10px] text-muted-foreground block">SGST ({rate / 2}%)</span>
+                      <strong className="text-sm text-gray-900">₹{sgst}</strong>
+                      <span className="text-[9px] text-gray-500 block">State Tax</span>
+                    </div>
+                    <div className="bg-emerald-700 text-white p-2.5 rounded-xl col-span-2 sm:col-span-1">
+                      <span className="text-[10px] text-emerald-200 block">With Delivery (+₹{sampleDelivery})</span>
+                      <strong className="text-sm">₹{sampleSalePrice + sampleDelivery}.00</strong>
+                      <span className="text-[9px] text-emerald-100 block">Final Total</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </TabsContent>
       </Tabs>

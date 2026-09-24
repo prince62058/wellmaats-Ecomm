@@ -7,11 +7,14 @@ import { useState } from "react";
 import { capturePayment, createNewOrder } from "@/store/shop/order-slice";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { Lock, ShieldCheck, Truck, Leaf } from "lucide-react";
+import { Lock, ShieldCheck, Truck, Leaf, Sparkles, Receipt } from "lucide-react";
+import { calculateDeliveryCharge } from "@/lib/shipping-calculator";
+import { calculateCartTaxBreakdown } from "@/lib/tax-calculator";
 
 function ShoppingCheckout() {
   const { brand } = useSiteSettings();
   const { cartItems } = useSelector((state) => state.shopCart);
+  const siteSettingsData = useSelector((state) => state.siteSettings?.data);
   const { user } = useSelector((state) => state.auth);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
@@ -30,6 +33,19 @@ function ShoppingCheckout() {
         0
       )
     : 0;
+
+  const shippingInfo = calculateDeliveryCharge(
+    items,
+    totalCartAmount,
+    siteSettingsData?.shippingSettings
+  );
+  const deliveryCharge = shippingInfo.deliveryCharge || 0;
+  const finalTotalAmount = totalCartAmount + deliveryCharge;
+
+  const taxInfo = calculateCartTaxBreakdown(
+    items,
+    siteSettingsData?.taxSettings?.defaultGstRate || 5
+  );
 
   function openRazorpayCheckout(paymentData) {
     if (typeof window.Razorpay === "undefined") {
@@ -94,6 +110,8 @@ function ShoppingCheckout() {
         image: item?.image,
         price: item?.salePrice > 0 ? item?.salePrice : item?.price,
         quantity: item?.quantity,
+        gstRate: item?.gstRate != null ? item?.gstRate : (siteSettingsData?.taxSettings?.defaultGstRate || 5),
+        hsnCode: item?.hsnCode || "3004",
       })),
       addressInfo: {
         addressId: currentSelectedAddress?._id,
@@ -106,7 +124,13 @@ function ShoppingCheckout() {
       orderStatus: "pending",
       paymentMethod: "razorpay",
       paymentStatus: "pending",
-      totalAmount: totalCartAmount,
+      subTotal: totalCartAmount,
+      deliveryCharges: deliveryCharge,
+      totalWeightGrams: shippingInfo.totalWeightGrams,
+      taxableAmount: taxInfo.taxableAmount,
+      gstAmount: taxInfo.gstAmount,
+      gstRate: taxInfo.effectiveGstRate,
+      totalAmount: finalTotalAmount,
       orderDate: new Date(),
       orderUpdateDate: new Date(),
     };
@@ -140,7 +164,7 @@ function ShoppingCheckout() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-leaf via-white to-leaf/30">
-      {/* Compact branded header — no random banner image */}
+      {/* Compact branded header */}
       <div className="bg-forest text-white">
         <div className="container mx-auto px-4 py-8 md:py-10">
           <p className="text-gold/90 text-xs font-medium tracking-[0.3em] uppercase mb-2">
@@ -172,16 +196,38 @@ function ShoppingCheckout() {
 
               <div className="px-4 sm:px-6 py-4 bg-leaf/40 border-t border-forest/10 space-y-2 text-sm">
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Subtotal</span>
-                  <span>₹{totalCartAmount}</span>
+                  <div>
+                    <span>Items Subtotal</span>
+                    <span className="block text-[11px] text-gray-500">
+                      (Includes ₹{taxInfo.gstAmount} GST @ {taxInfo.effectiveGstRate}%)
+                    </span>
+                  </div>
+                  <span className="font-semibold text-gray-800">₹{totalCartAmount}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Delivery</span>
-                  <span className="text-forest font-medium">FREE</span>
+                  <span className="flex items-center gap-1.5">
+                    <span>Delivery Charges</span>
+                    {shippingInfo.totalWeightGrams > 0 && (
+                      <span className="text-[11px] text-gray-400">({shippingInfo.weightFormatted})</span>
+                    )}
+                  </span>
+                  <span className={`font-semibold ${shippingInfo.isFree ? "text-emerald-700" : "text-gray-800"}`}>
+                    {shippingInfo.isFree ? "FREE" : `+₹${deliveryCharge}`}
+                  </span>
                 </div>
-                <div className="flex justify-between text-base font-bold text-forest pt-2 border-t border-forest/10">
-                  <span>Total</span>
-                  <span>₹{totalCartAmount}</span>
+                {!shippingInfo.isFree && shippingInfo.amountNeededForFree > 0 && (
+                  <p className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                    💡 Add ₹{shippingInfo.amountNeededForFree} more to qualify for <strong>FREE Delivery</strong>!
+                  </p>
+                )}
+                <div className="flex justify-between items-baseline text-forest pt-2 border-t border-forest/10">
+                  <div>
+                    <span className="text-base font-bold block">Total Payable</span>
+                    <span className="text-[10px] text-muted-foreground block">
+                      Taxable: ₹{taxInfo.taxableAmount} + GST: ₹{taxInfo.gstAmount}
+                    </span>
+                  </div>
+                  <span className="text-xl font-bold">₹{finalTotalAmount}</span>
                 </div>
               </div>
 
@@ -206,7 +252,7 @@ function ShoppingCheckout() {
                   disabled={isPaymentStart}
                   className="w-full h-12 rounded-full bg-forest hover:bg-forest/90 text-base font-semibold shadow-md"
                 >
-                  {isPaymentStart ? "Opening Razorpay..." : `Pay ₹${totalCartAmount}`}
+                  {isPaymentStart ? "Opening Razorpay..." : `Pay ₹${finalTotalAmount}`}
                 </Button>
                 <p className="text-center text-[11px] text-muted-foreground mt-3">
                   UPI · Cards · Net Banking · Wallets · COD

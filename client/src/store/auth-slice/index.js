@@ -3,7 +3,7 @@ import axiosInstance from "@/lib/axiosInstance";
 
 const initialState = {
   isAuthenticated: false,
-  isLoading: true,
+  isLoading: false,
   user: null,
 };
 
@@ -22,11 +22,16 @@ export const logoutUser = createAsyncThunk("/auth/logout", async () => {
   return response.data;
 });
 
-export const checkAuth = createAsyncThunk("/auth/checkauth", async () => {
-  const response = await axiosInstance.get(`/api/auth/check-auth`, {
-    headers: { "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate" },
-  });
-  return response.data;
+export const checkAuth = createAsyncThunk("/auth/checkauth", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.get(`/api/auth/check-auth`, {
+      headers: { "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate" },
+      timeout: 3000,
+    });
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || { success: false });
+  }
 });
 
 export const updateProfile = createAsyncThunk("/auth/updateProfile", async (formData) => {

@@ -11,7 +11,7 @@ import {
 import ProductImageUpload from "./image-upload";
 import { getDiscountPercent, toDatetimeLocalValue } from "@/lib/product-offers";
 import { useState, useRef } from "react";
-import { Plus, Check, X } from "lucide-react";
+import { Plus, Check, X, Building2, Scale, Package, ShieldCheck, Sparkles } from "lucide-react";
 import DynamicIcon from "@/components/common/dynamic-icon";
 import RichTextEditor from "@/components/common/RichTextEditor";
 
@@ -321,6 +321,95 @@ function AdminProductForm({
         </div>
       </section>
 
+      {/* Product Type, Size & Measurable Weight */}
+      <section className="space-y-4 p-5 rounded-2xl bg-[#f9fafb] border border-forest/15">
+        <div className="flex items-center gap-2 border-b border-forest/10 pb-2">
+          <Scale className="w-4 h-4 text-forest" />
+          <h3 className="text-sm font-semibold text-forest uppercase tracking-wide">
+            Product Type, Size &amp; Weight (Measurables)
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* 1. Type (Dosage Form) */}
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Product Type (Form) *</Label>
+            <Select
+              value={formData.productType || "Capsule"}
+              onValueChange={(v) => setField("productType", v)}
+            >
+              <SelectTrigger className="rounded-xl border-gray-200 bg-white">
+                <SelectValue placeholder="Select Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {["Capsule", "Tablet", "Syrup", "Powder", "Oil", "Ointment", "Drops", "Churna", "Cream", "Gel", "Decoction", "Other"].map((t) => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[11px] text-muted-foreground">e.g. Capsule, Syrup, Tablet, Oil</p>
+          </div>
+
+          {/* 2. Size / Packaging */}
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Packaging Size</Label>
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                value={formData.sizeValue || ""}
+                onChange={(e) => setField("sizeValue", e.target.value)}
+                placeholder="e.g. 60, 200"
+                className="w-1/2 rounded-xl bg-white"
+              />
+              <Select
+                value={formData.sizeUnit || "Capsules"}
+                onValueChange={(v) => setField("sizeUnit", v)}
+              >
+                <SelectTrigger className="w-1/2 rounded-xl border-gray-200 bg-white">
+                  <SelectValue placeholder="Unit" />
+                </SelectTrigger>
+                <SelectContent>
+                  {["Capsules", "Tablets", "ml", "gm", "kg", "Pieces", "Pack"].map((u) => (
+                    <SelectItem key={u} value={u}>{u}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <p className="text-[11px] text-muted-foreground">Shown to buyers: {formData.sizeValue || "60"} {formData.sizeUnit || "Capsules"}</p>
+          </div>
+
+          {/* 3. Delivery / Gross Weight */}
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold flex items-center justify-between">
+              <span>Gross Delivery Weight *</span>
+              <span className="text-[10px] text-forest font-bold">For Delivery Fee</span>
+            </Label>
+            <div className="flex gap-2 items-center">
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                value={formData.grossWeightInGrams || ""}
+                onChange={(e) => {
+                  setField("grossWeightInGrams", e.target.value);
+                  setField("netWeight", e.target.value);
+                }}
+                placeholder="250"
+                className="rounded-xl bg-white flex-1"
+              />
+              <span className="text-xs font-semibold text-muted-foreground px-2 py-2 bg-white rounded-xl border border-gray-200">
+                Grams (g)
+              </span>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              {Number(formData.grossWeightInGrams || 0) >= 1000
+                ? `${(Number(formData.grossWeightInGrams) / 1000).toFixed(2)} kg package weight`
+                : `${formData.grossWeightInGrams || 250}g package weight`}
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing & Stock */}
       <section className="space-y-4">
         <h3 className="text-sm font-semibold text-forest uppercase tracking-wide border-b pb-2">
@@ -344,6 +433,81 @@ function AdminProductForm({
             <Input type="number" min="0" max="5" step="0.1" value={formData.averageReview} onChange={(e) => setField("averageReview", e.target.value)} />
           </div>
         </div>
+
+        {/* GST & Tax Compliance */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-[#f8faf8] border border-forest/15">
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold text-forest flex items-center justify-between">
+              <span>GST Rate (%) *</span>
+              <span className="text-[10px] text-muted-foreground">Price is Tax-Inclusive</span>
+            </Label>
+            <Select
+              value={String(formData.gstRate != null ? formData.gstRate : "5")}
+              onValueChange={(v) => setField("gstRate", Number(v))}
+            >
+              <SelectTrigger className="bg-white rounded-xl">
+                <SelectValue placeholder="GST Rate" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">0% (Nil / Exempt)</SelectItem>
+                <SelectItem value="5">5% (Standard Ayurvedic)</SelectItem>
+                <SelectItem value="12">12% (Formulations)</SelectItem>
+                <SelectItem value="18">18% (Cosmetics / Supplements)</SelectItem>
+                <SelectItem value="28">28% (Luxury)</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-[11px] text-muted-foreground">Standard 5% for Ayurvedic products.</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold text-forest">HSN Code (Tax Category)</Label>
+            <Input
+              value={formData.hsnCode || "3004"}
+              onChange={(e) => setField("hsnCode", e.target.value)}
+              placeholder="e.g. 3004"
+              className="bg-white rounded-xl font-mono text-xs font-bold"
+            />
+            <p className="text-[11px] text-muted-foreground">HSN 3004: Medicaments / Ayurvedic extracts.</p>
+          </div>
+        </div>
+
+        {/* Live Tax Breakdown Card for this product */}
+        {(() => {
+          const sellingPrice = salePriceNum > 0 ? salePriceNum : mrpNum;
+          if (sellingPrice <= 0) return null;
+          const rate = Number(formData.gstRate != null ? formData.gstRate : 5) || 0;
+          const taxable = rate > 0 ? Number((sellingPrice / (1 + rate / 100)).toFixed(2)) : sellingPrice;
+          const gstAmt = Number((sellingPrice - taxable).toFixed(2));
+          const cgst = Number((gstAmt / 2).toFixed(2));
+          const sgst = Number((gstAmt - cgst).toFixed(2));
+
+          return (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3.5 space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-emerald-950">
+                  Customer Pays: ₹{sellingPrice} (Inclusive of {rate}% GST)
+                </span>
+                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                  Delivery charged extra
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
+                <div className="bg-white p-2 rounded-lg border border-emerald-100">
+                  <span className="text-muted-foreground block text-[10px]">Taxable Base</span>
+                  <strong className="text-forest">₹{taxable}</strong>
+                </div>
+                <div className="bg-white p-2 rounded-lg border border-emerald-100">
+                  <span className="text-muted-foreground block text-[10px]">CGST ({rate / 2}%)</span>
+                  <strong className="text-forest">₹{cgst}</strong>
+                </div>
+                <div className="bg-white p-2 rounded-lg border border-emerald-100">
+                  <span className="text-muted-foreground block text-[10px]">SGST ({rate / 2}%)</span>
+                  <strong className="text-forest">₹{sgst}</strong>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Live discount preview */}
         {discount > 0 && (
@@ -441,6 +605,99 @@ function AdminProductForm({
         <div className="space-y-2">
           <Label>Dosage</Label>
           <Input value={formData.dosage} onChange={(e) => setField("dosage", e.target.value)} placeholder="Twice daily, morning & evening" />
+        </div>
+      </section>
+
+      {/* Manufacturing & Seller Compliance (Manufactured By / Sold By) */}
+      <section className="space-y-4 p-5 rounded-2xl bg-[#f8faf8] border border-forest/15">
+        <div className="flex items-center justify-between border-b border-forest/10 pb-2">
+          <div className="flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-forest" />
+            <h3 className="text-sm font-semibold text-forest uppercase tracking-wide">
+              Manufactured By &amp; Sold By (Product Origin &amp; Compliance)
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setFormData((prev) => ({
+                ...prev,
+                soldBy: prev.soldBy || "Wellmaats Healthcare / Mother Tatwa",
+                countryOfOrigin: prev.countryOfOrigin || "India",
+                sellerAddress: prev.sellerAddress || "Plot No. 12, Industrial Area, New Delhi - 110020",
+                customerCareContact: prev.customerCareContact || "care@wellmaats.in | +91 98765 43210",
+              }));
+            }}
+            className="text-xs text-forest hover:text-forest/80 font-semibold flex items-center gap-1 bg-white border border-forest/20 px-2.5 py-1 rounded-lg shadow-xs transition"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-gold" /> Autofill Brand Info
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Manufactured By (Company Name)</Label>
+            <Input
+              value={formData.manufacturedBy || ""}
+              onChange={(e) => setField("manufacturedBy", e.target.value)}
+              placeholder="e.g. Sanjeevani Ayurvedic Pharmacy Pvt. Ltd."
+              className="bg-white rounded-xl"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Manufacturing License / Ayush / FSSAI</Label>
+            <Input
+              value={formData.mfgLicenseNumber || ""}
+              onChange={(e) => setField("mfgLicenseNumber", e.target.value)}
+              placeholder="e.g. AYU-1284 / FSSAI 10020011000123"
+              className="bg-white rounded-xl"
+            />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label className="text-xs font-semibold">Manufacturer Plant Address</Label>
+            <Input
+              value={formData.manufacturerAddress || ""}
+              onChange={(e) => setField("manufacturerAddress", e.target.value)}
+              placeholder="e.g. Industrial Area, Phase II, Haridwar, Uttarakhand - 249401"
+              className="bg-white rounded-xl"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Marketed / Sold By</Label>
+            <Input
+              value={formData.soldBy || ""}
+              onChange={(e) => setField("soldBy", e.target.value)}
+              placeholder="e.g. Wellmaats Healthcare"
+              className="bg-white rounded-xl"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Country of Origin</Label>
+            <Input
+              value={formData.countryOfOrigin || "India"}
+              onChange={(e) => setField("countryOfOrigin", e.target.value)}
+              placeholder="India"
+              className="bg-white rounded-xl"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Seller / Marketed Office Address</Label>
+            <Input
+              value={formData.sellerAddress || ""}
+              onChange={(e) => setField("sellerAddress", e.target.value)}
+              placeholder="Registered Office Address"
+              className="bg-white rounded-xl"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Customer Care (Email / Phone)</Label>
+            <Input
+              value={formData.customerCareContact || ""}
+              onChange={(e) => setField("customerCareContact", e.target.value)}
+              placeholder="care@wellmaats.in | +91 98765 43210"
+              className="bg-white rounded-xl"
+            />
+          </div>
         </div>
       </section>
 

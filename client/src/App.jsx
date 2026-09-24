@@ -57,9 +57,10 @@ function App() {
     dispatch(fetchSiteSettings());
   }, [dispatch]);
 
-  if (isLoading) return <Skeleton className="w-full max-w-md h-40 mx-auto mt-24 rounded-2xl" />;
-
-  console.log(isLoading, user);
+  // Only show loading skeleton on protected admin routes during active auth verification
+  if (isLoading && typeof window !== "undefined" && window.location.pathname.startsWith("/admin")) {
+    return <Skeleton className="w-full max-w-md h-40 mx-auto mt-24 rounded-2xl" />;
+  }
 
   return (
     <LoginModalProvider>

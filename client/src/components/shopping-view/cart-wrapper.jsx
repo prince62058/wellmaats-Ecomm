@@ -1,11 +1,15 @@
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import UserCartItemsContent from "./cart-items-content";
-import { ShoppingBag, Leaf } from "lucide-react";
+import { ShoppingBag, Leaf, Truck, Sparkles } from "lucide-react";
+import { calculateDeliveryCharge } from "@/lib/shipping-calculator";
+import { calculateCartTaxBreakdown } from "@/lib/tax-calculator";
 
 function UserCartWrapper({ cartItems, setOpenCartSheet }) {
   const navigate = useNavigate();
+  const siteSettingsData = useSelector((state) => state.siteSettings?.data);
 
   const totalCartAmount =
     cartItems && cartItems.length > 0
@@ -21,6 +25,19 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
       : 0;
 
   const itemCount = cartItems?.reduce((n, i) => n + i.quantity, 0) || 0;
+
+  const shippingInfo = calculateDeliveryCharge(
+    cartItems,
+    totalCartAmount,
+    siteSettingsData?.shippingSettings
+  );
+
+  const taxInfo = calculateCartTaxBreakdown(
+    cartItems,
+    siteSettingsData?.taxSettings?.defaultGstRate || 5
+  );
+
+  const finalPayable = totalCartAmount + (shippingInfo.deliveryCharge || 0);
 
   return (
     <SheetContent className="w-full sm:max-w-md flex flex-col p-0">
@@ -38,6 +55,33 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
         </SheetHeader>
       </div>
 
+      {/* Free Delivery Progress Nudge */}
+      {cartItems && cartItems.length > 0 && (
+        <div className="bg-leaf/40 px-6 py-3 border-b border-forest/10 space-y-1.5">
+          <div className="flex items-center justify-between text-xs font-semibold text-forest">
+            <span className="flex items-center gap-1.5">
+              <Truck className="w-3.5 h-3.5 text-forest" />
+              {shippingInfo.isFree ? (
+                <span className="text-emerald-700 flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-gold" /> FREE Delivery Unlocked!
+                </span>
+              ) : (
+                <span>Add <strong>₹{shippingInfo.amountNeededForFree}</strong> more for <strong>FREE Delivery</strong></span>
+              )}
+            </span>
+            <span className="text-[11px] text-forest/70 font-bold">{shippingInfo.freeDeliveryProgress}%</span>
+          </div>
+          <div className="w-full h-1.5 bg-forest/15 rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all duration-500 rounded-full ${
+                shippingInfo.isFree ? "bg-emerald-600" : "bg-forest"
+              }`}
+              style={{ width: `${shippingInfo.freeDeliveryProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
         {cartItems && cartItems.length > 0 ? (
           cartItems.map((item) => (
@@ -53,20 +97,45 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
       </div>
 
       {cartItems && cartItems.length > 0 && (
-        <div className="border-t border-forest/10 px-6 py-5 bg-leaf/30 space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Subtotal</span>
-            <span className="text-2xl font-bold text-forest">₹{totalCartAmount}</span>
+        <div className="border-t border-forest/10 px-6 py-5 bg-leaf/30 space-y-3">
+          <div className="space-y-1.5 text-sm">
+            <div className="flex justify-between items-center text-muted-foreground">
+              <div>
+                <span>Items Subtotal</span>
+                <span className="block text-[10px] text-gray-400">
+                  (Incl. ₹{taxInfo.gstAmount} GST)
+                </span>
+              </div>
+              <span className="font-semibold text-gray-800">₹{totalCartAmount}</span>
+            </div>
+            <div className="flex justify-between items-center text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <span>Delivery Charges</span>
+                {shippingInfo.totalWeightGrams > 0 && (
+                  <span className="text-[11px] text-gray-400">({shippingInfo.weightFormatted})</span>
+                )}
+              </span>
+              <span className={`font-semibold ${shippingInfo.isFree ? "text-emerald-700" : "text-gray-800"}`}>
+                {shippingInfo.isFree ? "FREE" : `+₹${shippingInfo.deliveryCharge}`}
+              </span>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t border-forest/10">
+              <div>
+                <span className="text-base font-bold text-forest block">Estimated Total</span>
+                <span className="text-[10px] text-muted-foreground block">
+                  Taxable: ₹{taxInfo.taxableAmount} + GST: ₹{taxInfo.gstAmount}
+                </span>
+              </div>
+              <span className="text-2xl font-bold text-forest">₹{finalPayable}</span>
+            </div>
           </div>
-          <p className="text-[10px] text-muted-foreground text-center">
-            Shipping & taxes calculated at checkout
-          </p>
+
           <Button
             onClick={() => {
               navigate("/shop/checkout");
               setOpenCartSheet(false);
             }}
-            className="w-full rounded-full h-12 bg-forest hover:bg-forest/90 font-semibold text-base"
+            className="w-full rounded-full h-12 bg-forest hover:bg-forest/90 font-semibold text-base mt-2"
           >
             Proceed to Checkout
           </Button>
