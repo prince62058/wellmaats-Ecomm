@@ -2,6 +2,19 @@ const buffer = require("buffer");
 if (!buffer.SlowBuffer) {
   buffer.SlowBuffer = buffer.Buffer;
 }
+
+// Suppress non-breaking AWS SDK future Node deprecation warning from console
+const _origEmitWarning = process.emitWarning;
+process.emitWarning = (warning, ...args) => {
+  if (
+    (typeof warning === "string" && (warning.includes("AWS SDK") || args[0] === "NodeVersionSupportWarning")) ||
+    (warning && (warning.name === "NodeVersionSupportWarning" || (warning.message && warning.message.includes("AWS SDK"))))
+  ) {
+    return;
+  }
+  return _origEmitWarning.call(process, warning, ...args);
+};
+
 const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 const express = require("express");
