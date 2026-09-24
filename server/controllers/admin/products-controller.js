@@ -78,6 +78,16 @@ const addProduct = async (req, res) => {
       isFlashSale,
       flashSaleEndsAt,
       offerLabel,
+      productType,
+      sizeValue,
+      sizeUnit,
+      netWeight,
+      weightUnit,
+      grossWeightInGrams,
+      gstRate,
+      hsnCode,
+      isTaxInclusive,
+      manufacturingDetails,
     } = req.body;
 
     const normalizedImages = Array.isArray(images)
@@ -111,6 +121,16 @@ const addProduct = async (req, res) => {
       isFlashSale: isFlashSale === true || isFlashSale === "true",
       flashSaleEndsAt: flashSaleEndsAt || null,
       offerLabel: offerLabel || "Flash Sale",
+      productType: productType || "Capsule",
+      sizeValue: sizeValue || "",
+      sizeUnit: sizeUnit || "",
+      netWeight: netWeight !== "" && netWeight != null ? Number(netWeight) : 0,
+      weightUnit: weightUnit || "gm",
+      grossWeightInGrams: grossWeightInGrams !== "" && grossWeightInGrams != null ? Number(grossWeightInGrams) : 250,
+      gstRate: gstRate !== "" && gstRate != null ? Number(gstRate) : 5,
+      hsnCode: hsnCode || "3004",
+      isTaxInclusive: isTaxInclusive !== undefined ? (isTaxInclusive === true || isTaxInclusive === "true") : true,
+      manufacturingDetails: manufacturingDetails || {},
     });
 
     await newlyCreatedProduct.save();
@@ -172,6 +192,16 @@ const editProduct = async (req, res) => {
       isFlashSale,
       flashSaleEndsAt,
       offerLabel,
+      productType,
+      sizeValue,
+      sizeUnit,
+      netWeight,
+      weightUnit,
+      grossWeightInGrams,
+      gstRate,
+      hsnCode,
+      isTaxInclusive,
+      manufacturingDetails,
     } = req.body;
 
     let findProduct = await Product.findById(id);
@@ -220,6 +250,25 @@ const editProduct = async (req, res) => {
       findProduct.flashSaleEndsAt = flashSaleEndsAt || null;
     }
     if (offerLabel !== undefined) findProduct.offerLabel = offerLabel;
+
+    if (productType !== undefined) findProduct.productType = productType;
+    if (sizeValue !== undefined) findProduct.sizeValue = sizeValue;
+    if (sizeUnit !== undefined) findProduct.sizeUnit = sizeUnit;
+    if (netWeight !== undefined) findProduct.netWeight = netWeight === "" ? 0 : Number(netWeight);
+    if (weightUnit !== undefined) findProduct.weightUnit = weightUnit;
+    if (grossWeightInGrams !== undefined) findProduct.grossWeightInGrams = grossWeightInGrams === "" ? 250 : Number(grossWeightInGrams);
+    if (gstRate !== undefined) findProduct.gstRate = gstRate === "" ? 5 : Number(gstRate);
+    if (hsnCode !== undefined) findProduct.hsnCode = hsnCode || "3004";
+    if (isTaxInclusive !== undefined) findProduct.isTaxInclusive = isTaxInclusive === true || isTaxInclusive === "true";
+    if (manufacturingDetails !== undefined) {
+      const existingMfg = findProduct.manufacturingDetails && findProduct.manufacturingDetails.toObject
+        ? findProduct.manufacturingDetails.toObject()
+        : (findProduct.manufacturingDetails || {});
+      findProduct.manufacturingDetails = {
+        ...existingMfg,
+        ...manufacturingDetails,
+      };
+    }
 
     await findProduct.save();
     res.status(200).json({

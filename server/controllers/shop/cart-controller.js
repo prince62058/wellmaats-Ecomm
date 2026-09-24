@@ -152,17 +152,28 @@ const updateCartItemQty = async (req, res) => {
 
     await cart.populate({
       path: "items.productId",
-      select: "image title price salePrice",
+      select: "image title price salePrice productType sizeValue sizeUnit netWeight weightUnit grossWeightInGrams totalStock gstRate hsnCode",
     });
 
-    const populateCartItems = cart.items.map((item) => ({
-      productId: item.productId ? item.productId._id : null,
-      image: item.productId ? item.productId.image : null,
-      title: item.productId ? item.productId.title : "Product not found",
-      price: item.productId ? item.productId.price : null,
-      salePrice: item.productId ? item.productId.salePrice : null,
-      quantity: item.quantity,
-    }));
+    const populateCartItems = cart.items
+      .filter((item) => item.productId)
+      .map((item) => ({
+        productId: item.productId._id,
+        image: item.productId.image,
+        title: item.productId.title,
+        price: item.productId.price,
+        salePrice: item.productId.salePrice,
+        quantity: item.quantity,
+        productType: item.productId.productType || "Capsule",
+        sizeValue: item.productId.sizeValue || "",
+        sizeUnit: item.productId.sizeUnit || "",
+        netWeight: item.productId.netWeight || 0,
+        weightUnit: item.productId.weightUnit || "gm",
+        grossWeightInGrams: item.productId.grossWeightInGrams || 250,
+        gstRate: item.productId.gstRate != null ? item.productId.gstRate : 5,
+        hsnCode: item.productId.hsnCode || "3004",
+        totalStock: item.productId.totalStock,
+      }));
 
     res.status(200).json({
       success: true,
@@ -190,10 +201,7 @@ const deleteCartItem = async (req, res) => {
       });
     }
 
-    const cart = await Cart.findOne({ userId }).populate({
-      path: "items.productId",
-      select: "image title price salePrice",
-    });
+    const cart = await Cart.findOne({ userId });
 
     if (!cart) {
       return res.status(404).json({
@@ -203,24 +211,35 @@ const deleteCartItem = async (req, res) => {
     }
 
     cart.items = cart.items.filter(
-      (item) => item.productId._id.toString() !== productId
+      (item) => item.productId.toString() !== productId
     );
 
     await cart.save();
 
     await cart.populate({
       path: "items.productId",
-      select: "image title price salePrice",
+      select: "image title price salePrice productType sizeValue sizeUnit netWeight weightUnit grossWeightInGrams totalStock gstRate hsnCode",
     });
 
-    const populateCartItems = cart.items.map((item) => ({
-      productId: item.productId ? item.productId._id : null,
-      image: item.productId ? item.productId.image : null,
-      title: item.productId ? item.productId.title : "Product not found",
-      price: item.productId ? item.productId.price : null,
-      salePrice: item.productId ? item.productId.salePrice : null,
-      quantity: item.quantity,
-    }));
+    const populateCartItems = cart.items
+      .filter((item) => item.productId)
+      .map((item) => ({
+        productId: item.productId._id,
+        image: item.productId.image,
+        title: item.productId.title,
+        price: item.productId.price,
+        salePrice: item.productId.salePrice,
+        quantity: item.quantity,
+        productType: item.productId.productType || "Capsule",
+        sizeValue: item.productId.sizeValue || "",
+        sizeUnit: item.productId.sizeUnit || "",
+        netWeight: item.productId.netWeight || 0,
+        weightUnit: item.productId.weightUnit || "gm",
+        grossWeightInGrams: item.productId.grossWeightInGrams || 250,
+        gstRate: item.productId.gstRate != null ? item.productId.gstRate : 5,
+        hsnCode: item.productId.hsnCode || "3004",
+        totalStock: item.productId.totalStock,
+      }));
 
     res.status(200).json({
       success: true,

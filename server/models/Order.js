@@ -3,7 +3,22 @@ const mongoose = require("mongoose");
 const OrderSchema = new mongoose.Schema({
   userId:            String,
   cartId:            String,
-  cartItems:         [{ productId: String, title: String, image: String, price: String, quantity: Number }],
+  cartItems: [
+    {
+      productId: String,
+      title: String,
+      image: String,
+      price: String,
+      quantity: Number,
+      hsnCode: { type: String, default: "3004" },
+      gstRate: { type: Number, default: 5 },
+      productType: { type: String, default: "Capsule" },
+      sizeValue: { type: String, default: "" },
+      sizeUnit: { type: String, default: "" },
+      netWeight: { type: Number, default: 0 },
+      weightUnit: { type: String, default: "gm" },
+    },
+  ],
   addressInfo:       { addressId: String, address: String, city: String, pincode: String, phone: String, notes: String },
   orderStatus:       String,
   paymentMethod:     String,
