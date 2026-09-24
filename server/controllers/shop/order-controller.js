@@ -4,6 +4,7 @@ const Order    = require("../../models/Order");
 const Cart     = require("../../models/Cart");
 const Product  = require("../../models/Product");
 const User     = require("../../models/User");
+const Coupon   = require("../../models/Coupon");
 const { processReferralReward } = require("./referral-controller");
 
 const createOrder = async (req, res) => {
@@ -12,7 +13,7 @@ const createOrder = async (req, res) => {
       userId, cartItems, addressInfo, orderStatus, paymentMethod,
       paymentStatus, totalAmount, subTotal, deliveryCharges, totalWeightGrams,
       orderDate, orderUpdateDate, cartId,
-      walletCreditsUsed,
+      walletCreditsUsed, couponDetails,
     } = req.body;
 
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET)
@@ -43,6 +44,11 @@ const createOrder = async (req, res) => {
       gstRate:           effectiveGstRate,
       totalAmount:       Number(totalAmount),
       walletCreditsUsed: Number(walletCreditsUsed || 0),
+      couponDetails: {
+        couponCode:     couponDetails?.couponCode || "",
+        couponDiscount: Number(couponDetails?.couponDiscount || 0),
+        discountType:   couponDetails?.discountType || "",
+      },
       orderDate, orderUpdateDate,
       paymentId: "",
       payerId:   razorpayOrder.id,
@@ -109,6 +115,28 @@ const capturePayment = async (req, res) => {
           },
         ];
         await user.save();
+      }
+    }
+
+    // Record coupon usage if coupon was applied
+    if (order.couponDetails && order.couponDetails.couponCode) {
+      try {
+        await Coupon.findOneAndUpdate(
+          { code: order.couponDetails.couponCode.toUpperCase() },
+          {
+            $inc: { usageCount: 1 },
+            $push: {
+              usedBy: {
+                userId: order.userId,
+                orderId: order._id,
+                discountApplied: order.couponDetails.couponDiscount,
+                usedAt: new Date(),
+              },
+            },
+          }
+        );
+      } catch (couponErr) {
+        console.error("Error updating coupon usage:", couponErr);
       }
     }
 

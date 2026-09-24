@@ -7,14 +7,16 @@ import { useState } from "react";
 import { capturePayment, createNewOrder } from "@/store/shop/order-slice";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { Lock, ShieldCheck, Truck, Leaf, Sparkles, Receipt } from "lucide-react";
+import { Lock, ShieldCheck, Truck, Leaf, Sparkles, Receipt, Tag } from "lucide-react";
 import { calculateDeliveryCharge } from "@/lib/shipping-calculator";
 import { calculateCartTaxBreakdown } from "@/lib/tax-calculator";
+import CouponSection from "@/components/shopping-view/coupon-section";
 
 function ShoppingCheckout() {
   const { brand } = useSiteSettings();
   const { cartItems } = useSelector((state) => state.shopCart);
   const siteSettingsData = useSelector((state) => state.siteSettings?.data);
+  const appliedCoupon = useSelector((state) => state.shopCoupons?.appliedCoupon);
   const { user } = useSelector((state) => state.auth);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
@@ -34,13 +36,16 @@ function ShoppingCheckout() {
       )
     : 0;
 
+  const couponDiscount = appliedCoupon ? Number(appliedCoupon.discountValueCalculated || 0) : 0;
+  const discountedSubtotal = Math.max(0, totalCartAmount - couponDiscount);
+
   const shippingInfo = calculateDeliveryCharge(
     items,
-    totalCartAmount,
+    discountedSubtotal,
     siteSettingsData?.shippingSettings
   );
   const deliveryCharge = shippingInfo.deliveryCharge || 0;
-  const finalTotalAmount = totalCartAmount + deliveryCharge;
+  const finalTotalAmount = discountedSubtotal + deliveryCharge;
 
   const taxInfo = calculateCartTaxBreakdown(
     items,
@@ -130,6 +135,11 @@ function ShoppingCheckout() {
       taxableAmount: taxInfo.taxableAmount,
       gstAmount: taxInfo.gstAmount,
       gstRate: taxInfo.effectiveGstRate,
+      couponDetails: {
+        couponCode: appliedCoupon?.code || "",
+        couponDiscount: couponDiscount,
+        discountType: appliedCoupon?.discountType || "",
+      },
       totalAmount: finalTotalAmount,
       orderDate: new Date(),
       orderUpdateDate: new Date(),
@@ -194,6 +204,11 @@ function ShoppingCheckout() {
                 ))}
               </div>
 
+              {/* Dynamic Coupon Section */}
+              <div className="px-4 sm:px-6 py-3 border-t border-forest/10 bg-gray-50/50">
+                <CouponSection cartSubtotal={totalCartAmount} />
+              </div>
+
               <div className="px-4 sm:px-6 py-4 bg-leaf/40 border-t border-forest/10 space-y-2 text-sm">
                 <div className="flex justify-between text-muted-foreground">
                   <div>
@@ -204,6 +219,16 @@ function ShoppingCheckout() {
                   </div>
                   <span className="font-semibold text-gray-800">₹{totalCartAmount}</span>
                 </div>
+
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between items-center text-emerald-700">
+                    <span className="flex items-center gap-1 text-xs font-semibold">
+                      <Tag className="w-3.5 h-3.5" /> Coupon Discount ({appliedCoupon?.code})
+                    </span>
+                    <span className="font-bold text-sm">-₹{couponDiscount}</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <span>Delivery Charges</span>

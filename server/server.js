@@ -22,6 +22,8 @@ const shopBlogRouter = require("./routes/shop/blog-routes");
 const shopWishlistRouter  = require("./routes/shop/wishlist-routes");
 const shopReferralRouter  = require("./routes/shop/referral-routes");
 const adminBlogRouter = require("./routes/admin/blog-routes");
+const adminCouponRouter = require("./routes/admin/coupon-routes");
+const shopCouponRouter = require("./routes/shop/coupon-routes");
 
 const commonFeatureRouter = require("./routes/common/feature-routes");
 const commonSiteSettingsRouter = require("./routes/common/site-settings-routes");
@@ -87,6 +89,8 @@ app.use("/api/shop/blog", shopBlogRouter);
 app.use("/api/shop/wishlist",  shopWishlistRouter);
 app.use("/api/shop/referral", shopReferralRouter);
 app.use("/api/admin/blog", adminBlogRouter);
+app.use("/api/admin/coupons", adminCouponRouter);
+app.use("/api/shop/coupons", shopCouponRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
 app.use("/api/common/site-settings", commonSiteSettingsRouter);

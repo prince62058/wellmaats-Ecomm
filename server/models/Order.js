@@ -31,6 +31,11 @@ const OrderSchema = new mongoose.Schema({
   gstRate:           { type: Number, default: 5 },
   totalAmount:       Number,
   walletCreditsUsed: { type: Number, default: 0 },
+  couponDetails: {
+    couponCode:     { type: String, default: "" },
+    couponDiscount: { type: Number, default: 0 },
+    discountType:   { type: String, default: "" },
+  },
   orderDate:         Date,
   orderUpdateDate:   Date,
   paymentId:         String,

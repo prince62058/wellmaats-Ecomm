@@ -3,13 +3,15 @@ import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import UserCartItemsContent from "./cart-items-content";
-import { ShoppingBag, Leaf, Truck, Sparkles } from "lucide-react";
+import CouponSection from "./coupon-section";
+import { ShoppingBag, Leaf, Truck, Sparkles, Tag } from "lucide-react";
 import { calculateDeliveryCharge } from "@/lib/shipping-calculator";
 import { calculateCartTaxBreakdown } from "@/lib/tax-calculator";
 
 function UserCartWrapper({ cartItems, setOpenCartSheet }) {
   const navigate = useNavigate();
   const siteSettingsData = useSelector((state) => state.siteSettings?.data);
+  const appliedCoupon = useSelector((state) => state.shopCoupons?.appliedCoupon);
 
   const totalCartAmount =
     cartItems && cartItems.length > 0
@@ -26,9 +28,12 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
 
   const itemCount = cartItems?.reduce((n, i) => n + i.quantity, 0) || 0;
 
+  const couponDiscount = appliedCoupon ? Number(appliedCoupon.discountValueCalculated || 0) : 0;
+  const discountedSubtotal = Math.max(0, totalCartAmount - couponDiscount);
+
   const shippingInfo = calculateDeliveryCharge(
     cartItems,
-    totalCartAmount,
+    discountedSubtotal,
     siteSettingsData?.shippingSettings
   );
 
@@ -37,7 +42,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
     siteSettingsData?.taxSettings?.defaultGstRate || 5
   );
 
-  const finalPayable = totalCartAmount + (shippingInfo.deliveryCharge || 0);
+  const finalPayable = discountedSubtotal + (shippingInfo.deliveryCharge || 0);
 
   return (
     <SheetContent className="w-full sm:max-w-md flex flex-col p-0">
@@ -98,6 +103,9 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
 
       {cartItems && cartItems.length > 0 && (
         <div className="border-t border-forest/10 px-6 py-5 bg-leaf/30 space-y-3">
+          {/* Dynamic Coupon Component */}
+          <CouponSection cartSubtotal={totalCartAmount} />
+
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between items-center text-muted-foreground">
               <div>
@@ -108,6 +116,16 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
               </div>
               <span className="font-semibold text-gray-800">₹{totalCartAmount}</span>
             </div>
+
+            {couponDiscount > 0 && (
+              <div className="flex justify-between items-center text-emerald-700">
+                <span className="flex items-center gap-1 text-xs font-semibold">
+                  <Tag className="w-3.5 h-3.5" /> Coupon Discount ({appliedCoupon?.code})
+                </span>
+                <span className="font-bold text-sm">-₹{couponDiscount}</span>
+              </div>
+            )}
+
             <div className="flex justify-between items-center text-muted-foreground">
               <span className="flex items-center gap-1">
                 <span>Delivery Charges</span>
@@ -119,6 +137,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
                 {shippingInfo.isFree ? "FREE" : `+₹${shippingInfo.deliveryCharge}`}
               </span>
             </div>
+
             <div className="flex justify-between items-center pt-2 border-t border-forest/10">
               <div>
                 <span className="text-base font-bold text-forest block">Estimated Total</span>

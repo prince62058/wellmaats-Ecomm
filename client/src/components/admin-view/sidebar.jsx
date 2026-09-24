@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Leaf, Settings, ShoppingBasket,
-  ClipboardList, ChevronRight,
+  ClipboardList, ChevronRight, TicketPercent,
 } from "lucide-react";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { Fragment } from "react";
@@ -11,6 +11,7 @@ const NAV = [
   { id: "dashboard", label: "Dashboard",     path: "/admin/dashboard", icon: LayoutDashboard },
   { id: "products",  label: "Products",      path: "/admin/products",  icon: ShoppingBasket  },
   { id: "orders",    label: "Orders",        path: "/admin/orders",    icon: ClipboardList   },
+  { id: "coupons",   label: "Coupons",       path: "/admin/coupons",   icon: TicketPercent   },
   { id: "settings",  label: "Site Settings", path: "/admin/settings",  icon: Settings        },
 ];
 

@@ -11,6 +11,7 @@ const PAGE_TITLES = {
   "/admin/settings":  "Site Settings",
   "/admin/features":  "Features",
   "/admin/blogs":     "Blogs",
+  "/admin/coupons":   "Coupons & Offers",
 };
 
 function AdminHeader({ setOpen }) {

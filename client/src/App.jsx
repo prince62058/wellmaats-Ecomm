@@ -11,6 +11,7 @@ import AdminProducts from "./pages/admin-view/products";
 import AdminOrders from "./pages/admin-view/orders";
 import AdminFeatures from "./pages/admin-view/features";
 import AdminSettings from "./pages/admin-view/settings";
+import AdminCoupons from "./pages/admin-view/coupons";
 import ShoppingLayout from "./components/shopping-view/layout";
 import NotFound from "./pages/not-found";
 import ShoppingHome from "./pages/shopping-view/home";
@@ -104,6 +105,7 @@ function App() {
           <Route path="features" element={<AdminFeatures />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="blogs" element={<AdminBlogs />} />
+          <Route path="coupons" element={<AdminCoupons />} />
         </Route>
         <Route
           path="/shop"

@@ -323,6 +323,12 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
         <div class="extra-value">- ₹${walletUsed.toLocaleString("en-IN")}</div>
       </div>` : ""}
 
+      ${orderDetails?.couponDetails?.couponDiscount > 0 ? `
+      <div class="extra-row">
+        <div class="extra-label">Coupon Discount (${orderDetails.couponDetails.couponCode || "PROMO"})</div>
+        <div class="extra-value" style="color:#108644;font-weight:600">- ₹${Number(orderDetails.couponDetails.couponDiscount).toLocaleString("en-IN")}</div>
+      </div>` : ""}
+
       <!-- ═══ TOTAL BAR ═══ -->
       <div class="total-bar">
         <div class="total-label">Total</div>
