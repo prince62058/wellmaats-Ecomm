@@ -1,7 +1,7 @@
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { resolveProductImage } from "@/hooks/use-site-settings";
-import { getDiscountPercent, isFlashSaleActive } from "@/lib/product-offers";
+import { getDiscountPercent, isFlashSaleActive, getSellingPrice } from "@/lib/product-offers";
 import { Pencil, Trash2, Star, Package, Zap, TrendingDown, Images, Video } from "lucide-react";
 import { useState } from "react";
 
@@ -12,7 +12,7 @@ function AdminProductTile({
   handleDelete,
 }) {
   const [imgSrc, setImgSrc] = useState(resolveProductImage(product?.image));
-  const price    = product?.salePrice > 0 ? product.salePrice : product?.price;
+  const price    = getSellingPrice(product);
   const discount = getDiscountPercent(product);
   const flash    = isFlashSaleActive(product);
   const lowStock = product?.totalStock > 0 && product?.totalStock <= 10;

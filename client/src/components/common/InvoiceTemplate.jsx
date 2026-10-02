@@ -1,3 +1,5 @@
+import { roundMoney } from "@/lib/product-offers";
+import { calculateCartTaxBreakdown } from "@/lib/tax-calculator";
 /* ──────────────────────────────────────────────────────────
    InvoiceTemplate — Professional GST-style Indian Invoice
    Matches standard tax invoice format used in Indian businesses.
@@ -27,8 +29,18 @@ function numberToWords(n) {
   return result + " Only";
 }
 
+function escapeInvoiceData(value) {
+  if (typeof value === "string") return value.replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+  if (value instanceof Date) return value.toISOString();
+  if (Array.isArray(value)) return value.map(escapeInvoiceData);
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, escapeInvoiceData(item)]));
+  return value;
+}
+
 export function printInvoice(orderDetails, brandName = "Wellmaats") {
   if (!orderDetails) return;
+  orderDetails = escapeInvoiceData(orderDetails);
+  brandName = escapeInvoiceData(brandName);
 
   const dateStr = orderDetails.orderDate
     ? new Date(orderDetails.orderDate).toLocaleDateString("en-IN", {
@@ -36,21 +48,23 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
       }).replace(/ /g, "-")
     : "—";
 
-  const invoiceNo = `WM/${String(orderDetails._id).slice(-6).toUpperCase()}`;
+  const invoiceNo = `${orderDetails.invoicePrefix || "WM"}/${String(orderDetails._id).slice(-6).toUpperCase()}`;
   const orderIdShort = String(orderDetails._id).slice(-10).toUpperCase();
 
   const items = orderDetails.cartItems || [];
   const totalQty = items.reduce((s, i) => s + (i.quantity || 1), 0);
   const subtotal = items.reduce((s, i) => s + (Number(i.price || 0) * (i.quantity || 1)), 0);
-  const totalAmount = Number(orderDetails.totalAmount || subtotal);
+  const totalAmount = Number(orderDetails.paymentAmount ?? (Number(orderDetails.totalAmount ?? subtotal) - Number(orderDetails.walletCreditsUsed || 0)));
   const walletUsed = Number(orderDetails.walletCreditsUsed || 0);
-  const defaultGstRate = Number(orderDetails.gstRate || 5);
+  const defaultGstRate = Number(orderDetails.gstRate ?? 5);
 
   let totalTaxable = 0;
   let totalGst = 0;
   const hsnSummary = {};
 
-  // Build items rows with reverse GST breakdown
+  const breakdown = calculateCartTaxBreakdown(items, defaultGstRate, orderDetails.couponDetails?.couponDiscount || 0);
+
+  // Use the saved price and per-product GST slab; allocate discounts before reversing GST.
   const itemRows = items.map((item, idx) => {
     const qty = item.quantity || 1;
     const rate = Number(item.price || 0);
@@ -58,16 +72,17 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
     const itemGstRate = item.gstRate != null ? Number(item.gstRate) : defaultGstRate;
     const itemHsn = item.hsnCode || "3004";
 
-    const taxable = Number((lineTotal / (1 + itemGstRate / 100)).toFixed(2));
-    const gst = Number((lineTotal - taxable).toFixed(2));
+    const taxable = item.taxableAmount ?? breakdown.itemBreakdown[idx].taxableAmount;
+    const gst = item.gstAmount ?? breakdown.itemBreakdown[idx].gstAmount;
     totalTaxable += taxable;
     totalGst += gst;
 
-    if (!hsnSummary[itemHsn]) {
-      hsnSummary[itemHsn] = { hsn: itemHsn, rate: itemGstRate, taxable: 0, gst: 0 };
+    const taxKey = `${itemHsn}:${itemGstRate}`;
+    if (!hsnSummary[taxKey]) {
+      hsnSummary[taxKey] = { hsn: itemHsn, rate: itemGstRate, taxable: 0, gst: 0 };
     }
-    hsnSummary[itemHsn].taxable += taxable;
-    hsnSummary[itemHsn].gst += gst;
+    hsnSummary[taxKey].taxable += taxable;
+    hsnSummary[taxKey].gst += gst;
 
     return `
       <tr>
@@ -83,9 +98,14 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
       </tr>`;
   }).join("");
 
-  const hsnRows = Object.values(hsnSummary).map((h) => {
-    const cgst = Number((h.gst / 2).toFixed(2));
-    const sgst = Number((h.gst - cgst).toFixed(2));
+  const taxGroups = Object.values(hsnSummary).map(h => {
+    const cgst = roundMoney(h.gst / 2);
+    return { ...h, cgst, sgst: roundMoney(h.gst - cgst) };
+  });
+  const totalCgst = roundMoney(taxGroups.reduce((sum, h) => sum + h.cgst, 0));
+  const totalSgst = roundMoney(taxGroups.reduce((sum, h) => sum + h.sgst, 0));
+  const hsnRows = taxGroups.map((h) => {
+    const { cgst, sgst } = h;
     return `
       <tr>
         <td class="bc">${h.hsn}</td>
@@ -233,12 +253,13 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
       <div class="top-section">
         <div class="seller-info">
           <div class="company">${brandName}</div>
-          Maats Value Industries Limited<br/>
-          New Delhi, India<br/>
-          E-Mail: support@wellmaats.in<br/>
-          www.wellmaats.in<br/>
-          ${orderDetails.gstNumber ? `<strong>GSTIN:</strong> ${orderDetails.gstNumber}<br/>` : "<strong>GSTIN:</strong> 07AABCW1234D1Z5<br/>"}
-          ${orderDetails.panNumber ? `<strong>PAN:</strong> ${orderDetails.panNumber}<br/>` : "<strong>PAN:</strong> AABCW1234D<br/>"}
+          ${orderDetails.sellerInfo?.companyName || ""}<br/>
+          ${orderDetails.sellerInfo?.address || ""}<br/>
+          ${orderDetails.sellerInfo?.email ? `E-Mail: ${orderDetails.sellerInfo.email}<br/>` : ""}
+          ${orderDetails.sellerInfo?.phone ? `Phone: ${orderDetails.sellerInfo.phone}<br/>` : ""}
+          ${orderDetails.sellerInfo?.siteUrl || ""}<br/>
+          ${orderDetails.gstNumber ? `<strong>GSTIN:</strong> ${orderDetails.gstNumber}<br/>` : ""}
+          ${orderDetails.panNumber ? `<strong>PAN:</strong> ${orderDetails.panNumber}<br/>` : ""}
           <br/>
           <span class="buyer-label">Buyer (Bill to)</span><br/>
           <div class="buyer-name">${orderDetails.customerInfo?.userName || orderDetails.addressInfo?.name || "Customer"}</div>
@@ -329,6 +350,8 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
         <div class="extra-value" style="color:#108644;font-weight:600">- ₹${Number(orderDetails.couponDetails.couponDiscount).toLocaleString("en-IN")}</div>
       </div>` : ""}
 
+      <div class="extra-row"><div class="extra-label">Product taxable value (after discounts)</div><div class="extra-value">₹${totalTaxable.toFixed(2)}</div></div>
+      <div class="extra-row"><div class="extra-label">Included GST (not added again)</div><div class="extra-value">₹${totalGst.toFixed(2)}</div></div>
       <!-- ═══ TOTAL BAR ═══ -->
       <div class="total-bar">
         <div class="total-label">Total</div>
@@ -363,14 +386,14 @@ export function printInvoice(orderDetails, brandName = "Wellmaats") {
             </tr>
           </thead>
           <tbody>
-            ${hsnRows || `<tr><td class="bc">3004</td><td class="br">₹${totalTaxable.toFixed(2)}</td><td class="bc">2.5%</td><td class="br">₹${(totalGst/2).toFixed(2)}</td><td class="bc">2.5%</td><td class="br">₹${(totalGst/2).toFixed(2)}</td><td class="br">₹${totalGst.toFixed(2)}</td></tr>`}
+            ${hsnRows}
             <tr style="font-weight:700;background:#f9f9f9">
               <td class="bc">Total</td>
               <td class="br">₹${totalTaxable.toFixed(2)}</td>
               <td class="bc">-</td>
-              <td class="br">₹${(totalGst / 2).toFixed(2)}</td>
+              <td class="br">₹${totalCgst.toFixed(2)}</td>
               <td class="bc">-</td>
-              <td class="br">₹${(totalGst - totalGst / 2).toFixed(2)}</td>
+              <td class="br">₹${totalSgst.toFixed(2)}</td>
               <td class="br">₹${totalGst.toFixed(2)}</td>
             </tr>
           </tbody>

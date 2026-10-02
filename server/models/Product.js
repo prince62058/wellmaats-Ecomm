@@ -14,6 +14,7 @@ const ProductSchema = new mongoose.Schema(
     brand: String,
     price: Number,
     salePrice: Number,
+    flashSalePrice: { type: Number, default: 0, min: 0 },
     totalStock: Number,
     averageReview: Number,
     ingredients: String,

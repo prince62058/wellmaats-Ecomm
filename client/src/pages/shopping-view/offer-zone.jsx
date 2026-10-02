@@ -1,3 +1,4 @@
+import { getSellingPrice } from "@/lib/product-offers";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllFilteredProducts, fetchProductDetails } from "@/store/shop/products-slice";
@@ -21,7 +22,7 @@ function OfferZone() {
     dispatch(fetchAllFilteredProducts({ filterParams: {}, sortParams: "price-lowtohigh" }));
   }, [dispatch]);
 
-  const dealsAll = (productList || []).filter((p) => p.salePrice > 0 && p.salePrice < p.price);
+  const dealsAll = (productList || []).filter((p) => getSellingPrice(p) < p.price);
   const deals = activeFilter === "all" ? dealsAll : dealsAll.filter((p) => p.category === activeFilter);
 
   function handleGetProductDetails(id) { dispatch(fetchProductDetails(id)); }

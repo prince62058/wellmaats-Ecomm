@@ -1,3 +1,4 @@
+import RichTextEditor from "@/components/common/RichTextEditor";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -160,8 +161,8 @@ function AdminBlogs() {
               <Textarea rows={2} placeholder="A brief description..." value={form.excerpt} onChange={(e) => set("excerpt", e.target.value)} className="mt-1" />
             </div>
             <div>
-              <Label>Content (HTML supported)</Label>
-              <Textarea rows={10} placeholder="<p>Write your article here...</p>" value={form.content} onChange={(e) => set("content", e.target.value)} className="mt-1 font-mono text-xs" />
+              <Label>Article Content</Label>
+              <RichTextEditor value={form.content} onChange={(html) => set("content", html)} placeholder="Write your article here..." minHeight={240} />
             </div>
             <div className="flex items-center gap-3 p-3 bg-forest-50 rounded-xl">
               <input type="checkbox" id="published" checked={form.isPublished} onChange={(e) => set("isPublished", e.target.checked)} className="w-4 h-4 accent-forest cursor-pointer" />

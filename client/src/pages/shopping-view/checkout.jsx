@@ -1,3 +1,6 @@
+import { useOfferClock } from "@/hooks/use-offer-clock";
+import { calculateCouponDiscount, roundMoney } from "@/lib/product-offers";
+import { getSellingPrice } from "@/lib/product-offers";
 import Address from "@/components/shopping-view/address";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,18 +28,11 @@ function ShoppingCheckout() {
   const { toast } = useToast();
 
   const items = cartItems?.items || [];
+  useOfferClock(items);
 
-  const totalCartAmount = items.length
-    ? items.reduce(
-        (sum, currentItem) =>
-          sum +
-          (currentItem?.salePrice > 0 ? currentItem?.salePrice : currentItem?.price) *
-            currentItem?.quantity,
-        0
-      )
-    : 0;
+  const totalCartAmount = roundMoney((items || []).reduce((sum, item) => sum + getSellingPrice(item) * item.quantity, 0));
 
-  const couponDiscount = appliedCoupon ? Number(appliedCoupon.discountValueCalculated || 0) : 0;
+  const couponDiscount = calculateCouponDiscount(appliedCoupon, totalCartAmount);
   const discountedSubtotal = Math.max(0, totalCartAmount - couponDiscount);
 
   const shippingInfo = calculateDeliveryCharge(
@@ -45,11 +41,12 @@ function ShoppingCheckout() {
     siteSettingsData?.shippingSettings
   );
   const deliveryCharge = shippingInfo.deliveryCharge || 0;
-  const finalTotalAmount = discountedSubtotal + deliveryCharge;
+  const finalTotalAmount = roundMoney(discountedSubtotal + deliveryCharge);
 
   const taxInfo = calculateCartTaxBreakdown(
     items,
-    siteSettingsData?.taxSettings?.defaultGstRate || 5
+    siteSettingsData?.taxSettings?.defaultGstRate ?? 5,
+    couponDiscount
   );
 
   function openRazorpayCheckout(paymentData) {
@@ -81,6 +78,7 @@ function ShoppingCheckout() {
             sessionStorage.removeItem("currentOrderId");
             navigate("/shop/payment-success");
           } else {
+            setIsPaymemntStart(false);
             toast({ title: "Payment verification failed.", variant: "destructive" });
           }
         });
@@ -113,9 +111,9 @@ function ShoppingCheckout() {
         productId: item?.productId,
         title: item?.title,
         image: item?.image,
-        price: item?.salePrice > 0 ? item?.salePrice : item?.price,
+        price: getSellingPrice(item),
         quantity: item?.quantity,
-        gstRate: item?.gstRate != null ? item?.gstRate : (siteSettingsData?.taxSettings?.defaultGstRate || 5),
+        gstRate: item?.gstRate != null ? item?.gstRate : (siteSettingsData?.taxSettings?.defaultGstRate ?? 5),
         hsnCode: item?.hsnCode || "3004",
       })),
       addressInfo: {
@@ -214,7 +212,7 @@ function ShoppingCheckout() {
                   <div>
                     <span>Items Subtotal</span>
                     <span className="block text-[11px] text-gray-500">
-                      (Includes ₹{taxInfo.gstAmount} GST @ {taxInfo.effectiveGstRate}%)
+                      (Prices include GST)
                     </span>
                   </div>
                   <span className="font-semibold text-gray-800">₹{totalCartAmount}</span>
@@ -229,6 +227,11 @@ function ShoppingCheckout() {
                   </div>
                 )}
 
+                <div className="rounded-lg border border-forest/10 bg-white p-3 space-y-1.5">
+                  <div className="flex justify-between text-sm"><span>Product value (excl. GST)</span><span>₹{taxInfo.taxableAmount.toFixed(2)}</span></div>
+                  <div className="flex justify-between text-sm"><span>GST (included)</span><span>₹{taxInfo.gstAmount.toFixed(2)}</span></div>
+                  {couponDiscount > 0 && <p className="text-[11px] text-muted-foreground">Calculated after the coupon discount.</p>}
+                </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <span>Delivery Charges</span>
@@ -249,7 +252,7 @@ function ShoppingCheckout() {
                   <div>
                     <span className="text-base font-bold block">Total Payable</span>
                     <span className="text-[10px] text-muted-foreground block">
-                      Taxable: ₹{taxInfo.taxableAmount} + GST: ₹{taxInfo.gstAmount}
+                      Base after discount: ₹{taxInfo.taxableAmount.toFixed(2)} + GST: ₹{taxInfo.gstAmount.toFixed(2)}
                     </span>
                   </div>
                   <span className="text-xl font-bold">₹{finalTotalAmount}</span>

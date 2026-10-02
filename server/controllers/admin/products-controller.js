@@ -52,9 +52,25 @@ const handleMultipleImagesUpload = async (req, res) => {
   }
 };
 
+function validateProductInput(data) {
+  const price = Number(data.price);
+  if (!Number.isFinite(price) || price <= 0) return "MRP must be greater than zero.";
+  for (const field of ["salePrice", "flashSalePrice"]) {
+    const amount = Number(data[field] || 0);
+    if (!Number.isFinite(amount) || amount < 0 || amount > price) return "Selling and flash prices must be between zero and MRP.";
+  }
+  if (Number(data.flashSalePrice || 0) > Number(data.salePrice || data.price)) return "Flash price cannot exceed the regular selling price.";
+  if (![0, 5, 12, 18, 28].includes(Number(data.gstRate ?? 5))) return "Select a valid GST slab.";
+  if (!Number.isFinite(Number(data.grossWeightInGrams)) || Number(data.grossWeightInGrams) <= 0) return "Enter a positive delivery weight in grams.";
+  if (!Number.isInteger(Number(data.totalStock)) || Number(data.totalStock) < 0) return "Stock must be a non-negative whole number.";
+  return null;
+}
+
 //add a new product
 const addProduct = async (req, res) => {
   try {
+    const validationError = validateProductInput(req.body);
+    if (validationError) return res.status(400).json({ success: false, message: validationError });
     const {
       image,
       images,
@@ -68,6 +84,7 @@ const addProduct = async (req, res) => {
       brand,
       price,
       salePrice,
+      flashSalePrice,
       totalStock,
       averageReview,
       ingredients,
@@ -111,6 +128,7 @@ const addProduct = async (req, res) => {
       brand,
       price,
       salePrice,
+      flashSalePrice,
       totalStock,
       averageReview,
       ingredients,
@@ -129,7 +147,7 @@ const addProduct = async (req, res) => {
       grossWeightInGrams: grossWeightInGrams !== "" && grossWeightInGrams != null ? Number(grossWeightInGrams) : 250,
       gstRate: gstRate !== "" && gstRate != null ? Number(gstRate) : 5,
       hsnCode: hsnCode || "3004",
-      isTaxInclusive: isTaxInclusive !== undefined ? (isTaxInclusive === true || isTaxInclusive === "true") : true,
+      isTaxInclusive: true,
       manufacturingDetails: manufacturingDetails || {},
     });
 
@@ -182,6 +200,7 @@ const editProduct = async (req, res) => {
       brand,
       price,
       salePrice,
+      flashSalePrice,
       totalStock,
       averageReview,
       ingredients,
@@ -211,6 +230,9 @@ const editProduct = async (req, res) => {
         message: "Product not found",
       });
 
+    const validationError = validateProductInput({ ...findProduct.toObject(), ...req.body });
+    if (validationError) return res.status(400).json({ success: false, message: validationError });
+    findProduct.isTaxInclusive = true;
     findProduct.title = title ?? findProduct.title;
     findProduct.description = description ?? findProduct.description;
     if (mainCategory !== undefined) findProduct.mainCategory = mainCategory;
@@ -222,6 +244,7 @@ const editProduct = async (req, res) => {
     findProduct.salePrice =
       salePrice === "" ? 0 : salePrice ?? findProduct.salePrice;
     findProduct.totalStock = totalStock ?? findProduct.totalStock;
+    if (flashSalePrice !== undefined) findProduct.flashSalePrice = Number(flashSalePrice || 0);
 
     if (images !== undefined) {
       findProduct.images = Array.isArray(images) ? images.filter(Boolean) : (images ? [images] : []);
@@ -259,7 +282,7 @@ const editProduct = async (req, res) => {
     if (grossWeightInGrams !== undefined) findProduct.grossWeightInGrams = grossWeightInGrams === "" ? 250 : Number(grossWeightInGrams);
     if (gstRate !== undefined) findProduct.gstRate = gstRate === "" ? 5 : Number(gstRate);
     if (hsnCode !== undefined) findProduct.hsnCode = hsnCode || "3004";
-    if (isTaxInclusive !== undefined) findProduct.isTaxInclusive = isTaxInclusive === true || isTaxInclusive === "true";
+
     if (manufacturingDetails !== undefined) {
       const existingMfg = findProduct.manufacturingDetails && findProduct.manufacturingDetails.toObject
         ? findProduct.manufacturingDetails.toObject()

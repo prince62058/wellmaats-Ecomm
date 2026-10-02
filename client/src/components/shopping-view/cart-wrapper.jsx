@@ -1,3 +1,6 @@
+import { useOfferClock } from "@/hooks/use-offer-clock";
+import { calculateCouponDiscount, roundMoney } from "@/lib/product-offers";
+import { getSellingPrice } from "@/lib/product-offers";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
@@ -9,26 +12,16 @@ import { calculateDeliveryCharge } from "@/lib/shipping-calculator";
 import { calculateCartTaxBreakdown } from "@/lib/tax-calculator";
 
 function UserCartWrapper({ cartItems, setOpenCartSheet }) {
+  useOfferClock(cartItems);
   const navigate = useNavigate();
   const siteSettingsData = useSelector((state) => state.siteSettings?.data);
   const appliedCoupon = useSelector((state) => state.shopCoupons?.appliedCoupon);
 
-  const totalCartAmount =
-    cartItems && cartItems.length > 0
-      ? cartItems.reduce(
-          (sum, currentItem) =>
-            sum +
-            (currentItem?.salePrice > 0
-              ? currentItem?.salePrice
-              : currentItem?.price) *
-              currentItem?.quantity,
-          0
-        )
-      : 0;
+  const totalCartAmount = roundMoney((cartItems || []).reduce((sum, item) => sum + getSellingPrice(item) * item.quantity, 0));
 
   const itemCount = cartItems?.reduce((n, i) => n + i.quantity, 0) || 0;
 
-  const couponDiscount = appliedCoupon ? Number(appliedCoupon.discountValueCalculated || 0) : 0;
+  const couponDiscount = calculateCouponDiscount(appliedCoupon, totalCartAmount);
   const discountedSubtotal = Math.max(0, totalCartAmount - couponDiscount);
 
   const shippingInfo = calculateDeliveryCharge(
@@ -39,10 +32,11 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
 
   const taxInfo = calculateCartTaxBreakdown(
     cartItems,
-    siteSettingsData?.taxSettings?.defaultGstRate || 5
+    siteSettingsData?.taxSettings?.defaultGstRate ?? 5,
+    couponDiscount
   );
 
-  const finalPayable = discountedSubtotal + (shippingInfo.deliveryCharge || 0);
+  const finalPayable = roundMoney(discountedSubtotal + (shippingInfo.deliveryCharge || 0));
 
   return (
     <SheetContent className="w-full sm:max-w-md flex flex-col p-0">
@@ -111,7 +105,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
               <div>
                 <span>Items Subtotal</span>
                 <span className="block text-[10px] text-gray-400">
-                  (Incl. ₹{taxInfo.gstAmount} GST)
+                  (Prices include GST)
                 </span>
               </div>
               <span className="font-semibold text-gray-800">₹{totalCartAmount}</span>
@@ -126,7 +120,12 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
               </div>
             )}
 
-            <div className="flex justify-between items-center text-muted-foreground">
+            <div className="rounded-lg border border-forest/10 bg-white p-3 space-y-1.5">
+                  <div className="flex justify-between text-sm"><span>Product value (excl. GST)</span><span>₹{taxInfo.taxableAmount.toFixed(2)}</span></div>
+                  <div className="flex justify-between text-sm"><span>GST (included)</span><span>₹{taxInfo.gstAmount.toFixed(2)}</span></div>
+                  {couponDiscount > 0 && <p className="text-[11px] text-muted-foreground">Calculated after the coupon discount.</p>}
+                </div>
+                <div className="flex justify-between items-center text-muted-foreground">
               <span className="flex items-center gap-1">
                 <span>Delivery Charges</span>
                 {shippingInfo.totalWeightGrams > 0 && (
@@ -142,7 +141,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
               <div>
                 <span className="text-base font-bold text-forest block">Estimated Total</span>
                 <span className="text-[10px] text-muted-foreground block">
-                  Taxable: ₹{taxInfo.taxableAmount} + GST: ₹{taxInfo.gstAmount}
+                  Base after discount: ₹{taxInfo.taxableAmount.toFixed(2)} + GST: ₹{taxInfo.gstAmount.toFixed(2)}
                 </span>
               </div>
               <span className="text-2xl font-bold text-forest">₹{finalPayable}</span>

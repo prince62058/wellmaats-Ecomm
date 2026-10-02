@@ -1,3 +1,5 @@
+import { useOfferClock } from "@/hooks/use-offer-clock";
+import { getSellingPrice } from "@/lib/product-offers";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
 import { useSiteSettings, resolveProductImage } from "@/hooks/use-site-settings";
@@ -13,6 +15,7 @@ import { useLoginModal } from "@/context/LoginModalContext";
 const FALLBACK_IMG = "/products/signature.jpg";
 
 function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart }) {
+  useOfferClock(product);
   const { categoryOptionsMap } = useSiteSettings();
   const [imgSrc, setImgSrc] = useState(resolveProductImage(product?.image));
   const dispatch = useDispatch();
@@ -34,9 +37,9 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
     setImgSrc(resolveProductImage(product?.image || productImages[0]));
   }, [product?.image, product?.images, product?._id]);
 
-  const price = product?.salePrice > 0 ? product.salePrice : product?.price;
+  const price = getSellingPrice(product);
   const discount = getDiscountPercent(product);
-  const savings = product?.salePrice > 0 ? product.price - product.salePrice : 0;
+  const savings = Math.max(0, Number(product?.price || 0) - price);
   const categoryName = categoryOptionsMap[product?.category] || product?.category?.replace(/-/g, " ") || "Wellness";
 
   function handleWishlist(e) {
@@ -141,13 +144,13 @@ function ShoppingProductTile({ product, handleGetProductDetails, handleAddtoCart
             </span>
           </div>
           <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
-            <span className="text-sm sm:text-lg font-bold text-forest">₹{price}</span>
+            <span className="text-sm sm:text-lg font-bold text-forest">Order Price ₹{price}</span>
             <span className="text-[9px] sm:text-[10px] text-muted-foreground font-normal">
               (Incl. GST)
             </span>
-            {product?.salePrice > 0 && (
+            {product?.price > 0 && (
               <>
-                <span className="text-[11px] sm:text-xs text-muted-foreground line-through">₹{product?.price}</span>
+                <span className="text-[11px] sm:text-xs text-muted-foreground line-through">MRP ₹{product?.price}</span>
                 {discount > 0 && (
                   <span className="text-[9px] sm:text-[10px] font-bold text-forest-700 bg-forest-50 px-1 sm:px-1.5 py-0.5 rounded">
                     {discount}% off

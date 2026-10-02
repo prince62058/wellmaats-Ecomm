@@ -13,6 +13,7 @@
     "client": "npm run dev --prefix client",
     "build": "npm install --prefix client --include=dev && npm run build --prefix client && npm install --prefix server --omit=dev",
     "start": "node server/server.js",
-    "seed": "node server/seed.js"
+    "seed": "node server/seed.js",
+    "test:pricing": "node --test shared/tests/*.test.mjs server/tests/*.test.cjs"
   }
 }

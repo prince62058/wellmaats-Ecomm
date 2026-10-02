@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import ProductImageUpload from "./image-upload";
-import { getDiscountPercent, toDatetimeLocalValue } from "@/lib/product-offers";
+import { getDiscountPercent, toDatetimeLocalValue, getSellingPrice } from "@/lib/product-offers";
 import { useState, useRef } from "react";
 import { Plus, Check, X, Building2, Scale, Package, ShieldCheck, Sparkles } from "lucide-react";
 import DynamicIcon from "@/components/common/dynamic-icon";
@@ -80,15 +80,11 @@ function QuickAddSelect({ value, onValueChange, options = [], placeholder, onAdd
                 </div>
               </SelectItem>
             ))}
-            <div className="border-t border-gray-100 mt-1 pt-1">
-              <button type="button" onClick={startAdd}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-forest font-semibold hover:bg-leaf/50 rounded-lg transition-colors">
-                <Plus className="w-4 h-4" /> Add New {addLabel}
-              </button>
-            </div>
+
           </SelectContent>
         </Select>
       )}
+      {!adding && <button type="button" onClick={startAdd} className="text-xs font-semibold text-forest flex items-center gap-1"><Plus className="w-3 h-3" /> Add New {addLabel}</button>}
     </div>
   );
 }
@@ -107,6 +103,8 @@ function AdminProductForm({
   onAddCategory,
   onAddSubCategory,
   onAddBrand,
+  defaultManufacturingDetails = {},
+  productTypes = [], packagingUnits = [], onAddProductType, onAddPackagingUnit,
 }) {
   const [localExtraSubs, setLocalExtraSubs] = useState({});
 
@@ -334,19 +332,10 @@ function AdminProductForm({
           {/* 1. Type (Dosage Form) */}
           <div className="space-y-2">
             <Label className="text-xs font-semibold">Product Type (Form) *</Label>
-            <Select
-              value={formData.productType || "Capsule"}
-              onValueChange={(v) => setField("productType", v)}
-            >
-              <SelectTrigger className="rounded-xl border-gray-200 bg-white">
-                <SelectValue placeholder="Select Type" />
-              </SelectTrigger>
-              <SelectContent>
-                {["Capsule", "Tablet", "Syrup", "Powder", "Oil", "Ointment", "Drops", "Churna", "Cream", "Gel", "Decoction", "Other"].map((t) => (
-                  <SelectItem key={t} value={t}>{t}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <QuickAddSelect value={formData.productType || "Capsule"}
+              onValueChange={(v) => setField("productType", v)} addLabel="Product Type"
+              options={[...new Set(["Capsule", "Tablet", "Syrup", "Powder", "Oil", "Ointment", "Drops", "Churna", "Cream", "Gel", "Decoction", ...productTypes])].map(v => ({ id: v, label: v }))}
+              onAddNew={(v) => { setField("productType", v); onAddProductType?.(v); }} />
             <p className="text-[11px] text-muted-foreground">e.g. Capsule, Syrup, Tablet, Oil</p>
           </div>
 
@@ -355,25 +344,16 @@ function AdminProductForm({
             <Label className="text-xs font-semibold">Packaging Size</Label>
             <div className="flex gap-2">
               <Input
-                type="text"
+                type="number" min="0.01" step="any"
                 value={formData.sizeValue || ""}
                 onChange={(e) => setField("sizeValue", e.target.value)}
                 placeholder="e.g. 60, 200"
                 className="w-1/2 rounded-xl bg-white"
               />
-              <Select
-                value={formData.sizeUnit || "Capsules"}
-                onValueChange={(v) => setField("sizeUnit", v)}
-              >
-                <SelectTrigger className="w-1/2 rounded-xl border-gray-200 bg-white">
-                  <SelectValue placeholder="Unit" />
-                </SelectTrigger>
-                <SelectContent>
-                  {["Capsules", "Tablets", "ml", "gm", "kg", "Pieces", "Pack"].map((u) => (
-                    <SelectItem key={u} value={u}>{u}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <QuickAddSelect value={formData.sizeUnit || "Capsules"}
+                onValueChange={(v) => setField("sizeUnit", v)} addLabel="Unit"
+                options={[...new Set(["Capsules", "Tablets", "ml", "gm", "kg", "l", "Pieces", "Pack", ...packagingUnits])].map(v => ({ id: v, label: v }))}
+                onAddNew={(v) => { setField("sizeUnit", v); onAddPackagingUnit?.(v); }} />
             </div>
             <p className="text-[11px] text-muted-foreground">Shown to buyers: {formData.sizeValue || "60"} {formData.sizeUnit || "Capsules"}</p>
           </div>
@@ -392,9 +372,9 @@ function AdminProductForm({
                 value={formData.grossWeightInGrams || ""}
                 onChange={(e) => {
                   setField("grossWeightInGrams", e.target.value);
-                  setField("netWeight", e.target.value);
+
                 }}
-                placeholder="250"
+                placeholder="Required, e.g. 250"
                 className="rounded-xl bg-white flex-1"
               />
               <span className="text-xs font-semibold text-muted-foreground px-2 py-2 bg-white rounded-xl border border-gray-200">
@@ -418,11 +398,23 @@ function AdminProductForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>MRP (₹) *</Label>
-            <Input type="number" min="0" value={formData.price} onChange={(e) => setField("price", e.target.value)} />
+            <Input type="number" min="0.01" step="0.01" value={formData.price} onChange={(e) => setField("price", e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>Sale Price (₹)</Label>
-            <Input type="number" min="0" value={formData.salePrice} onChange={(e) => setField("salePrice", e.target.value)} placeholder="0 = no discount" />
+            <Label>Regular Selling Price (₹, includes GST)</Label>
+            <Input type="number" min="0" step="0.01" value={formData.salePrice} onChange={(e) => setField("salePrice", e.target.value)} placeholder="0 = no discount" />
+          </div>
+          <div className="space-y-2">
+            <Label>Regular Discount from MRP (%)</Label>
+            <Input type="number" min="0" max="99" step="0.01"
+              value={mrpNum > 0 && salePriceNum > 0 ? Number(((1 - salePriceNum / mrpNum) * 100).toFixed(2)) : 0}
+              onChange={(e) => setField("salePrice", Number((mrpNum * (1 - Math.min(99, Math.max(0, Number(e.target.value))) / 100)).toFixed(2)))} />
+            <p className="text-xs text-muted-foreground">Discount applies to the base price; the final selling price includes GST.</p>
+          </div>
+          <div className="space-y-2">
+            <Label>Flash Sale Price (₹, includes GST)</Label>
+            <Input type="number" min="0" step="0.01" value={formData.flashSalePrice || ""} onChange={(e) => setField("flashSalePrice", e.target.value)} placeholder="e.g. 800" />
+            <p className="text-xs text-muted-foreground">Used while Flash Sale is enabled and has not expired. Regular price returns after expiry.</p>
           </div>
           <div className="space-y-2">
             <Label>Stock Quantity *</Label>
@@ -450,13 +442,13 @@ function AdminProductForm({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="0">0% (Nil / Exempt)</SelectItem>
-                <SelectItem value="5">5% (Standard Ayurvedic)</SelectItem>
-                <SelectItem value="12">12% (Formulations)</SelectItem>
-                <SelectItem value="18">18% (Cosmetics / Supplements)</SelectItem>
-                <SelectItem value="28">28% (Luxury)</SelectItem>
+                <SelectItem value="5">5%</SelectItem>
+                <SelectItem value="12">12%</SelectItem>
+                <SelectItem value="18">18%</SelectItem>
+                <SelectItem value="28">28%</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-[11px] text-muted-foreground">Standard 5% for Ayurvedic products.</p>
+            <p className="text-[11px] text-muted-foreground">Select the applicable GST rate for this product.</p>
           </div>
 
           <div className="space-y-2">
@@ -478,7 +470,7 @@ function AdminProductForm({
 
         {/* Live Tax Breakdown Card for this product */}
         {(() => {
-          const sellingPrice = salePriceNum > 0 ? salePriceNum : mrpNum;
+          const sellingPrice = getSellingPrice(formData);
           if (sellingPrice <= 0) return null;
           const rate = Number(formData.gstRate != null ? formData.gstRate : 5) || 0;
           const taxable = rate > 0 ? Number((sellingPrice / (1 + rate / 100)).toFixed(2)) : sellingPrice;
@@ -578,7 +570,7 @@ function AdminProductForm({
       {/* Ayurvedic Details */}
       <section className="space-y-4">
         <h3 className="text-sm font-semibold text-forest uppercase tracking-wide border-b pb-2">
-          Ayurvedic Details (shown in product modal)
+          Product Details (shown on product page and preview)
         </h3>
         <div className="space-y-2">
           <Label>Ingredients</Label>
@@ -609,7 +601,7 @@ function AdminProductForm({
         </div>
         <div className="space-y-2">
           <Label>Dosage</Label>
-          <Input value={formData.dosage} onChange={(e) => setField("dosage", e.target.value)} placeholder="Twice daily, morning & evening" />
+          <RichTextEditor value={formData.dosage} onChange={(html) => setField("dosage", html)} placeholder="Twice daily, morning & evening" minHeight={80} />
         </div>
       </section>
 
@@ -627,10 +619,7 @@ function AdminProductForm({
             onClick={() => {
               setFormData((prev) => ({
                 ...prev,
-                soldBy: prev.soldBy || "Wellmaats Healthcare / Mother Tatwa",
-                countryOfOrigin: prev.countryOfOrigin || "India",
-                sellerAddress: prev.sellerAddress || "Plot No. 12, Industrial Area, New Delhi - 110020",
-                customerCareContact: prev.customerCareContact || "care@wellmaats.in | +91 98765 43210",
+                ...Object.fromEntries(Object.entries(defaultManufacturingDetails).map(([key, value]) => [key, prev[key] || value])),
               }));
             }}
             className="text-xs text-forest hover:text-forest/80 font-semibold flex items-center gap-1 bg-white border border-forest/20 px-2.5 py-1 rounded-lg shadow-xs transition"
@@ -695,7 +684,7 @@ function AdminProductForm({
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-xs font-semibold">Customer Care (Email / Phone)</Label>
+            <Label className="text-xs font-semibold">Grievance / Customer Care (Email / Phone)</Label>
             <Input
               value={formData.customerCareContact || ""}
               onChange={(e) => setField("customerCareContact", e.target.value)}
@@ -706,6 +695,7 @@ function AdminProductForm({
         </div>
       </section>
 
+      {!isValid && <p className="text-sm text-amber-800">Complete required fields, packaging size and delivery weight. Selling price must not exceed MRP; flash price must not exceed regular price.</p>}
       <Button type="submit" className="w-full bg-forest hover:bg-forest/90 py-6 text-base" disabled={!isValid || saving}>
         {saving ? "Saving..." : isEdit ? "Save Product Changes" : "Add Product to Store"}
       </Button>

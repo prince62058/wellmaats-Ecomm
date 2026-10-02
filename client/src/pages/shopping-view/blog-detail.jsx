@@ -1,3 +1,4 @@
+import { cleanRichText } from "@/lib/rich-text";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Clock, Eye, Tag, Calendar, BookOpen } from "lucide-react";
@@ -89,11 +90,11 @@ function BlogDetail() {
 
         {/* Content */}
         <div
-          className="prose prose-green max-w-none text-forest/80 leading-relaxed
+          className="rich-content prose prose-green max-w-none text-forest/80 leading-relaxed
             prose-headings:font-display prose-headings:text-forest
             prose-a:text-gold prose-a:no-underline hover:prose-a:underline
             prose-strong:text-forest"
-          dangerouslySetInnerHTML={{ __html: blog.content || "<p>Content coming soon...</p>" }}
+          dangerouslySetInnerHTML={{ __html: cleanRichText(blog.content || "<p>Content coming soon...</p>") }}
         />
 
         {/* Tags */}

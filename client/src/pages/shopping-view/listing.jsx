@@ -34,14 +34,10 @@ function createSearchParamsHelper(filterParams) {
 
 function parseFiltersFromParams(searchParams) {
   const filters = {};
-  const category = searchParams.get("category");
-  const subCategory = searchParams.get("subCategory");
-  const brand = searchParams.get("brand");
-  const offers = searchParams.get("offers");
-  if (category) filters.category = category.split(",").filter(Boolean);
-  if (subCategory) filters.subCategory = subCategory.split(",").filter(Boolean);
-  if (brand) filters.brand = brand.split(",").filter(Boolean);
-  if (offers) filters.offers = offers.split(",").filter(Boolean);
+  for (const key of ["mainCategory", "category", "subCategory", "childCategory", "brand", "offers", "productType", "priceRange", "availability", "rating"]) {
+    const value = searchParams.get(key);
+    if (value) filters[key] = value.split(",").filter(Boolean);
+  }
   return filters;
 }
 
@@ -80,7 +76,7 @@ function ShoppingListing() {
 
   function handleFilter(sectionId, optionId) {
     setFilters((prev) => {
-      const cpy = { ...prev };
+      const cpy = Object.fromEntries(Object.entries(prev).map(([key, values]) => [key, [...values]]));
       if (!cpy[sectionId]) cpy[sectionId] = [];
       const idx = cpy[sectionId].indexOf(optionId);
       if (idx === -1) cpy[sectionId].push(optionId);
@@ -196,7 +192,7 @@ function ShoppingListing() {
                       <SlidersHorizontal className="w-3.5 h-3.5" /> Filters
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-full max-w-sm p-0">
+                  <SheetContent side="left" className="w-full max-w-sm p-0 overflow-y-auto">
                     <div className="p-4 pt-12">
                       <ProductFilter
                         filters={filters}

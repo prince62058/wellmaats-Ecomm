@@ -1,3 +1,4 @@
+import { calculateCouponDiscount } from "@/lib/product-offers";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -97,7 +98,7 @@ export default function CouponSection({ cartSubtotal, onCouponApplied, className
                   {appliedCoupon.code}
                 </span>
                 <span className="text-[11px] font-semibold text-emerald-700">
-                  -₹{appliedCoupon.discountValueCalculated} OFF
+                  -₹{calculateCouponDiscount(appliedCoupon, cartSubtotal)} OFF
                 </span>
               </div>
               <p className="text-[10px] text-emerald-600 truncate mt-0.5">

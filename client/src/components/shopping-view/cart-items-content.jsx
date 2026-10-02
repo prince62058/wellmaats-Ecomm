@@ -1,3 +1,4 @@
+import { getSellingPrice } from "@/lib/product-offers";
 import { Minus, Plus, Trash } from "lucide-react";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
@@ -105,7 +106,7 @@ function UserCartItemsContent({ cartItem }) {
         <p className="font-bold text-forest text-sm">
           ₹
           {(
-            (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
+            getSellingPrice(cartItem) *
             cartItem?.quantity
           ).toFixed(0)}
         </p>

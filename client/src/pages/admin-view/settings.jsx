@@ -687,7 +687,7 @@ function AdminSettings() {
               {(form.announcementBar?.messages || []).map((msg, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground w-5 shrink-0 font-bold">{i+1}.</span>
-                  <Input value={msg} placeholder="🚚 Free Shipping above ₹499 | 🌿 100% Ayurvedic"
+                  <Input value={msg} placeholder="🚚 Free Shipping of ₹2,499 or more | 🌿 100% Ayurvedic"
                     className="flex-1 h-9 rounded-xl border-gray-200 text-sm"
                     onChange={(e) => setForm((p) => { const m=[...(p.announcementBar?.messages||[])]; m[i]=e.target.value; return {...p, announcementBar:{...(p.announcementBar||{}), messages:m}}; })} />
                   <button type="button" onClick={() => setForm((p) => { const m=(p.announcementBar?.messages||[]).filter((_,j)=>j!==i); return {...p, announcementBar:{...(p.announcementBar||{}), messages:m}}; })}
@@ -2124,7 +2124,7 @@ function AdminSettings() {
                             <Input
                               value={currentPolicy.freeShippingSubtext || ""}
                               onChange={(e) => updatePolicy("shipping", "freeShippingSubtext", e.target.value)}
-                              placeholder="On all orders above ₹499"
+                              placeholder="On all orders of ₹2,499 or more"
                               className="text-xs h-8 text-muted-foreground"
                             />
                           </div>
@@ -2383,9 +2383,9 @@ function AdminSettings() {
                 <div className="text-right">
                   <span className="text-xs text-muted-foreground line-through mr-1">FREE</span>
                   <span className="text-base font-bold text-forest">
-                    ₹{(form?.shippingSettings?.baseShippingCharge ?? 70) + (form?.shippingSettings?.additionalChargePerKg ?? 40)}
+                    ₹{(form?.shippingSettings?.baseShippingCharge ?? 70) + 2 * (form?.shippingSettings?.additionalChargePerKg ?? 40)}
                   </span>
-                  <p className="text-[10px] text-gray-500">Base ₹{form?.shippingSettings?.baseShippingCharge ?? 70} + Extra wt ₹{form?.shippingSettings?.additionalChargePerKg ?? 40}</p>
+                  <p className="text-[10px] text-gray-500">Base ₹{form?.shippingSettings?.baseShippingCharge ?? 70} + 2 slabs × ₹{form?.shippingSettings?.additionalChargePerKg ?? 40} (rounded up to 2 kg)</p>
                 </div>
               </div>
             </div>

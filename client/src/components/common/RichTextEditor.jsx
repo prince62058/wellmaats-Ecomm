@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { cleanRichText } from "@/lib/rich-text";
 
 /* ──────────────────────────────────────────────────────────
    Lightweight Rich Text Editor (no external deps)
@@ -47,23 +48,43 @@ function execBlock(tag) {
 export default function RichTextEditor({ value = "", onChange, placeholder = "Type here…", minHeight = 120 }) {
   const editorRef = useRef(null);
   const isComposing = useRef(false);
+  const savedRange = useRef(null);
+  const lastEmitted = useRef(null);
+  function saveSelection() {
+    const selection = window.getSelection();
+    if (selection?.rangeCount && editorRef.current?.contains(selection.anchorNode) && editorRef.current?.contains(selection.focusNode)) {
+      savedRange.current = selection.getRangeAt(0).cloneRange();
+    }
+  }
+  useEffect(() => {
+    document.addEventListener("selectionchange", saveSelection);
+    return () => document.removeEventListener("selectionchange", saveSelection);
+  }, []);
 
   // Set initial HTML once on mount / when value changes externally
   useEffect(() => {
     if (!editorRef.current) return;
     // Only update if the content actually differs (avoid cursor jumping)
-    if (editorRef.current.innerHTML !== value) {
-      editorRef.current.innerHTML = value || "";
+    if (value !== lastEmitted.current) {
+      editorRef.current.innerHTML = cleanRichText(value);
+      savedRange.current = null;
     }
   }, [value]);
 
   function handleInput() {
     if (isComposing.current) return;
-    onChange?.(editorRef.current?.innerHTML || "");
+    lastEmitted.current = editorRef.current?.innerHTML || "";
+    onChange?.(lastEmitted.current);
+    saveSelection();
   }
 
   function handleCommand(btn) {
     editorRef.current?.focus();
+    const selection = window.getSelection();
+    if (savedRange.current && editorRef.current.contains(savedRange.current.commonAncestorContainer)) {
+      selection.removeAllRanges();
+      selection.addRange(savedRange.current);
+    }
     if (btn.isTable) { insertTable(editorRef); handleInput(); return; }
     if (btn.isBlock) { execBlock(btn.cmd); handleInput(); return; }
     if (btn.isHighlight) {
@@ -86,7 +107,8 @@ export default function RichTextEditor({ value = "", onChange, placeholder = "Ty
               key={btn.cmd}
               type="button"
               title={btn.title}
-              onMouseDown={(e) => { e.preventDefault(); handleCommand(btn); }}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => handleCommand(btn)}
               className="px-2 py-1 text-xs rounded-lg hover:bg-forest/10 hover:text-forest text-gray-600 transition-colors whitespace-nowrap leading-tight"
               dangerouslySetInnerHTML={{ __html: btn.icon }}
             />
@@ -105,7 +127,7 @@ export default function RichTextEditor({ value = "", onChange, placeholder = "Ty
         data-placeholder={placeholder}
         style={{ minHeight }}
         className={[
-          "p-3 text-sm text-gray-800 outline-none",
+          "rich-content p-3 text-sm text-gray-800 outline-none",
           "prose-sm prose max-w-none",
           "[&_table]:w-full [&_table]:border-collapse",
           "[&_td]:border [&_td]:border-forest/30 [&_td]:p-2",

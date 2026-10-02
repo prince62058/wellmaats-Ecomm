@@ -1,3 +1,4 @@
+import { useOfferClock } from "@/hooks/use-offer-clock";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,9 +18,10 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   ShoppingBag, Zap, Heart, ArrowLeft, BadgeCheck,
   Truck, Shield, Package, Star, ChevronRight, Share2,
-  ChevronLeft, Play, Receipt,
+  ChevronLeft, Play,
 } from "lucide-react";
-import { calculateTaxBreakdown } from "@/lib/tax-calculator";
+import RichText from "@/components/common/rich-text";
+import { getSellingPrice, getUnitPrice, getUnitLabel } from "@/lib/product-offers";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import axiosInstance from "@/lib/axiosInstance";
 import { useLoginModal } from "@/context/LoginModalContext";
@@ -43,6 +45,7 @@ export default function ProductDetailPage() {
 
   // Local product state — avoids Redux productDetails being reset by modal
   const [product, setProduct] = useState(null);
+  useOfferClock(product);
   const [loadError, setLoadError] = useState(false);
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
   const [reviewMsg, setReviewMsg] = useState("");
@@ -100,9 +103,9 @@ export default function ProductDetailPage() {
   }, []);
 
   const p = product;
-  const price = p?.salePrice > 0 ? p.salePrice : p?.price;
+  const price = getSellingPrice(p);
   const discount = getDiscountPercent(p);
-  const savings = p?.salePrice > 0 ? (p.price - p.salePrice) : 0;
+  const savings = Math.max(0, Number(p?.price || 0) - price);
   const flashActive = isFlashSaleActive(p);
   const timeLeft = flashActive && p?.flashSaleEndsAt ? getTimeLeft(p.flashSaleEndsAt) : null;
   const categoryName = categoryOptionsMap[p?.category] || p?.category?.replace(/-/g, " ") || "Wellness";
@@ -363,13 +366,13 @@ export default function ProductDetailPage() {
 
             {/* Price */}
             <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
-              <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-forest">₹{price}</span>
+              <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-forest">Offer Price ₹{price}</span>
               <span className="text-xs sm:text-sm text-muted-foreground font-medium">
-                (Incl. of all taxes / {p?.gstRate ?? 5}% GST)
+                (Inclusive of all taxes)
               </span>
-              {p.salePrice > 0 && (
+              {p.price > 0 && (
                 <>
-                  <span className="text-base sm:text-xl line-through text-muted-foreground">₹{p.price}</span>
+                  <span className="text-base sm:text-xl line-through text-muted-foreground">MRP ₹{p.price}</span>
                   {discount > 0 && (
                     <span className="text-xs sm:text-sm font-bold text-red-600 bg-red-50 px-2.5 py-0.5 sm:py-1 rounded-xl border border-red-100">
                       {discount}% OFF — Save ₹{savings}
@@ -379,20 +382,7 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {/* Dynamic GST Breakdown Pill */}
-            {(() => {
-              const tb = calculateTaxBreakdown(price, p?.gstRate ?? 5);
-              return (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 mt-1 flex-wrap">
-                  <Receipt className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span>Base Price: <strong>₹{tb.taxableAmount}</strong></span>
-                  <span className="text-emerald-300">•</span>
-                  <span>GST ({tb.gstRate}%): <strong>₹{tb.gstAmount}</strong> (CGST ₹{tb.cgstAmount} + SGST ₹{tb.sgstAmount})</span>
-                  <span className="text-emerald-300">•</span>
-                  <span className="text-emerald-700 font-medium">Delivery extra</span>
-                </div>
-              );
-            })()}
+            {getUnitPrice(p) != null && <p className="text-sm text-muted-foreground">₹{getUnitPrice(p).toFixed(2)} per {getUnitLabel(p.sizeUnit)} · Pack of {p.sizeValue} {p.sizeUnit}</p>}
 
             {flashActive && timeLeft && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2 text-xs sm:text-sm">
@@ -402,7 +392,7 @@ export default function ProductDetailPage() {
             )}
 
             {/* Short description */}
-            <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{p.description}</p>
+            <RichText value={p.description} className="text-muted-foreground text-sm" />
 
             {/* Product badges */}
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -487,7 +477,7 @@ export default function ProductDetailPage() {
                 <span className="text-lg sm:text-xl">💊</span>
                 <div>
                   <p className="text-[10px] sm:text-xs font-bold text-amber-800 uppercase tracking-wide mb-0.5">Recommended Dosage</p>
-                  <p className="text-xs sm:text-sm text-amber-700">{p.dosage}</p>
+                  <RichText value={p.dosage} className="text-sm text-amber-700" />
                 </div>
               </div>
             )}
@@ -517,27 +507,14 @@ export default function ProductDetailPage() {
             <TabsContent value="benefits">
               <div className="bg-leaf/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-forest/10 w-full min-w-0">
                 <h3 className="font-display font-bold text-forest text-base sm:text-lg mb-3 sm:mb-4">Key Benefits</h3>
-                <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-3">
-                  {(p.benefits || "Natural Ayurvedic wellness support for daily health.").split(/[,\n]/).filter(Boolean).map((b, i) => (
-                    <div key={i} className="flex items-start gap-2.5 bg-white rounded-xl p-3 shadow-sm border border-forest/5">
-                      <span className="text-forest mt-0.5 text-xs">✓</span>
-                      <span className="text-xs sm:text-sm text-forest/90 leading-relaxed">{b.trim()}</span>
-                    </div>
-                  ))}
-                </div>
+                <RichText value={p.benefits || "Natural Ayurvedic wellness support for daily health."} />
               </div>
             </TabsContent>
 
             <TabsContent value="ingredients">
               <div className="bg-leaf/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-forest/10 w-full min-w-0">
                 <h3 className="font-display font-bold text-forest text-base sm:text-lg mb-3 sm:mb-4">Active Ingredients</h3>
-                <div className="flex flex-wrap gap-2">
-                  {(p.ingredients || "100% natural Ayurvedic herbs").split(/[,\n]/).filter(Boolean).map((ing, i) => (
-                    <span key={i} className="bg-white border border-forest/15 text-forest text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-sm">
-                      🌿 {ing.trim()}
-                    </span>
-                  ))}
-                </div>
+                <RichText value={p.ingredients || "100% natural Ayurvedic herbs"} />
               </div>
             </TabsContent>
 
@@ -552,7 +529,7 @@ export default function ProductDetailPage() {
                     <span className="text-xl sm:text-2xl">{item.icon}</span>
                     <div>
                       <p className="font-bold text-forest text-xs sm:text-sm mb-0.5 sm:mb-1">{item.title}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{item.text}</p>
+                      <RichText value={item.text} className="text-sm text-muted-foreground" />
                     </div>
                   </div>
                 ))}
@@ -572,7 +549,7 @@ export default function ProductDetailPage() {
                       <span>Manufactured By</span>
                     </div>
                     <p className="font-semibold text-gray-800 text-sm">
-                      {p.manufacturingDetails?.manufacturedBy || siteSettingsData?.defaultManufacturingDetails?.manufacturedBy || "Sanjeevani Ayurvedic Formulations Pvt. Ltd."}
+                      {p.manufacturingDetails?.manufacturedBy || siteSettingsData?.defaultManufacturingDetails?.manufacturedBy || "Not provided"}
                     </p>
                     {(p.manufacturingDetails?.manufacturerAddress || siteSettingsData?.defaultManufacturingDetails?.manufacturerAddress) && (
                       <p className="text-xs text-muted-foreground leading-relaxed">
@@ -611,7 +588,7 @@ export default function ProductDetailPage() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-forest uppercase tracking-wide">Customer Care Support</p>
+                      <p className="text-xs font-semibold text-forest uppercase tracking-wide">Grievance / Customer Care</p>
                       <p className="text-sm font-medium text-gray-800 mt-0.5">
                         {p.manufacturingDetails?.customerCareContact || siteSettingsData?.defaultManufacturingDetails?.customerCareContact || siteSettingsData?.contact?.email || "care@wellmaats.in"}
                       </p>
@@ -726,8 +703,8 @@ export default function ProductDetailPage() {
             <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Price</span>
             <div className="flex items-baseline gap-1">
               <span className="text-base sm:text-lg font-bold text-forest">₹{price}</span>
-              {p.salePrice > 0 && (
-                <span className="text-xs line-through text-muted-foreground">₹{p.price}</span>
+              {p.price > 0 && (
+                <span className="text-xs line-through text-muted-foreground">MRP ₹{p.price}</span>
               )}
             </div>
           </div>

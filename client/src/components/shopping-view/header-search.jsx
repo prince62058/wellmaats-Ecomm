@@ -1,3 +1,4 @@
+import { getSellingPrice } from "@/lib/product-offers";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -137,7 +138,7 @@ function HeaderSearch({ className = "", onResultClick, variant = "light" }) {
                         </p>
                       </div>
                       <span className="text-sm font-bold text-forest shrink-0">
-                        ₹{product.salePrice > 0 ? product.salePrice : product.price}
+                        ₹{getSellingPrice(product)}
                       </span>
                     </button>
                   </li>

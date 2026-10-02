@@ -44,7 +44,7 @@ module.exports = {
     "🧪 Lab Tested",
     "✅ GMP Certified",
     "🇮🇳 Made in India",
-    "🚚 Free Shipping above ₹499",
+    "🚚 Free Shipping of ₹2,499 or more",
     "💊 35+ Herbs Extract",
     "⭐ 4.8 Customer Rating",
     "🔒 Secure Payments",
@@ -501,7 +501,7 @@ module.exports = {
       dispatchText: "24hr Dispatch",
       dispatchSubtext: "Orders shipped on priority",
       freeShippingText: "Free Shipping",
-      freeShippingSubtext: "On all orders above ₹499",
+      freeShippingSubtext: "On all orders of ₹2,499 or more",
       trackingText: "Live Tracking",
       trackingSubtext: "SMS & Email updates",
       sections: [

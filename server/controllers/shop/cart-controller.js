@@ -64,7 +64,7 @@ const fetchCartItems = async (req, res) => {
 
     const cart = await Cart.findOne({ userId }).populate({
       path: "items.productId",
-      select: "image title price salePrice productType sizeValue sizeUnit netWeight weightUnit grossWeightInGrams totalStock gstRate hsnCode",
+      select: "image title price salePrice flashSalePrice isFlashSale flashSaleEndsAt productType sizeValue sizeUnit netWeight weightUnit grossWeightInGrams totalStock gstRate hsnCode",
     });
 
     if (!cart) {
@@ -89,6 +89,9 @@ const fetchCartItems = async (req, res) => {
       title: item.productId.title,
       price: item.productId.price,
       salePrice: item.productId.salePrice,
+      flashSalePrice: item.productId.flashSalePrice,
+      isFlashSale: item.productId.isFlashSale,
+      flashSaleEndsAt: item.productId.flashSaleEndsAt,
       quantity: item.quantity,
       productType: item.productId.productType || "Capsule",
       sizeValue: item.productId.sizeValue || "",
@@ -152,7 +155,7 @@ const updateCartItemQty = async (req, res) => {
 
     await cart.populate({
       path: "items.productId",
-      select: "image title price salePrice productType sizeValue sizeUnit netWeight weightUnit grossWeightInGrams totalStock gstRate hsnCode",
+      select: "image title price salePrice flashSalePrice isFlashSale flashSaleEndsAt productType sizeValue sizeUnit netWeight weightUnit grossWeightInGrams totalStock gstRate hsnCode",
     });
 
     const populateCartItems = cart.items
@@ -163,6 +166,9 @@ const updateCartItemQty = async (req, res) => {
         title: item.productId.title,
         price: item.productId.price,
         salePrice: item.productId.salePrice,
+      flashSalePrice: item.productId.flashSalePrice,
+      isFlashSale: item.productId.isFlashSale,
+      flashSaleEndsAt: item.productId.flashSaleEndsAt,
         quantity: item.quantity,
         productType: item.productId.productType || "Capsule",
         sizeValue: item.productId.sizeValue || "",
@@ -218,7 +224,7 @@ const deleteCartItem = async (req, res) => {
 
     await cart.populate({
       path: "items.productId",
-      select: "image title price salePrice productType sizeValue sizeUnit netWeight weightUnit grossWeightInGrams totalStock gstRate hsnCode",
+      select: "image title price salePrice flashSalePrice isFlashSale flashSaleEndsAt productType sizeValue sizeUnit netWeight weightUnit grossWeightInGrams totalStock gstRate hsnCode",
     });
 
     const populateCartItems = cart.items
@@ -229,6 +235,9 @@ const deleteCartItem = async (req, res) => {
         title: item.productId.title,
         price: item.productId.price,
         salePrice: item.productId.salePrice,
+      flashSalePrice: item.productId.flashSalePrice,
+      isFlashSale: item.productId.isFlashSale,
+      flashSaleEndsAt: item.productId.flashSaleEndsAt,
         quantity: item.quantity,
         productType: item.productId.productType || "Capsule",
         sizeValue: item.productId.sizeValue || "",

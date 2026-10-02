@@ -1,16 +1,12 @@
+import { getSellingPrice } from "../../../shared/pricing.mjs";
+export { getSellingPrice, getUnitPrice, isFlashSaleActive } from "../../../shared/pricing.mjs";
+import { isFlashSaleActive } from "../../../shared/pricing.mjs";
 /** Discount % from MRP vs sale price */
 export function getDiscountPercent(product) {
   const price = Number(product?.price);
-  const sale = Number(product?.salePrice);
+  const sale = getSellingPrice(product);
   if (!price || !sale || sale <= 0 || sale >= price) return 0;
   return Math.round(((price - sale) / price) * 100);
-}
-
-/** Flash sale active (not expired) */
-export function isFlashSaleActive(product) {
-  if (!product?.isFlashSale) return false;
-  if (!product?.flashSaleEndsAt) return true;
-  return new Date(product.flashSaleEndsAt) > new Date();
 }
 
 export function getOfferLabel(product) {
@@ -48,4 +44,10 @@ export function getTimeLeft(isoDate) {
   if (h >= 24) return `${Math.floor(h / 24)}d ${h % 24}h left`;
   if (h > 0) return `${h}h ${m}m left`;
   return `${m}m left`;
+}
+
+export { calculateCouponDiscount, roundMoney } from "../../../shared/pricing.mjs";
+
+export function getUnitLabel(unit) {
+  return ({ Capsules: "capsule", Tablets: "tablet", Pieces: "piece", Pack: "pack", gm: "g" })[unit] || unit;
 }

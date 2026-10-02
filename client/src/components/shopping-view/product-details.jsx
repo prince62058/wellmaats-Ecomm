@@ -1,3 +1,7 @@
+import RichText from "@/components/common/rich-text";
+import { useOfferClock } from "@/hooks/use-offer-clock";
+import { cleanRichText } from "@/lib/rich-text";
+import { getSellingPrice, getUnitPrice, getUnitLabel } from "@/lib/product-offers";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent } from "../ui/dialog";
@@ -15,13 +19,13 @@ import { addReview, getReviews } from "@/store/shop/review-slice";
 import { useSiteSettings, resolveProductImage } from "@/hooks/use-site-settings";
 import { getDiscountPercent, isFlashSaleActive, getTimeLeft } from "@/lib/product-offers";
 import ProductOfferBadges from "./product-offer-badges";
-import { BadgeCheck, Truck, Shield, ArrowUpRight, ChevronLeft, ChevronRight, Play, Film, Receipt } from "lucide-react";
+import { BadgeCheck, Truck, Shield, ArrowUpRight, ChevronLeft, ChevronRight, Play, Film } from "lucide-react";
 import { Link } from "react-router-dom";
-import { calculateTaxBreakdown } from "@/lib/tax-calculator";
 
 const badgeIcons = { Truck, Shield };
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
+  useOfferClock(productDetails);
   const [reviewMsg, setReviewMsg] = useState("");
   const [rating, setRating] = useState(0);
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
@@ -55,7 +59,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
     setActiveMediaIndex(0);
   }, [productDetails?._id]);
 
-  const price = productDetails?.salePrice > 0 ? productDetails.salePrice : productDetails?.price;
+  const price = getSellingPrice(productDetails);
   const discount = getDiscountPercent(productDetails);
   const flashActive = isFlashSaleActive(productDetails);
   const timeLeft = flashActive && productDetails?.flashSaleEndsAt
@@ -226,50 +230,37 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               <span className="text-sm text-muted-foreground">({averageReview.toFixed(1)})</span>
             </div>
             <div className="flex items-baseline gap-3 mt-4 flex-wrap">
-              <span className="text-3xl font-bold text-forest">₹{price}</span>
+              <span className="text-3xl font-bold text-forest">Offer Price ₹{price}</span>
               <span className="text-xs text-muted-foreground font-medium">
-                (Incl. of all taxes / {productDetails?.gstRate ?? 5}% GST)
+                (Inclusive of all taxes)
               </span>
               {productDetails?.salePrice > 0 && (
                 <>
-                  <span className="text-lg line-through text-muted-foreground">₹{productDetails?.price}</span>
+                  <span className="text-lg line-through text-muted-foreground">MRP ₹{productDetails?.price}</span>
                   {discount > 0 && (
                     <span className="text-sm font-bold text-red-600 bg-red-50 px-2 py-1 rounded-lg">
-                      {discount}% OFF — You save ₹{productDetails.price - productDetails.salePrice}
+                      {discount}% OFF — You save ₹{productDetails.price - price}
                     </span>
                   )}
                 </>
               )}
             </div>
 
-            {/* Dynamic Tax Breakdown Pill */}
-            {(() => {
-              const tb = calculateTaxBreakdown(price, productDetails?.gstRate ?? 5);
-              return (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-200/70 text-[11px] text-emerald-900 mt-2">
-                  <Receipt className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span>Base: <strong>₹{tb.taxableAmount}</strong></span>
-                  <span className="text-emerald-400">•</span>
-                  <span>GST ({tb.gstRate}%): <strong>₹{tb.gstAmount}</strong></span>
-                  <span className="text-emerald-400">•</span>
-                  <span className="text-emerald-700">Delivery extra</span>
-                </div>
-              );
-            })()}
+            {getUnitPrice(productDetails) != null && <p className="text-sm text-muted-foreground">₹{getUnitPrice(productDetails).toFixed(2)} per {getUnitLabel(productDetails.sizeUnit)}</p>}
             {flashActive && timeLeft && (
               <p className="text-sm text-red-600 font-semibold mt-2">⏱ Flash sale ends in {timeLeft}</p>
             )}
             {/* Description — rendered as HTML for rich text support */}
             {productDetails?.description ? (
               <div
-                className="text-muted-foreground mt-3 text-sm prose prose-sm max-w-none
+                className="rich-content text-muted-foreground mt-3 text-sm prose prose-sm max-w-none
                   [&_table]:w-full [&_table]:border-collapse [&_table]:my-2
                   [&_td]:border [&_td]:border-forest/20 [&_td]:px-2 [&_td]:py-1.5 [&_td]:text-xs
                   [&_th]:border [&_th]:border-forest/20 [&_th]:px-2 [&_th]:py-1.5 [&_th]:bg-leaf/40 [&_th]:font-semibold [&_th]:text-xs
                   [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4
                   [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-forest
                   [&_h3]:text-xs [&_h3]:font-semibold [&_h3]:text-forest/80"
-                dangerouslySetInnerHTML={{ __html: productDetails.description }}
+                dangerouslySetInnerHTML={{ __html: cleanRichText(productDetails.description) }}
               />
             ) : null}
 
@@ -334,12 +325,12 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               <TabsContent value="benefits" className="mt-4 text-sm text-muted-foreground">
                 {productDetails?.benefits ? (
                   <div
-                    className="prose prose-sm max-w-none
+                    className="rich-content prose prose-sm max-w-none
                       [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4
                       [&_table]:w-full [&_table]:border-collapse
                       [&_td]:border [&_td]:border-forest/20 [&_td]:px-2 [&_td]:py-1
                       [&_th]:border [&_th]:border-forest/20 [&_th]:px-2 [&_th]:py-1 [&_th]:bg-leaf/40"
-                    dangerouslySetInnerHTML={{ __html: productDetails.benefits }}
+                    dangerouslySetInnerHTML={{ __html: cleanRichText(productDetails.benefits) }}
                   />
                 ) : (
                   <p>Natural Ayurvedic wellness support for daily health.</p>
@@ -348,12 +339,12 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               <TabsContent value="ingredients" className="mt-4 text-sm text-muted-foreground">
                 {productDetails?.ingredients ? (
                   <div
-                    className="prose prose-sm max-w-none
+                    className="rich-content prose prose-sm max-w-none
                       [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4
                       [&_table]:w-full [&_table]:border-collapse
                       [&_td]:border [&_td]:border-forest/20 [&_td]:px-2 [&_td]:py-1
                       [&_th]:border [&_th]:border-forest/20 [&_th]:px-2 [&_th]:py-1 [&_th]:bg-leaf/40"
-                    dangerouslySetInnerHTML={{ __html: productDetails.ingredients }}
+                    dangerouslySetInnerHTML={{ __html: cleanRichText(productDetails.ingredients) }}
                   />
                 ) : (
                   <p>100% natural Ayurvedic herbs.</p>
@@ -362,14 +353,14 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               <TabsContent value="usage" className="mt-4 text-sm space-y-2">
                 {productDetails?.howToUse ? (
                   <div
-                    className="prose prose-sm max-w-none
+                    className="rich-content prose prose-sm max-w-none
                       [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4"
-                    dangerouslySetInnerHTML={{ __html: `<strong>How to use:</strong> ${productDetails.howToUse}` }}
+                    dangerouslySetInnerHTML={{ __html: cleanRichText(`<strong>How to use:</strong> ${productDetails.howToUse}`) }}
                   />
                 ) : (
                   <p><strong>How to use:</strong> Take with warm water.</p>
                 )}
-                <p><strong>Dosage:</strong> {productDetails?.dosage || "As directed by physician."}</p>
+                <div><strong>Dosage:</strong><RichText value={productDetails?.dosage || "As directed by physician."} /></div>
               </TabsContent>
               <TabsContent value="compliance" className="mt-4 text-xs sm:text-sm space-y-3">
                 <div className="bg-leaf/25 border border-forest/15 rounded-2xl p-4 space-y-3.5">

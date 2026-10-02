@@ -38,7 +38,7 @@ const DEFAULT_MARQUEE = [
   "🧪 Lab Tested",
   "✅ GMP Certified",
   "🇮🇳 Made in India",
-  "🚚 Free Shipping above ₹499",
+  "🚚 Free Shipping of ₹2,499 or more",
   "💊 35+ Herbs Extract",
   "⭐ 4.8 Customer Rating",
   "🔒 Secure Payments",

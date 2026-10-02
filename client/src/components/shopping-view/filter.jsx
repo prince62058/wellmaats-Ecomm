@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { Check, SlidersHorizontal, X, ChevronDown } from "lucide-react";
 import { Button } from "../ui/button";
@@ -5,7 +6,8 @@ import { useState } from "react";
 import DynamicIcon from "@/components/common/dynamic-icon";
 
 function ProductFilter({ filters, handleFilter, onClose }) {
-  const { productCategories } = useSiteSettings();
+  const { productCategories, brands, mainCategories } = useSiteSettings();
+  const customTypes = useSelector(state => state.siteSettings?.data?.productTypes || []);
   const [expandedCats, setExpandedCats] = useState({});
 
   const activeCount = filters
@@ -172,6 +174,20 @@ function ProductFilter({ filters, handleFilter, onClose }) {
           </div>
         </div>
 
+        {[
+          { key: "mainCategory", title: "Main Category", options: mainCategories || [] },
+          { key: "brand", title: "Brand", options: brands || [] },
+          { key: "productType", title: "Product Type", options: [...new Set(["Capsule", "Tablet", "Syrup", "Powder", "Oil", "Drops", "Cream", ...customTypes])].map(id => ({ id, label: id })) },
+          { key: "priceRange", title: "Selling Price", options: [{ id: "0-500", label: "Under ₹500" }, { id: "500-1000", label: "₹500–₹999" }, { id: "1000-2500", label: "₹1,000–₹2,499" }, { id: "2500-plus", label: "₹2,500 and above" }] },
+          { key: "availability", title: "Availability", options: [{ id: "in-stock", label: "In stock" }] },
+          { key: "rating", title: "Customer Rating", options: [{ id: "4", label: "4 stars and above" }] },
+        ].map(section => <div key={section.key} className="mt-5 border-t border-forest/10 pt-4">
+          <h3 className="text-sm font-semibold mb-2">{section.title}</h3>
+          {section.options.map(option => <label key={option.id} className="flex items-center gap-2 py-1.5 text-sm cursor-pointer">
+            <input type="checkbox" checked={filters?.[section.key]?.includes(option.id) || false} onChange={() => handleFilter(section.key, option.id)} />
+            {option.label}
+          </label>)}
+        </div>)}
         {activeCount > 0 && (
           <Button
             variant="outline"

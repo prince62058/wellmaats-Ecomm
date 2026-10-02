@@ -21,6 +21,9 @@ function buildProductQuery(filterParams = {}, sortParams = "price-lowtohigh") {
   if (filterParams.offers?.includes("onSale")) {
     query.set("onSale", "true");
   }
+  for (const key of ["mainCategory", "subCategory", "childCategory", "productType", "priceRange", "availability", "rating"]) {
+    if (filterParams[key]?.length) query.set(key, filterParams[key].join(","));
+  }
   query.set("sortBy", sortParams);
   return query.toString();
 }

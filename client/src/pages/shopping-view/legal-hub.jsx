@@ -187,7 +187,7 @@ export default function LegalHubPage({ defaultTab = "privacy" }) {
                     {shipping.freeShippingText || "Free Shipping"}
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    {shipping.freeShippingSubtext || "On all orders above ₹499"}
+                    {shipping.freeShippingSubtext || "On all orders of ₹2,499 or more"}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl bg-[#fafcfa] border border-forest/10 text-center">

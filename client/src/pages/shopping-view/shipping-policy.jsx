@@ -27,7 +27,7 @@ export default function ShippingPolicyPage() {
             <div className="bg-[#fafcfa] p-5 rounded-2xl border border-forest/10 text-center">
               <Truck className="w-6 h-6 text-gold mx-auto mb-2" />
               <h3 className="font-bold text-sm text-forest">Free Shipping</h3>
-              <p className="text-xs text-muted-foreground mt-1">On all orders above ₹499 across India</p>
+              <p className="text-xs text-muted-foreground mt-1">On all orders of ₹2,499 or more across India</p>
             </div>
             <div className="bg-[#fafcfa] p-5 rounded-2xl border border-forest/10 text-center">
               <ShieldCheck className="w-6 h-6 text-forest mx-auto mb-2" />

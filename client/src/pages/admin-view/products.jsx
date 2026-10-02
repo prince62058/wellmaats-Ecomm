@@ -35,6 +35,7 @@ const initialFormData = {
   brand: "",
   price: "",
   salePrice: "",
+  flashSalePrice: "",
   totalStock: "",
   averageReview: 4.5,
   isFeatured: "false",
@@ -50,7 +51,7 @@ const initialFormData = {
   // Measurable Weight (for shipping and specifications)
   netWeight: "",
   weightUnit: "gm",
-  grossWeightInGrams: "250",
+  grossWeightInGrams: "",
   // Tax & GST Compliance (Price is Inclusive)
   gstRate: "5",
   hsnCode: "3004",
@@ -158,6 +159,7 @@ function AdminProducts() {
       flashSaleEndsAt: data.flashSaleEndsAt || null,
       offerLabel: data.offerLabel || "Flash Sale",
       salePrice: data.salePrice === "" ? 0 : Number(data.salePrice),
+      flashSalePrice: Number(data.flashSalePrice || 0),
       price: Number(data.price),
       totalStock: Number(data.totalStock),
       averageReview: Number(data.averageReview) || 0,
@@ -236,7 +238,13 @@ function AdminProducts() {
 
   function isFormValid() {
     const required = ["title", "description", "category", "brand", "price", "totalStock"];
-    return required.every((key) => formData[key] !== "" && formData[key] != null);
+    return required.every((key) => formData[key] !== "" && formData[key] != null)
+      && Number(formData.grossWeightInGrams) > 0
+      && Number(formData.sizeValue) > 0 && Boolean(formData.sizeUnit)
+      && Number(formData.price) > 0
+      && Number(formData.salePrice || 0) <= Number(formData.price)
+      && Number(formData.flashSalePrice || 0) <= Number(formData.salePrice || formData.price)
+      && [0, 5, 12, 18, 28].includes(Number(formData.gstRate));
   }
 
   const filtered = useMemo(() => {
@@ -326,6 +334,11 @@ function AdminProducts() {
             </SheetTitle>
           </SheetHeader>
           <AdminProductForm
+              defaultManufacturingDetails={siteSettingsData?.defaultManufacturingDetails || {}}
+              productTypes={siteSettingsData?.productTypes || []}
+              packagingUnits={siteSettingsData?.packagingUnits || []}
+              onAddProductType={(v) => dispatch(updateSiteSettings({ productTypes: [...new Set([...(siteSettingsData?.productTypes || []), v])] }))}
+              onAddPackagingUnit={(v) => dispatch(updateSiteSettings({ packagingUnits: [...new Set([...(siteSettingsData?.packagingUnits || []), v])] }))}
             formData={formData}
             setFormData={setFormData}
             onSubmit={onSubmit}
