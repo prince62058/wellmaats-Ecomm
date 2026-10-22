@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export default function AboutUsPage() {
-  const { brand, contact } = useSiteSettings();
+  const { brand, contact, aboutUs } = useSiteSettings();
 
   return (
     <div className="bg-[#f9faf9] min-h-screen">
@@ -13,13 +13,13 @@ export default function AboutUsPage() {
         <div className="absolute -right-16 -bottom-16 w-96 h-96 bg-gold/10 rounded-full blur-3xl" />
         <div className="container mx-auto px-4 max-w-5xl text-center relative z-10">
           <span className="inline-flex items-center gap-2 bg-white/10 text-gold text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 border border-white/10">
-            <Leaf className="w-3.5 h-3.5" /> Ancient Wisdom, Modern Science
+            <Leaf className="w-3.5 h-3.5" /> {aboutUs.heroTag}
           </span>
           <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-            Nurturing Life with the Purity of <span className="text-gradient-gold">Pure Ayurveda</span>
+            {aboutUs.heroHeading}
           </h1>
           <p className="text-white/80 text-base md:text-xl max-w-3xl mx-auto leading-relaxed">
-            Welcome to {brand.name || "Wellmaats"}. We craft 100% natural, highly bio-available Ayurvedic drops made with ethically harvested herbs from the Himalayan foothills and Haridwar.
+            Welcome to {brand.name || "Wellmaats"}. {aboutUs.heroSubtext}
           </p>
         </div>
       </section>
@@ -70,13 +70,13 @@ export default function AboutUsPage() {
           <div className="space-y-6">
             <span className="text-gold text-xs font-bold uppercase tracking-widest">Our Heritage</span>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-forest leading-tight">
-              Rooted in Haridwar, Trusted Across India
+              {aboutUs.storyHeading}
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              Founded with the vision to make authentic Ayurvedic healing convenient for modern lives, {brand.name} blends time-tested Ayurvedic texts with modern standardized botanical extraction.
+              {aboutUs.storyParagraph1}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              From Tulsi, Giloy, Ashwagandha to rare Himalayan Kutki and Shatavari, our herbs are ethically sourced directly from certified organic farmers and tribal wildcraft harvesters.
+              {aboutUs.storyParagraph2}
             </p>
             <div className="space-y-3 pt-2">
               <div className="flex items-center gap-3 text-sm font-semibold text-forest">
@@ -97,7 +97,7 @@ export default function AboutUsPage() {
           <div className="bg-[#fafcfa] p-8 md:p-10 rounded-3xl border border-forest/15 shadow-sm space-y-6">
             <h3 className="font-display text-2xl font-bold text-forest">Our Core Mission</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              To empower 10 million Indian households to adopt preventive, holistic Ayurvedic wellness into their daily lifestyle without cumbersome preparation.
+              {aboutUs.missionText}
             </p>
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-forest/10">
               <div>

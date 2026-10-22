@@ -79,6 +79,16 @@ const DEFAULT_NEWSLETTER = {
   subtitle: "Subscribe to wellness tips & exclusive offers",
 };
 
+const DEFAULT_ABOUT_US = {
+  heroTag: "Ancient Wisdom, Modern Science",
+  heroHeading: "Nurturing Life with the Purity of Pure Ayurveda",
+  heroSubtext: "We craft 100% natural, highly bio-available Ayurvedic drops made with ethically harvested herbs from the Himalayan foothills and Haridwar.",
+  storyHeading: "Rooted in Haridwar, Trusted Across India",
+  storyParagraph1: "Founded with the vision to make authentic Ayurvedic healing convenient for modern lives, we blend time-tested Ayurvedic texts with modern standardized botanical extraction.",
+  storyParagraph2: "From Tulsi, Giloy, Ashwagandha to rare Himalayan Kutki and Shatavari, our herbs are ethically sourced directly from certified organic farmers and tribal wildcraft harvesters.",
+  missionText: "To empower 10 million Indian households to adopt preventive, holistic Ayurvedic wellness into their daily lifestyle without cumbersome preparation.",
+};
+
 const DEFAULT_PRODUCT_BADGES = [
   { label: "Express Delivery", icon: "Truck" },
   { label: "COD Available",    icon: "Shield" },
@@ -180,6 +190,7 @@ export function useSiteSettings() {
       faq:            data?.faq?.length            ? data.faq            : FAQ_ITEMS,
       stats:          data?.stats?.length          ? data.stats          : DEFAULT_STATS,
       newsletter:     data?.newsletter             || DEFAULT_NEWSLETTER,
+      aboutUs:        data?.aboutUs                || DEFAULT_ABOUT_US,
 
       // Footer
       footerLinks: (() => {

@@ -709,6 +709,7 @@ function ShoppingHeader() {
   const { brand, headerNavLinks } = useSiteSettings();
   const isHome = location.pathname === "/shop/home";
   const light = isHome && !scrolled;
+  const isSearchPage = location.pathname === "/shop/search";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 48);
@@ -790,22 +791,26 @@ function ShoppingHeader() {
           )}
         </Link>
 
-        {/* Search — visible on tablet & desktop */}
-        <div className="hidden min-[480px]:block flex-1 max-w-2xl mx-1 sm:mx-2 md:mx-4 min-w-0">
-          <HeaderSearch className="w-full" variant="light" />
-        </div>
+        {/* Search — visible on tablet & desktop (hidden on the dedicated search page, which has its own) */}
+        {!isSearchPage && (
+          <div className="hidden min-[480px]:block flex-1 max-w-2xl mx-1 sm:mx-2 md:mx-4 min-w-0">
+            <HeaderSearch className="w-full" variant="light" />
+          </div>
+        )}
 
         {/* Right: Search toggle (< 480px) + Cart + Wishlist + User */}
         <div className="flex items-center shrink-0 ml-auto gap-1 sm:gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setShowMobileSearch((prev) => !prev)}
-            className="min-[480px]:hidden rounded-full shrink-0 h-8 w-8 border-forest/15 text-forest hover:bg-leaf"
-            aria-label="Toggle search"
-          >
-            {showMobileSearch ? <X className="h-3.5 w-3.5" /> : <Search className="h-3.5 w-3.5" />}
-          </Button>
+          {!isSearchPage && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setShowMobileSearch((prev) => !prev)}
+              className="min-[480px]:hidden rounded-full shrink-0 h-8 w-8 border-forest/15 text-forest hover:bg-leaf"
+              aria-label="Toggle search"
+            >
+              {showMobileSearch ? <X className="h-3.5 w-3.5" /> : <Search className="h-3.5 w-3.5" />}
+            </Button>
+          )}
 
           <HeaderRightContent
             light={false}
@@ -816,7 +821,7 @@ function ShoppingHeader() {
       </div>
 
       {/* Mobile Search dropdown row (< 480px) */}
-      {showMobileSearch && (
+      {showMobileSearch && !isSearchPage && (
         <div className="min-[480px]:hidden px-3 py-2 bg-leaf/50 border-t border-forest/10 animate-fade-in">
           <HeaderSearch className="w-full" variant="light" onResultClick={() => setShowMobileSearch(false)} />
         </div>

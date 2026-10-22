@@ -359,7 +359,7 @@ export default function ProductDetailPage() {
                 <span className="text-xs text-muted-foreground">({reviews?.length || 0} reviews)</span>
               </div>
               {p.totalStock > 0
-                ? <span className="text-[11px] sm:text-xs bg-forest-50 text-forest-700 font-semibold px-2.5 py-0.5 sm:py-1 rounded-full border border-forest-200">✓ In Stock ({p.totalStock})</span>
+                ? <span className="text-[11px] sm:text-xs bg-forest-50 text-forest-700 font-semibold px-2.5 py-0.5 sm:py-1 rounded-full border border-forest-200">✓ Available</span>
                 : <span className="text-[11px] sm:text-xs bg-red-50 text-red-600 font-semibold px-2.5 py-0.5 sm:py-1 rounded-full border border-red-200">Out of Stock</span>
               }
             </div>
@@ -415,18 +415,6 @@ export default function ProductDetailPage() {
                 <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-white text-forest px-3 py-1.5 rounded-xl border border-forest/15 font-semibold shadow-xs">
                   <span>📦 Pack Size:</span>
                   <strong>{p.sizeValue} {p.sizeUnit || ""}</strong>
-                </span>
-              )}
-              {(p.grossWeightInGrams || p.netWeight) && (
-                <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm bg-white text-forest px-3 py-1.5 rounded-xl border border-forest/15 font-semibold shadow-xs">
-                  <span>⚖️ Net/Pkg Wt:</span>
-                  <strong>
-                    {p.grossWeightInGrams
-                      ? (p.grossWeightInGrams >= 1000
-                          ? `${(p.grossWeightInGrams / 1000).toFixed(2)} kg`
-                          : `${p.grossWeightInGrams} g`)
-                      : `${p.netWeight} ${p.weightUnit || "gm"}`}
-                  </strong>
                 </span>
               )}
             </div>

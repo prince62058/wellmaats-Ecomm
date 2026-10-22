@@ -33,6 +33,7 @@ const SiteSettingsSchema = new mongoose.Schema(
     faq: mongoose.Schema.Types.Mixed,
     stats: mongoose.Schema.Types.Mixed,
     newsletter: mongoose.Schema.Types.Mixed,
+    aboutUs: mongoose.Schema.Types.Mixed,
 
     // ── Footer ──
     footerLinks: mongoose.Schema.Types.Mixed,

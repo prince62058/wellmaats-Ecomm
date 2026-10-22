@@ -105,6 +105,7 @@ function AdminProductForm({
   onAddBrand,
   defaultManufacturingDetails = {},
   productTypes = [], packagingUnits = [], onAddProductType, onAddPackagingUnit,
+  submitError = "",
 }) {
   const [localExtraSubs, setLocalExtraSubs] = useState({});
 
@@ -319,74 +320,136 @@ function AdminProductForm({
         </div>
       </section>
 
-      {/* Product Type, Size & Measurable Weight */}
+      {/* Product Type */}
       <section className="space-y-4 p-5 rounded-2xl bg-[#f9fafb] border border-forest/15">
         <div className="flex items-center gap-2 border-b border-forest/10 pb-2">
           <Scale className="w-4 h-4 text-forest" />
           <h3 className="text-sm font-semibold text-forest uppercase tracking-wide">
-            Product Type, Size &amp; Weight (Measurables)
+            Product Type
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {/* 1. Type (Dosage Form) */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold">Product Type (Form) *</Label>
-            <QuickAddSelect value={formData.productType || "Capsule"}
-              onValueChange={(v) => setField("productType", v)} addLabel="Product Type"
-              options={[...new Set(["Capsule", "Tablet", "Syrup", "Powder", "Oil", "Ointment", "Drops", "Churna", "Cream", "Gel", "Decoction", ...productTypes])].map(v => ({ id: v, label: v }))}
-              onAddNew={(v) => { setField("productType", v); onAddProductType?.(v); }} />
-            <p className="text-[11px] text-muted-foreground">e.g. Capsule, Syrup, Tablet, Oil</p>
-          </div>
+        <div className="space-y-2">
+          <Label className="text-xs font-semibold">Product Type (Form) *</Label>
+          <QuickAddSelect value={formData.productType || "Capsule"}
+            onValueChange={(v) => setField("productType", v)} addLabel="Product Type"
+            options={[...new Set(["Capsule", "Tablet", "Syrup", "Powder", "Oil", "Ointment", "Drops", "Churna", "Cream", "Gel", "Decoction", ...productTypes])].map(v => ({ id: v, label: v }))}
+            onAddNew={(v) => { setField("productType", v); onAddProductType?.(v); }} />
+          <p className="text-[11px] text-muted-foreground">e.g. Capsule, Syrup, Tablet, Oil</p>
+        </div>
+      </section>
 
-          {/* 2. Size / Packaging */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold">Packaging Size</Label>
-            <div className="flex gap-2">
-              <Input
-                type="number" min="0.01" step="any"
-                value={formData.sizeValue || ""}
-                onChange={(e) => setField("sizeValue", e.target.value)}
-                placeholder="e.g. 60, 200"
-                className="w-1/2 rounded-xl bg-white"
-              />
+      {/* Packaging Size — own section, full width */}
+      <section className="space-y-3 p-5 rounded-2xl bg-[#f9fafb] border border-forest/15">
+        <div className="flex items-center gap-2 border-b border-forest/10 pb-2">
+          <Package className="w-4 h-4 text-forest" />
+          <h3 className="text-sm font-semibold text-forest uppercase tracking-wide">
+            Packaging Size
+          </h3>
+        </div>
+        <div className="space-y-2">
+          <Label className="text-xs font-semibold">Pack Size (Qty &amp; Unit) *</Label>
+          <div className="flex gap-3">
+            <Input
+              type="number" min="0.01" step="any"
+              value={formData.sizeValue || ""}
+              onChange={(e) => setField("sizeValue", e.target.value)}
+              placeholder="e.g. 60, 200"
+              className="flex-1 h-11 rounded-xl bg-white text-base"
+            />
+            <div className="flex-1">
               <QuickAddSelect value={formData.sizeUnit || "Capsules"}
                 onValueChange={(v) => setField("sizeUnit", v)} addLabel="Unit"
                 options={[...new Set(["Capsules", "Tablets", "ml", "gm", "kg", "l", "Pieces", "Pack", ...packagingUnits])].map(v => ({ id: v, label: v }))}
                 onAddNew={(v) => { setField("sizeUnit", v); onAddPackagingUnit?.(v); }} />
             </div>
-            <p className="text-[11px] text-muted-foreground">Shown to buyers: {formData.sizeValue || "60"} {formData.sizeUnit || "Capsules"}</p>
           </div>
+          <p className="text-[11px] text-muted-foreground">Shown to buyers: {formData.sizeValue || "60"} {formData.sizeUnit || "Capsules"}</p>
+        </div>
+      </section>
 
-          {/* 3. Delivery / Gross Weight */}
+      {/* Delivery Weight & Cartage Calculation — separate section */}
+      <section className="space-y-4 p-5 rounded-2xl bg-[#f9fafb] border border-forest/15">
+        <div className="flex items-center gap-2 border-b border-forest/10 pb-2">
+          <Scale className="w-4 h-4 text-forest" />
+          <h3 className="text-sm font-semibold text-forest uppercase tracking-wide">
+            Delivery Weight &amp; Cartage Calculation
+          </h3>
+        </div>
+
+        <div className="flex items-center justify-between bg-white rounded-xl border border-forest/15 px-4 py-2.5">
+          <span className="text-xs font-semibold text-muted-foreground">Minimum Package Weight (store-wide, set in Settings)</span>
+          <span className="text-sm font-bold text-forest">500 gm</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-xs font-semibold flex items-center justify-between">
-              <span>Gross Delivery Weight *</span>
-              <span className="text-[10px] text-forest font-bold">For Delivery Fee</span>
-            </Label>
-            <div className="flex gap-2 items-center">
-              <Input
-                type="number"
-                min="0"
-                step="1"
-                value={formData.grossWeightInGrams || ""}
-                onChange={(e) => {
-                  setField("grossWeightInGrams", e.target.value);
-
-                }}
-                placeholder="Required, e.g. 250"
-                className="rounded-xl bg-white flex-1"
-              />
-              <span className="text-xs font-semibold text-muted-foreground px-2 py-2 bg-white rounded-xl border border-gray-200">
-                Grams (g)
-              </span>
-            </div>
-            <p className="text-[11px] text-muted-foreground">
-              {Number(formData.grossWeightInGrams || 0) >= 1000
-                ? `${(Number(formData.grossWeightInGrams) / 1000).toFixed(2)} kg package weight`
-                : `${formData.grossWeightInGrams || 250}g package weight`}
-            </p>
+            <Label className="text-xs font-semibold">Per Unit Weight (g)</Label>
+            <Input
+              type="number" min="0" step="any"
+              value={formData.perUnitWeightGrams || ""}
+              onChange={(e) => setField("perUnitWeightGrams", e.target.value)}
+              placeholder="Weight of one unit, e.g. 0.5"
+              className="rounded-xl bg-white"
+            />
+            <p className="text-[11px] text-muted-foreground">Weight of a single capsule/tablet/ml, used only to work out the gross package weight.</p>
           </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Per Unit Cartage (₹)</Label>
+            <Input
+              type="number" min="0" step="0.01"
+              value={formData.perUnitCartage || ""}
+              onChange={(e) => setField("perUnitCartage", e.target.value)}
+              placeholder="Packaging cost per unit, e.g. 0.75"
+              className="rounded-xl bg-white"
+            />
+            <p className="text-[11px] text-muted-foreground">Internal packaging/cartage cost per unit — for admin reference only, never shown to buyers.</p>
+          </div>
+        </div>
+
+        {Number(formData.perUnitWeightGrams) > 0 && Number(formData.sizeValue) > 0 && (
+          <div className="rounded-xl border border-forest/20 bg-leaf/30 p-3 flex items-center justify-between flex-wrap gap-2 text-xs">
+            <span className="text-forest font-semibold">
+              Suggested gross weight: {Number(formData.sizeValue)} × {formData.perUnitWeightGrams}g = {Math.max(500, Math.round(Number(formData.perUnitWeightGrams) * Number(formData.sizeValue)))}g
+              {Number(formData.perUnitCartage) > 0 && ` · Total cartage: ₹${(Number(formData.perUnitCartage) * Number(formData.sizeValue)).toFixed(2)}`}
+            </span>
+            <button
+              type="button"
+              onClick={() => setField("grossWeightInGrams", String(Math.max(500, Math.round(Number(formData.perUnitWeightGrams) * Number(formData.sizeValue)))))}
+              className="text-xs font-semibold text-white bg-forest hover:bg-forest/90 px-3 py-1.5 rounded-lg shadow-xs shrink-0"
+            >
+              Apply to Gross Weight
+            </button>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <Label className="text-xs font-semibold flex items-center justify-between">
+            <span>Gross Delivery Weight *</span>
+            <span className="text-[10px] text-forest font-bold">For Delivery Fee</span>
+          </Label>
+          <div className="flex gap-2 items-center">
+            <Input
+              type="number"
+              min="0"
+              step="1"
+              value={formData.grossWeightInGrams || ""}
+              onChange={(e) => {
+                setField("grossWeightInGrams", e.target.value);
+
+              }}
+              placeholder="Required, e.g. 250"
+              className="rounded-xl bg-white flex-1"
+            />
+            <span className="text-xs font-semibold text-muted-foreground px-2 py-2 bg-white rounded-xl border border-gray-200">
+              Grams (g)
+            </span>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            {Number(formData.grossWeightInGrams || 0) >= 1000
+              ? `${(Number(formData.grossWeightInGrams) / 1000).toFixed(2)} kg package weight`
+              : `${formData.grossWeightInGrams || 250}g package weight`}
+          </p>
         </div>
       </section>
 
@@ -695,7 +758,12 @@ function AdminProductForm({
         </div>
       </section>
 
-      {!isValid && <p className="text-sm text-amber-800">Complete required fields, packaging size and delivery weight. Selling price must not exceed MRP; flash price must not exceed regular price.</p>}
+      {submitError && (
+        <p className="text-sm font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          {submitError}
+        </p>
+      )}
+      {!isValid && <p className="text-sm font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-3">Complete required fields, packaging size and delivery weight. Selling price must not exceed MRP; flash price must not exceed regular price.</p>}
       <Button type="submit" className="w-full bg-forest hover:bg-forest/90 py-6 text-base" disabled={!isValid || saving}>
         {saving ? "Saving..." : isEdit ? "Save Product Changes" : "Add Product to Store"}
       </Button>

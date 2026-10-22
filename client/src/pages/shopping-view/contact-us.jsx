@@ -98,7 +98,7 @@ export default function ContactUsPage() {
                 <Clock className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Manufacturing Facility</p>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Marketing Facilitator</p>
                 <p className="text-forest text-sm font-semibold mt-1 leading-relaxed">{contact.manufacturing || "Wellmaats Ayurvedic Unit, Haridwar, Uttarakhand"}</p>
               </div>
             </div>

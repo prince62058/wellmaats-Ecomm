@@ -289,18 +289,6 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                   <strong>{productDetails.sizeValue} {productDetails.sizeUnit || ""}</strong>
                 </span>
               )}
-              {(productDetails?.grossWeightInGrams || productDetails?.netWeight) && (
-                <span className="inline-flex items-center gap-1 text-xs bg-white text-forest px-2.5 py-1 rounded-lg border border-forest/15 font-semibold shadow-xs">
-                  <span>⚖️ Net/Pkg Wt:</span>
-                  <strong>
-                    {productDetails.grossWeightInGrams
-                      ? (productDetails.grossWeightInGrams >= 1000
-                          ? `${(productDetails.grossWeightInGrams / 1000).toFixed(2)} kg`
-                          : `${productDetails.grossWeightInGrams} g`)
-                      : `${productDetails.netWeight} ${productDetails.weightUnit || "gm"}`}
-                  </strong>
-                </span>
-              )}
             </div>
 
             {productDetails?.totalStock === 0 ? (

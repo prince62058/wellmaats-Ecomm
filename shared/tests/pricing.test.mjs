@@ -7,7 +7,7 @@ test('MRP, regular price, flash price and expiry use GST-inclusive selling amoun
   assert.equal(getSellingPrice({ ...product, isFlashSale: false }), 1000);
   assert.equal(getSellingPrice({ ...product, flashSaleEndsAt: '2020-01-01' }), 1000);
   assert.equal(getSellingPrice({ price: 1200 }), 1200);
-  assert.equal(getUnitPrice(product), 13.33);
+  assert.equal(getUnitPrice(product), 20);
 });
 test('reverse GST uses configured slabs including zero', () => {
   assert.equal(calculateTaxBreakdown(800, 5).taxableAmount, 761.90);

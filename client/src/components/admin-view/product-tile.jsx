@@ -49,6 +49,8 @@ function AdminProductTile({
       netWeight:     product.netWeight != null ? String(product.netWeight) : "",
       weightUnit:    product.weightUnit || "gm",
       grossWeightInGrams: product.grossWeightInGrams != null ? String(product.grossWeightInGrams) : "250",
+      perUnitWeightGrams: product.perUnitWeightGrams != null ? String(product.perUnitWeightGrams) : "",
+      perUnitCartage: product.perUnitCartage != null ? String(product.perUnitCartage) : "",
       gstRate: product.gstRate != null ? String(product.gstRate) : "5",
       hsnCode: product.hsnCode || "3004",
       manufacturedBy: product.manufacturingDetails?.manufacturedBy || product.manufacturedBy || "",

@@ -14,7 +14,7 @@ function AnnouncementBar() {
 
   const defaultMessages = [
     { text: deliveryNotice },
-    { text: "↩️ 14-Day Easy Returns — No Questions Asked" },
+    { text: "📞 Ask the Expert +91. 8468881616" },
     { text: "✅ 100% Authentic Ayurvedic Formulations" },
     { text: "⭐ 4.8 Rating from 50,000+ Happy Customers" },
   ];

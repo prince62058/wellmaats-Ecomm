@@ -10,7 +10,8 @@ export function getSellingPrice(product, now = Date.now()) {
 }
 export function getUnitPrice(product) {
   const size = Number(product?.sizeValue);
-  return size > 0 && product?.sizeUnit ? roundMoney(getSellingPrice(product) / size) : null;
+  const mrp = Number(product?.price) || 0;
+  return size > 0 && product?.sizeUnit && mrp > 0 ? roundMoney(mrp / size) : null;
 }
 export function calculateTaxBreakdown(inclusivePrice = 0, rate = 5) {
   const price = roundMoney(Math.max(0, Number(inclusivePrice) || 0));

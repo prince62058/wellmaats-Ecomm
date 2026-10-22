@@ -21,7 +21,7 @@ export default function FAQPage() {
     { q: "Do these products contain any artificial colors, added sugar, or alcohol?", a: "No. Our drops contain zero added sugars, zero synthetic colors, zero harmful preservatives, and are 100% vegetarian." },
   ];
 
-  const allFaqs = (faq && faq.length > 0) ? [...faq, ...defaultFaqs.slice(faq.length)] : defaultFaqs;
+  const allFaqs = (faq && faq.length > 0) ? faq : defaultFaqs;
 
   const filtered = allFaqs.filter(
     (f) =>

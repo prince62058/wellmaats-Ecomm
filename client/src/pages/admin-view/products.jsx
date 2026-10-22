@@ -52,6 +52,8 @@ const initialFormData = {
   netWeight: "",
   weightUnit: "gm",
   grossWeightInGrams: "",
+  perUnitWeightGrams: "",
+  perUnitCartage: "",
   // Tax & GST Compliance (Price is Inclusive)
   gstRate: "5",
   hsnCode: "3004",
@@ -71,6 +73,7 @@ function AdminProducts() {
   const [currentEditedId, setCurrentEditedId] = useState(null);
   const [search, setSearch] = useState("");
   const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const { productList } = useSelector((state) => state.adminProducts);
   const siteSettingsData = useSelector((s) => s.siteSettings?.data);
@@ -124,6 +127,7 @@ function AdminProducts() {
   function resetForm() {
     setFormData(initialFormData);
     setCurrentEditedId(null);
+    setSubmitError("");
   }
 
   function openAdd() {
@@ -175,6 +179,8 @@ function AdminProducts() {
       grossWeightInGrams: data.grossWeightInGrams !== "" && data.grossWeightInGrams != null
         ? Number(data.grossWeightInGrams)
         : (data.weightUnit === "kg" ? (Number(data.netWeight) || 0.25) * 1000 : (Number(data.netWeight) || 250)),
+      perUnitWeightGrams: Number(data.perUnitWeightGrams || 0),
+      perUnitCartage: Number(data.perUnitCartage || 0),
 
       // Tax & GST Compliance
       gstRate: data.gstRate !== "" && data.gstRate != null ? Number(data.gstRate) : 5,
@@ -197,6 +203,7 @@ function AdminProducts() {
   async function onSubmit(event) {
     event.preventDefault();
     setSaving(true);
+    setSubmitError("");
     const payload = preparePayload(formData);
 
     if (currentEditedId !== null) {
@@ -206,11 +213,15 @@ function AdminProducts() {
         dispatch(fetchAllProducts());
         closeSheet();
       } else {
-        toast({ title: "Failed to update product", variant: "destructive" });
+        const message = result?.payload?.message || "Failed to update product";
+        setSubmitError(message);
+        toast({ title: message, variant: "destructive" });
       }
     } else {
       if (!payload.image && (!payload.images || payload.images.length === 0)) {
-        toast({ title: "Please add at least one product image", variant: "destructive" });
+        const message = "Please add at least one product image";
+        setSubmitError(message);
+        toast({ title: message, variant: "destructive" });
         setSaving(false);
         return;
       }
@@ -220,7 +231,9 @@ function AdminProducts() {
         dispatch(fetchAllProducts());
         closeSheet();
       } else {
-        toast({ title: "Failed to add product", variant: "destructive" });
+        const message = result?.payload?.message || "Failed to add product";
+        setSubmitError(message);
+        toast({ title: message, variant: "destructive" });
       }
     }
     setSaving(false);
@@ -348,6 +361,7 @@ function AdminProducts() {
             brands={brands}
             isValid={isFormValid()}
             saving={saving}
+            submitError={submitError}
             onAddMainCategory={onAddMainCategory}
             onAddCategory={onAddCategory}
             onAddSubCategory={onAddSubCategory}

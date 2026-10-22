@@ -43,6 +43,10 @@ const ProductSchema = new mongoose.Schema(
     weightUnit: { type: String, default: "gm" }, // gm, kg, ml, l
     grossWeightInGrams: { type: Number, default: 250 }, // Total package weight in grams for delivery calculation
 
+    // Per-unit cartage calculation aids (internal, used to derive grossWeightInGrams)
+    perUnitWeightGrams: { type: Number, default: 0 }, // Weight of a single unit (e.g. one capsule) in grams
+    perUnitCartage: { type: Number, default: 0 }, // Packaging/cartage cost per unit in ₹ (internal reference only)
+
     // Dynamic Manufacturing & Seller Details
     manufacturingDetails: {
       manufacturedBy: { type: String, default: "" },

@@ -1610,6 +1610,42 @@ function AdminSettings() {
 
           <section>
             <div className="flex items-center justify-between mb-3">
+              <Label>About Us Page</Label>
+            </div>
+            <div className="border rounded-lg p-4 mb-3 space-y-3">
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Hero Tag</Label>
+                <Input placeholder="Ancient Wisdom, Modern Science" value={form.aboutUs?.heroTag || ""} onChange={(e) => update("aboutUs.heroTag", e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Hero Heading</Label>
+                <Input placeholder="Nurturing Life with the Purity of Pure Ayurveda" value={form.aboutUs?.heroHeading || ""} onChange={(e) => update("aboutUs.heroHeading", e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Hero Subtext</Label>
+                <Textarea placeholder="We craft 100% natural..." value={form.aboutUs?.heroSubtext || ""} onChange={(e) => update("aboutUs.heroSubtext", e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Story Heading</Label>
+                <Input placeholder="Rooted in Haridwar, Trusted Across India" value={form.aboutUs?.storyHeading || ""} onChange={(e) => update("aboutUs.storyHeading", e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Story Paragraph 1</Label>
+                <Textarea value={form.aboutUs?.storyParagraph1 || ""} onChange={(e) => update("aboutUs.storyParagraph1", e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Story Paragraph 2</Label>
+                <Textarea value={form.aboutUs?.storyParagraph2 || ""} onChange={(e) => update("aboutUs.storyParagraph2", e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Mission Text</Label>
+                <Textarea value={form.aboutUs?.missionText || ""} onChange={(e) => update("aboutUs.missionText", e.target.value)} />
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <div className="flex items-center justify-between mb-3">
               <Label>FAQ</Label>
               <Button size="sm" variant="outline" onClick={() => addListItem("faq", { q: "", a: "" })}>
                 <Plus className="w-4 h-4 mr-1" /> Add FAQ

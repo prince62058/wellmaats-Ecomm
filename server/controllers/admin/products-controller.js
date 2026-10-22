@@ -101,6 +101,8 @@ const addProduct = async (req, res) => {
       netWeight,
       weightUnit,
       grossWeightInGrams,
+      perUnitWeightGrams,
+      perUnitCartage,
       gstRate,
       hsnCode,
       isTaxInclusive,
@@ -145,6 +147,8 @@ const addProduct = async (req, res) => {
       netWeight: netWeight !== "" && netWeight != null ? Number(netWeight) : 0,
       weightUnit: weightUnit || "gm",
       grossWeightInGrams: grossWeightInGrams !== "" && grossWeightInGrams != null ? Number(grossWeightInGrams) : 250,
+      perUnitWeightGrams: perUnitWeightGrams !== "" && perUnitWeightGrams != null ? Number(perUnitWeightGrams) : 0,
+      perUnitCartage: perUnitCartage !== "" && perUnitCartage != null ? Number(perUnitCartage) : 0,
       gstRate: gstRate !== "" && gstRate != null ? Number(gstRate) : 5,
       hsnCode: hsnCode || "3004",
       isTaxInclusive: true,
@@ -217,6 +221,8 @@ const editProduct = async (req, res) => {
       netWeight,
       weightUnit,
       grossWeightInGrams,
+      perUnitWeightGrams,
+      perUnitCartage,
       gstRate,
       hsnCode,
       isTaxInclusive,
@@ -280,6 +286,8 @@ const editProduct = async (req, res) => {
     if (netWeight !== undefined) findProduct.netWeight = netWeight === "" ? 0 : Number(netWeight);
     if (weightUnit !== undefined) findProduct.weightUnit = weightUnit;
     if (grossWeightInGrams !== undefined) findProduct.grossWeightInGrams = grossWeightInGrams === "" ? 250 : Number(grossWeightInGrams);
+    if (perUnitWeightGrams !== undefined) findProduct.perUnitWeightGrams = perUnitWeightGrams === "" ? 0 : Number(perUnitWeightGrams);
+    if (perUnitCartage !== undefined) findProduct.perUnitCartage = perUnitCartage === "" ? 0 : Number(perUnitCartage);
     if (gstRate !== undefined) findProduct.gstRate = gstRate === "" ? 5 : Number(gstRate);
     if (hsnCode !== undefined) findProduct.hsnCode = hsnCode || "3004";
 
